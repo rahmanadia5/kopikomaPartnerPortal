@@ -51,7 +51,7 @@ Aturan penting:
 - Target dan pencapaian: periode Bulanan/Kuartal/Semester/Tahunan, target vs "seharusnya per hari ini" (MTD/QTD/HTD/YTD), revenue + kuantitas, funnel 6 tahap dihitung mundur dari rasio konversi (bisa diubah).
 - Performa sales (manajer/super admin): dua tabel terpisah (revenue dan kuantitas), diurutkan dari paling perform, kolom Target, Seharusnya per 20 Okt, Achievement, %, Selisih, Status. Status mengikuti metrik terlemah.
 - Profil pengguna (peran, menu, tugas, notifikasi email, aktivitas), Pengguna dan peran (matriks akses).
-- Alur bisnis end-to-end (tab "Alur bisnis" untuk semua peran, dan tombol di halaman masuk tanpa login): diagram swimlane (Calon franchisee, Sales, Sistem, Reviewer, Manajer) dari pengajuan sampai quotation disetujui kedua pihak, plus tabel rincian tahap. Persetujuan 1 dari 2 = franchisee setuju quotation (dicatat sales), 2 dari 2 = approval akhir manajer. Data diagram di `FL_NODES` / `FL_EDGES` (posisi grid kolom x lane).
+- Alur bisnis end-to-end (tab "Alur bisnis" untuk semua peran setelah login): diagram swimlane (Calon franchisee, Sales, Sistem, Reviewer, Manajer) dari pengajuan sampai quotation disetujui kedua pihak, plus tabel rincian tahap. Persetujuan 1 dari 2 = franchisee setuju quotation (dicatat sales), 2 dari 2 = approval akhir manajer. Data diagram di `FL_NODES` / `FL_EDGES` (posisi grid kolom x lane).
 - Audit trail per aplikasi, termasuk akses dokumen. Persetujuan data pribadi (UU PDP) wajib saat input lead.
 - Data demo "hari ini" = 20 Oktober 2026 supaya angka MTD bermakna.
 

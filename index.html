@@ -309,8 +309,6 @@ footer{max-width:1360px;margin:0 auto;padding:0 24px 30px;font-size:12px;color:v
 .lg-acc b{display:block;font-size:14px}
 .lg-acc .small{display:block}
 @media (max-width:860px){.login{grid-template-columns:1fr}.lg-brand{padding:32px 24px;position:static;height:auto}.lg-brand h1{margin-top:16px}}
-.lg-flow{align-self:flex-start;margin-top:18px;background:none;border:1px solid rgba(255,255,255,.3);color:#F7EFE6;border-radius:999px;padding:9px 16px;font-weight:700;font-size:14px;cursor:pointer}
-.lg-flow:hover{background:rgba(255,255,255,.08)}
 
 /* business process (swimlane) */
 .flow-bar{position:sticky;top:0;z-index:30;background:var(--roast);color:#F7EFE6;padding:10px 24px;display:flex;align-items:center;gap:16px}
@@ -798,9 +796,7 @@ function render() {
   }
   if (!ME) {
     top.hidden = true; foot.hidden = true;
-    document.getElementById('main').innerHTML = state.flowOpen
-      ? `<div class="flow-bar"><div class="logo"><b>kopi koma<i>,</i></b><span>Partner Portal</span></div><button class="btn btn-sm" onclick="closeFlowPublic()">Kembali ke halaman masuk</button></div><div class="wrap">${viewFlow()}</div>`
-      : loginHTML();
+    document.getElementById('main').innerHTML = loginHTML();
     ['drawer','overlay'].forEach(id => document.getElementById(id).classList.remove('open'));
     document.getElementById('apv').hidden = true; document.getElementById('notifPop').hidden = true; document.getElementById('userMenu').hidden = true;
     return;
@@ -822,7 +818,6 @@ function loginHTML() {
     <section class="lg-brand">
       <div class="logo"><b>kopi koma<i>,</i></b><span>Partner Portal</span></div>
       <h1>Satu tempat untuk seluruh proses kemitraan.</h1>
-      <button class="lg-flow" onclick="openFlowPublic()">Lihat alur bisnis end-to-end</button>
     </section>
     <section class="lg-form">
       <div class="lg-card">
@@ -838,7 +833,7 @@ function loginHTML() {
   </div>`;
 }
 function startSession(k) {
-  ME = k; state.loginErr = ''; state.flowOpen = false; state.view = 'pipeline'; state.sel = null; state.addOpen = false; state.apv = null; state.hint = true; state.taskFilter = 'all';
+  ME = k; state.loginErr = ''; state.view = 'pipeline'; state.sel = null; state.addOpen = false; state.apv = null; state.hint = true; state.taskFilter = 'all';
   state.notifOpen = false; state.menuOpen = false; state.profile = k; render(); window.scrollTo(0,0);
   toast(`Masuk sebagai ${person(k)}`);
 }
@@ -1268,8 +1263,6 @@ function viewFlow() {
     <tbody>${FL_STEPS.map(r => `<tr>${r.map(c => `<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</tbody>
   </table></div></section>`;
 }
-function openFlowPublic() { state.flowOpen = true; render(); window.scrollTo(0,0); }
-function closeFlowPublic() { state.flowOpen = false; render(); window.scrollTo(0,0); }
 
 /* ===================== approval status modal ===================== */
 const STEP_DEF = [
