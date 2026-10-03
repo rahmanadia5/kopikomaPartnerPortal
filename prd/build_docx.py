@@ -78,11 +78,16 @@ while i < len(lines):
         block = []
         while i < len(lines) and lines[i].startswith('|'): block.append(lines[i]); i += 1
         table(block); continue
+    m = re.match(r'!\[[^\]]*\]\(([^)]+)\)', ln)
+    if m:
+        doc.add_picture(str(HERE / m.group(1)), width=Cm(14.5))
+        doc.paragraphs[-1].alignment = WD_ALIGN_PARAGRAPH.CENTER
+        i += 1; continue
     if ln.startswith('# '): p = doc.add_paragraph(style='Title'); add_inline(p, ln[2:], 16)
     elif ln.startswith('## '): doc.add_heading(ln[3:], level=1)
     elif ln.startswith('### '): doc.add_heading(ln[4:], level=2)
     elif ln.startswith('- '): para(ln[2:], 'List Bullet')
-    elif re.match(r'\d+\. ', ln): para(re.sub(r'^\d+\. ', '', ln), 'List Number')
+    elif re.match(r'\d+\. ', ln): para(re.sub(r'^\d+\. ', '', ln), 'List Number', WD_ALIGN_PARAGRAPH.LEFT)
     elif ln.strip(): para(ln, align=WD_ALIGN_PARAGRAPH.LEFT if ln.startswith(('Prototype', 'Demo password')) else WD_ALIGN_PARAGRAPH.JUSTIFY)
     i += 1
 
