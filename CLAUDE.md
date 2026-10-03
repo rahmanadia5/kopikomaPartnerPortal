@@ -31,7 +31,9 @@ Aturan penting:
 - Minta perubahan saat negosiasi: aplikasi kembali ke Quotation (label Revisi). Sales dan manajer berdiskusi DI LUAR sistem; saat kirim quotation versi berikutnya sales wajib isi "Hasil diskusi dengan manajer".
 - Minta revisi lokasi: kembali ke Survei lokasi; setelah layak langsung ke Quotation (tanpa assessment ulang).
 - Pengingat sepenuhnya otomatis (notifikasi dashboard + email) ke PIC dan manajer saat lewat batas waktu. Tidak ada tombol kirim pengingat manual. Tidak ada WhatsApp.
-- Portal Mitra untuk calon franchisee (publik, tanpa akun staf, dibuka dari halaman masuk): formulir pendaftaran (masuk sebagai lead mandiri lalu ikut aturan penugasan otomatis), tracker status 7 langkah (cek dengan nomor pengajuan + email/HP), dan tanggapan quotation langsung (setujui / minta perubahan / tidak melanjutkan). Quotation dikirim via email beserta link portal. Bila franchisee menjawab lewat telepon/tatap muka, sales tetap bisa mencatat tanggapan di tab Negosiasi. Aksi franchisee tercatat di audit trail sebagai "Calon franchisee (portal mitra)" (`by: FR`).
+- Portal Mitra untuk calon franchisee (POV franchisee, publik, tanpa akun staf, dibuka dari halaman masuk): formulir pendaftaran (masuk sebagai lead mandiri lalu ikut aturan penugasan otomatis), lalu masuk dengan nomor pengajuan + email/HP ke dashboard 4 tab: Status pengajuan (ringkasan, progress 7 langkah, timeline, sales pendamping), Quotation (setujui / minta perubahan / tidak melanjutkan), Notifikasi, dan Email (simulasi kotak masuk). Lonceng notifikasi di bar atas. Quotation dikirim via email beserta link portal. Bila franchisee menjawab lewat telepon/tatap muka, sales tetap bisa mencatat tanggapan di tab Negosiasi. Aksi franchisee tercatat di audit trail sebagai "Calon franchisee (portal mitra)" (`by: FR`).
+- Notifikasi franchisee (dashboard portal + email) dibuat otomatis dari audit trail: `log()` memanggil `fPush()`, yang memetakan teks log ke notifikasi lewat `fEvent()` (disimpan di `a.fn`). Data seed diputar ulang lewat `fReplay()` di `initState`. Alasan penolakan internal tidak ditampilkan ke franchisee. Ada pengingat otomatis bila quotation menunggu tanggapan >= 3 hari.
+- Panel demo di portal (`portalSimulate(id)`) mensimulasikan tim Kopi Koma memproses tahap saat ini supaya notifikasi perpindahan tahap bisa dilihat tanpa pindah akun.
 
 ## Peran (login demo, password semua akun: demo123)
 | Peran | Akun | Menu | Bisa memproses |
@@ -62,7 +64,7 @@ Aturan penting:
 - UI dalam Bahasa Indonesia. Hindari em dash di teks UI.
 
 ## Cara tes
-Jalankan tes headless dengan Playwright (Python) terhadap `file://.../index.html`, panggil fungsi global seperti `quickLogin('rendi')`, `openAdd(); demoFill(); submitLead()`, `submitPresentasi`, `submitSurvey`, `submitAssessment`, `sendQuote`, `negoAgree`, `finalDecision(id,'ok')`, dan pastikan tidak ada `pageerror`. Sisi franchisee: `openPortal('form'); portalDemoFill(); submitPortal()`, lalu `openPortal('track'); portalLookup(id, email)`, `portalAgree(id)` / `portalChange(id)` / `portalWithdraw(id)`.
+Jalankan tes headless dengan Playwright (Python) terhadap `file://.../index.html`, panggil fungsi global seperti `quickLogin('rendi')`, `openAdd(); demoFill(); submitLead()`, `submitPresentasi`, `submitSurvey`, `submitAssessment`, `sendQuote`, `negoAgree`, `finalDecision(id,'ok')`, dan pastikan tidak ada `pageerror`. Sisi franchisee: `openPortal('form'); portalDemoFill(); submitPortal()`, lalu `openPortal('track'); portalLookup(id, email)`, `portalTab('notif'|'email'|'quote'|'status')`, `portalSimulate(id)`, `portalAgree(id)` / `portalChange(id)` / `portalWithdraw(id)`.
 
 ## Pekerjaan berikutnya
 1. Pertimbangkan menggabungkan kolom Disetujui dan Ditolak jadi "Selesai" (kanban sekarang 9 kolom dan perlu scroll horizontal di laptop).

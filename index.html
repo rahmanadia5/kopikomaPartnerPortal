@@ -365,7 +365,51 @@ footer{max-width:1360px;margin:0 auto;padding:0 24px 30px;font-size:12px;color:v
 .both{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0}
 .steps td{vertical-align:top;font-size:14px}
 .steps td:first-child{font-weight:800;white-space:nowrap}
-@media (max-width:760px){.both{grid-template-columns:1fr}.flow-bar{padding:10px 14px;flex-wrap:wrap;gap:8px}.flow-bar .logo span{display:none}.pt-nav{order:3;width:100%}.pt-nav button{padding:6px 10px;font-size:13px}}
+@media (max-width:760px){.both{grid-template-columns:1fr}.flow-bar{padding:10px 14px;flex-wrap:wrap;gap:8px}.flow-bar .logo span{display:none}.pt-nav{order:3;width:100%;overflow-x:auto}.pt-nav button{padding:6px 10px;font-size:13px;white-space:nowrap}}
+.pt-who{display:flex;align-items:center;gap:8px;color:#F7EFE6}
+.pt-who .ub-text{display:flex;flex-direction:column;line-height:1.2;font-size:13px}
+.pt-who .ub-text span{color:#CDB9A6;font-size:12px}
+.pt-nav .cnt{display:inline-grid;place-items:center;min-width:18px;height:18px;border-radius:999px;background:#E39A3B;color:var(--roast);font-size:11px;font-weight:800;padding:0 5px;margin-left:4px}
+.flow-bar{position:relative}
+.pt-pop{position:absolute;top:100%;right:16px;margin-top:6px;color:var(--ink)}
+.pt-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin:20px 0 12px}
+.pt-progress{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:16px}
+.pt-progress span{height:6px;border-radius:999px;background:var(--line)}
+.pt-progress span.done{background:var(--roast)}
+.pt-progress span.cur{background:var(--aren)}
+.pt-progress span.rej{background:var(--bad)}
+.callout.warn-c{border-color:var(--warn);background:var(--warn-soft)}
+.pt-grid{display:grid;grid-template-columns:1.35fr 1fr;gap:16px;align-items:start}
+.fn-item{display:flex;gap:12px;width:100%;text-align:left;border:0;border-bottom:1px solid var(--line);background:none;padding:12px 16px;cursor:pointer}
+.fn-item:last-child{border-bottom:0}
+.fn-item:hover{background:#FAF8F5}
+.fn-item.unread{background:#FCF6EE}
+.fn-item.unread b::after{content:'';display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--aren);margin-left:6px;vertical-align:middle}
+.formcard .fn-item{padding:10px 0}
+.fn-list{padding:0}
+.fn-list .fn-item{padding:12px 18px}
+.pt-who .av{background:#E39A3B;color:var(--roast)}
+.f-wrap.wide{max-width:1040px}
+.fn-ic{flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:13px;background:#E3ECF8;color:#2C5A8F}
+.fn-ic.ok{background:var(--ok-soft);color:var(--ok)}
+.fn-ic.action,.fn-ic.warn{background:var(--warn-soft);color:var(--warn)}
+.fn-ic.bad{background:var(--bad-soft);color:var(--bad)}
+.fn-body{display:flex;flex-direction:column;gap:2px;min-width:0}
+.fn-text{font-size:14px}
+.mail-row{display:grid;grid-template-columns:200px 1fr auto;gap:12px;align-items:baseline;width:100%;text-align:left;border:0;border-bottom:1px solid var(--line);background:none;padding:12px 18px;cursor:pointer}
+.mail-row:last-child{border-bottom:0}
+.mail-row:hover{background:#FAF8F5}
+.mail-row:not(.unread) b{font-weight:600}
+.mail-row:not(.unread) .mr-from{font-weight:500}
+.mr-from{font-weight:800;font-size:14px}
+.mr-subj{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px}
+.mr-t{white-space:nowrap}
+.mail-meta{display:grid;grid-template-columns:70px 1fr;gap:4px 10px;font-size:13px;margin:0 0 16px;padding-bottom:14px;border-bottom:1px solid var(--line)}
+.mail-meta dt{color:var(--muted)}
+.mail-meta dd{margin:0}
+.mail-body{max-width:600px}
+.sim{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;margin-top:16px;border:1.5px dashed #C9BBA9;border-radius:var(--r-m);padding:12px 16px;background:#FBFAF7}
+@media (max-width:760px){.pt-grid{grid-template-columns:1fr}.pt-who .ub-text{display:none}.mail-row{grid-template-columns:1fr}.mr-subj{white-space:normal}}
 </style>
 </head>
 <body>
@@ -676,6 +720,7 @@ function initState() {
     a.log.push({t:TODAY.toISOString(), by:null, text:`Pengingat otomatis dikirim ke ${uname(p)}${p !== MANAGER ? ' dan manajer' : ''} lewat dashboard dan email`});
   });
   st.notifs.sort((x,y) => new Date(y.t) - new Date(x.t));
+  fReplay(st.apps);
   return st;
 }
 let state;
@@ -725,7 +770,7 @@ function actionOf(a) {
 }
 const overdueOf = a => !isDone(a) && SLA[a.stage] !== undefined && daysIn(a.stageSince) > SLA[a.stage];
 const showOverdue = a => overdueOf(a) && seesOverdue();
-function log(a, text, by = ME) { a.log.push({t:nowIso(), by, text}); }
+function log(a, text, by = ME) { const e = {t:nowIso(), by, text}; a.log.push(e); fPush(a, e, {assessed:!!(a.assess && a.assess.result === 'lolos'), v:latest(a) ? latest(a).v : 0}); }
 function setStage(a, k) { a.stage = k; a.stageSince = nowIso(); a.reached.push(k); }
 function notify(a, user, text) { state.notifs.unshift({id:++nid, user, appId:a.id, text, t:nowIso(), read:false}); }
 let toastTimer;
@@ -808,7 +853,7 @@ function loginHTML() {
       <div class="logo"><b>kopi koma<i>,</i></b><span>Partner Portal</span></div>
       <h1>Satu tempat untuk seluruh proses kemitraan.</h1>
       <button class="lg-flow" onclick="openFlowPublic()">Lihat alur bisnis end-to-end</button>
-      <div class="lg-cta"><p>Untuk calon franchisee</p><button class="lg-flow solid" onclick="openPortal('form')">Daftar jadi mitra</button><button class="lg-flow" onclick="openPortal('track')">Cek status pengajuan</button></div>
+      <div class="lg-cta"><p>Untuk calon franchisee</p><button class="lg-flow solid" onclick="openPortal('form')">Daftar jadi mitra</button><button class="lg-flow" onclick="openPortal('track')">Masuk Portal Mitra</button></div>
     </section>
     <section class="lg-form">
       <div class="lg-card">
@@ -1011,23 +1056,119 @@ const PORTAL_STEPS = [
   ['Persetujuan Kopi Koma','Manajer kemitraan memberi persetujuan akhir.']
 ];
 const PF_REQ = ['name','phone','email','city','modal','sumber','pengalaman','kelola','alamat','jenis','status'];
-function openPortal(view) { state.portal = {view, id:'', key:'', err:'', resp:null}; state.form = blankForm(); state.formErr = {}; render(); window.scrollTo(0,0); }
+const PT_TABS = [['status','Status pengajuan'],['quote','Quotation'],['notif','Notifikasi'],['email','Email']];
+const MAIL_FROM = 'Tim Kemitraan Kopi Koma <kemitraan@kopikoma.id>';
+const BELL_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>';
+
+/* notifikasi ke calon franchisee: dibuat otomatis dari peristiwa di audit trail, dikirim ke dashboard portal dan email */
+let fnid = 0;
+function fEvent(a, text, ctx) {
+  const pk = PAKET[a.paket].nama, sales = a.sales ? `${uname(a.sales)} (${USERS[a.sales].phone})` : 'Sales pendamping';
+  let m;
+  if (/mundur saat negosiasi/.test(text)) return {kind:'bad', step:5, title:'Pengajuan ditutup sesuai keputusanmu',
+    body:'Kami mencatat kamu memilih tidak melanjutkan kemitraan. Terima kasih atas minatmu pada Kopi Koma. Kamu bisa mendaftar kembali kapan saja lewat Portal Mitra.'};
+  if (/tidak melanjutkan setelah presentasi/.test(text)) return {kind:'bad', step:1, title:'Pengajuan ditutup sesuai keputusanmu',
+    body:'Sesuai keputusanmu setelah presentasi bisnis, pengajuan ini kami tutup. Kamu bisa mendaftar kembali kapan saja lewat Portal Mitra.'};
+  if (/aplikasi ditolak|Approval akhir: ditolak|Lead ditutup/.test(text)) {
+    const st = PORTAL_STEPS[a.rejectStep ?? 0][0].toLowerCase();
+    return {kind:'bad', step:a.rejectStep ?? 0, title:'Pengajuan belum dapat dilanjutkan',
+      body:`Mohon maaf, setelah peninjauan pada tahap ${st}, pengajuanmu belum dapat dilanjutkan. ${sales} akan menghubungimu untuk menjelaskan alasannya.`};
+  }
+  if (/^Lead masuk|^Input data lead/.test(text)) return {kind:'info', step:0, title:'Pendaftaran diterima',
+    body:`Terima kasih, pendaftaran kemitraan paket ${pk} di ${a.city} sudah kami terima dengan nomor pengajuan ${a.id}. Gunakan nomor ini beserta email atau nomor HP untuk masuk ke Portal Mitra dan memantau prosesnya.`};
+  if (/Sales ditugaskan|Diteruskan otomatis/.test(text)) return {kind:'info', step:1, title:'Sales pendamping sudah ditunjuk',
+    body:`${sales} akan mendampingimu selama proses kemitraan dan menghubungimu untuk menjadwalkan presentasi bisnis.`};
+  if (/Presentasi bisnis selesai/.test(text)) return {kind:'info', step:2, title:'Presentasi selesai, lanjut survei lokasi',
+    body:`Prospektus penawaran waralaba sudah dikirim ke emailmu. Berikutnya sales pendamping akan meninjau lokasi yang kamu ajukan: ${a.alamat}.`};
+  if (/minta revisi lokasi/.test(text)) return {kind:'warn', step:2, title:'Lokasi perlu ditinjau ulang',
+    body:'Sebelum persetujuan akhir, tim kemitraan meminta peninjauan ulang lokasi outlet. Sales pendamping akan menghubungimu untuk membahas lokasi.'};
+  if (/Survei lokasi: layak/.test(text)) return ctx.assessed
+    ? {kind:'info', step:4, title:'Lokasi dinilai layak, quotation revisi disiapkan', body:'Hasil peninjauan ulang lokasi sudah keluar. Tim kemitraan sedang menyiapkan quotation versi berikutnya untukmu.'}
+    : {kind:'info', step:3, title:'Lokasi dinilai layak', body:'Lokasi yang kamu ajukan lolos survei. Berikutnya penilaian kelayakan: interview, verifikasi identitas (KYC), dan verifikasi kemampuan finansial.'};
+  if (/Assessment: lolos/.test(text)) { ctx.assessed = true; return {kind:'ok', step:4, title:'Kamu lolos penilaian kelayakan',
+    body:`Selamat, kamu lolos penilaian kelayakan. Tim kemitraan sedang menyiapkan quotation paket ${pk} untukmu.`}; }
+  if ((m = text.match(/Quotation versi (\d+) dikirim/))) {
+    const v = Number(m[1]), q = a.quotes[v - 1]; ctx.v = v;
+    return {kind:'action', step:5, cta:'quote', title:`Quotation versi ${v} siap ditinjau`,
+      body:`Penawaran paket ${pk} senilai ${q ? rp(qValue(q)) : '-'} sudah dikirim. Tinjau, lalu setujui, minta perubahan, atau sampaikan bila tidak melanjutkan, langsung dari Portal Mitra.`};
+  }
+  if ((m = text.match(/meminta perubahan: ([^(]+)/))) return {kind:'info', step:4, title:'Permintaan perubahan diterima',
+    body:`Permintaan perubahan ${m[1].trim().toLowerCase()} sedang dibahas sales pendamping bersama manajer. Quotation versi ${(ctx.v || 1) + 1} akan dikirim ke emailmu.`};
+  if ((m = text.match(/menyetujui quotation versi (\d+)/))) {
+    const q = a.quotes[Number(m[1]) - 1];
+    return {kind:'ok', step:6, title:'Persetujuanmu tercatat (1 dari 2)',
+      body:`Kamu menyetujui quotation versi ${m[1]}${q ? ` senilai ${rp(qValue(q))}` : ''}. Pengajuan diteruskan ke manajer kemitraan Kopi Koma untuk persetujuan akhir, paling lambat ${SLA.approval} hari kerja.`};
+  }
+  if (/kemitraan disetujui/.test(text)) return {kind:'ok', step:6, title:'Selamat, kemitraan disepakati (2 dari 2)',
+    body:`Kopi Koma menyetujui kemitraan paket ${pk} dengan nilai deal ${rp(dealValue(a))}. ${sales} akan menghubungimu untuk penandatanganan perjanjian waralaba.`};
+  return null;
+}
+function fPush(a, entry, ctx) {
+  const e = fEvent(a, entry.text, ctx); if (!e) return null;
+  const n = Object.assign({id:++fnid, t:entry.t, read:false, mread:false, cta:'status'}, e);
+  (a.fn = a.fn || []).push(n); return n;
+}
+function fReplay(apps) {
+  fnid = 0;
+  apps.forEach(a => {
+    a.fn = []; const ctx = {assessed:false, v:0};
+    a.log.forEach(e => fPush(a, e, ctx));
+    a.fn.forEach((n, i) => { n.read = n.mread = i < a.fn.length - 1; });
+    if (a.stage === 'negosiasi' && daysIn(a.stageSince) >= 3) a.fn.push({id:++fnid, t:TODAY.toISOString(), kind:'action', step:5, cta:'quote', read:false, mread:false,
+      title:'Pengingat: quotation menunggu tanggapanmu', body:`Quotation versi ${latest(a).v} sudah ${daysIn(a.stageSince)} hari menunggu tanggapanmu. Mohon tinjau dan beri tanggapan agar proses bisa berlanjut.`});
+  });
+}
+const fList = a => (a.fn || []).slice().sort((x,y) => new Date(y.t) - new Date(x.t) || y.id - x.id);
+const fUnread = (a, mail) => (a.fn || []).filter(n => !(mail ? n.mread : n.read)).length;
+
+function openPortal(view) {
+  const me = state.portal && state.portal.me;
+  state.portal = {view, id:'', key:'', err:'', resp:null, me: view === 'form' ? null : me, tab:'status', mail:null, popOpen:false};
+  state.form = blankForm(); state.formErr = {}; render(); window.scrollTo(0,0);
+}
 function closePortal() { state.portal = null; render(); window.scrollTo(0,0); }
+function portalLogout() { state.portal = {view:'track', id:'', key:'', err:'', resp:null, me:null, tab:'status', mail:null}; render(); window.scrollTo(0,0); }
+function portalTab(t) { Object.assign(state.portal, {tab:t, mail:null, resp:null, popOpen:false, fresh:false}); render(); window.scrollTo(0,0); }
 function portalHTML() {
-  const pv = state.portal.view;
-  return `<div class="flow-bar"><div class="logo"><b>kopi koma<i>,</i></b><span>Portal Mitra</span></div>
-    <nav class="pt-nav"><button ${pv === 'form' ? 'aria-current="page"' : ''} onclick="openPortal('form')">Daftar jadi mitra</button><button ${pv === 'track' ? 'aria-current="page"' : ''} onclick="openPortal('track')">Cek status pengajuan</button></nav>
+  const pt = state.portal, a = pt.me ? find(pt.me) : null;
+  if (!a) return `<div class="flow-bar"><div class="logo"><b>kopi koma<i>,</i></b><span>Portal Mitra</span></div>
+    <nav class="pt-nav"><button ${pt.view === 'form' ? 'aria-current="page"' : ''} onclick="openPortal('form')">Daftar jadi mitra</button><button ${pt.view === 'track' ? 'aria-current="page"' : ''} onclick="openPortal('track')">Masuk / cek status</button></nav>
     <button class="btn btn-sm" onclick="closePortal()">Ke halaman staf</button></div>
-  <div class="f-wrap">${pv === 'form' ? portalForm() : portalTrack()}</div>`;
+  <div class="f-wrap">${pt.view === 'form' ? portalForm() : portalLogin()}</div>`;
+  const un = fUnread(a), um = fUnread(a, true);
+  const badge = (k) => k === 'notif' && un ? ` <span class="cnt">${un}</span>` : k === 'email' && um ? ` <span class="cnt">${um}</span>` : k === 'quote' && a.stage === 'negosiasi' ? ' <span class="cnt">!</span>' : '';
+  const views = {status:portalStatus, quote:portalQuoteTab, notif:portalNotifs, email:portalEmail};
+  return `<div class="flow-bar"><div class="logo"><b>kopi koma<i>,</i></b><span>Portal Mitra</span></div>
+    <nav class="pt-nav" aria-label="Menu portal">${PT_TABS.map(([k,l]) => `<button ${pt.tab === k ? 'aria-current="page"' : ''} onclick="portalTab('${k}')">${l}${badge(k)}</button>`).join('')}</nav>
+    <button class="bell" id="pt-bell" onclick="portalPop(event)" aria-haspopup="true" aria-expanded="${!!pt.popOpen}" aria-label="${un ? `Notifikasi, ${un} belum dibaca` : 'Notifikasi'}">${BELL_SVG}${un ? `<span class="badge">${un}</span>` : ''}</button>
+    <div class="pt-who"><span class="av sm">${initials(a.name)}</span><span class="ub-text"><b>${esc(a.name)}</b><span>${a.id}</span></span></div>
+    <button class="btn btn-sm" onclick="portalLogout()">Keluar</button>
+    ${pt.popOpen ? portalPopHTML(a) : ''}</div>
+  <div class="f-wrap wide">${views[pt.tab](a)}</div>`;
+}
+function portalPop(e) { e.stopPropagation(); state.portal.popOpen = !state.portal.popOpen; render(); }
+function portalPopHTML(a) {
+  const list = fList(a).slice(0, 5);
+  return `<div class="notif-pop pt-pop" role="dialog" aria-label="Notifikasi" onclick="event.stopPropagation()"><div class="np-head"><div><b>Notifikasi</b><div class="small">Juga dikirim ke ${esc(a.email)}</div></div>${fUnread(a) ? `<button class="link" onclick="portalMarkAll()">Tandai dibaca</button>` : ''}</div>
+    <ul class="np-list">${list.map(n => `<li><button class="np-item ${n.read ? '' : 'unread'}" onclick="portalOpenNotif(${n.id})"><b>${esc(n.title)}</b><span class="small">${fmtDT(n.t)}</span></button></li>`).join('')}</ul>
+    <div style="padding:10px 16px"><button class="link" onclick="portalTab('notif')">Lihat semua notifikasi</button></div></div>`;
+}
+document.addEventListener('click', e => {
+  if (state && state.portal && state.portal.popOpen && !e.target.closest('.pt-pop') && !e.target.closest('#pt-bell')) { state.portal.popOpen = false; render(); }
+});
+function portalMarkAll() { const a = find(state.portal.me); a.fn.forEach(n => n.read = true); render(); }
+function portalOpenNotif(nid) {
+  const a = find(state.portal.me), n = a.fn.find(x => x.id === nid); n.read = true;
+  portalTab(n.cta === 'quote' && latest(a) ? 'quote' : 'status');
 }
 function portalForm() {
   const f = state.form, e = state.formErr;
-  return `<section class="hero"><h1>Buka outlet Kopi Koma <i>di kotamu.</i></h1><p>Isi formulir pendaftaran, lalu pantau setiap tahap peninjauan sampai kemitraan disepakati, semuanya dari portal ini.</p></section>
+  return `<section class="hero"><h1>Buka outlet Kopi Koma <i>di kotamu.</i></h1><p>Isi formulir pendaftaran, lalu pantau setiap tahap peninjauan sampai kemitraan disepakati, semuanya dari portal ini. Setiap kali pengajuanmu pindah tahap, kamu mendapat notifikasi di portal dan email.</p></section>
   <div class="paket-list" style="margin-bottom:22px">${Object.entries(PAKET).map(([k,p]) => `<div class="paket"><h3>${p.nama}</h3><div class="price">${rp(total(k))}</div>
     <dl class="mini"><dt>Royalti</dt><dd>${p.royalti}</dd><dt>Estimasi balik modal</dt><dd>${p.bep}</dd></dl></div>`).join('')}</div>
   <div class="formcard"><div class="d-top"><h2>Formulir pendaftaran mitra</h2><button class="link" onclick="saveForm();portalDemoFill()">Isi data contoh</button></div>
     <p class="sec-title" style="margin-top:6px">Data diri</p>
-    <div class="grid2">${fIn('name','Nama lengkap')}${fIn('phone','Nomor HP','tel')}${fIn('email','Email','email','Status pengajuan dan quotation dikirim ke email ini')}${fIn('city','Kota domisili')}</div>
+    <div class="grid2">${fIn('name','Nama lengkap')}${fIn('phone','Nomor HP','tel')}${fIn('email','Email','email','Notifikasi status dan quotation dikirim ke email ini')}${fIn('city','Kota domisili')}</div>
     <p class="sec-title">Paket dan modal</p>
     <div class="grid2">${fSel('paket','Paket yang diminati', Object.entries(PAKET).map(([k,p]) => [k, `${p.nama} (${rp(total(k))})`]))}
       ${fIn('modal','Modal tersedia (Rp)','number')}
@@ -1066,38 +1207,59 @@ function submitPortal() {
   log(a, 'Lead masuk dari portal mitra (pendaftaran mandiri), persetujuan UU PDP diberikan', FR);
   routeNew(a);
   state.form = blankForm(); state.formErr = {};
-  state.portal = {view:'track', id:a.id, key:a.email, err:'', open:a.id, fresh:true, resp:null};
+  state.portal = {view:'track', id:a.id, key:a.email, err:'', me:a.id, tab:'status', fresh:true, resp:null, mail:null};
   render(); window.scrollTo(0,0);
 }
 function portalLookup(id, key) {
   const a = find((id || '').trim().toUpperCase()), k = (key || '').trim().toLowerCase();
-  if (!a || (a.email.toLowerCase() !== k && a.phone.replace(/\D/g,'') !== k.replace(/\D/g,''))) {
-    state.portal = {...state.portal, view:'track', id, key, err:'Nomor pengajuan dan email/HP tidak cocok.', open:null}; render(); return;
+  if (!a || !k || (a.email.toLowerCase() !== k && a.phone.replace(/\D/g,'') !== k.replace(/\D/g,''))) {
+    state.portal = {...state.portal, view:'track', id, key, err:'Nomor pengajuan dan email/HP tidak cocok.', me:null}; render(); return;
   }
-  state.portal = {...state.portal, view:'track', id:a.id, key, err:'', open:a.id, fresh:false, resp:null}; render();
+  state.portal = {...state.portal, view:'track', id:a.id, key, err:'', me:a.id, tab:'status', fresh:false, resp:null, mail:null, popOpen:false}; render(); window.scrollTo(0,0);
 }
-const PORTAL_DEMO = [['KK-0250','Menunggu persetujuanmu atas quotation'],['KK-0249','Permintaan perubahan sedang diproses'],['KK-0251','Menunggu persetujuan Kopi Koma'],['KK-0252','Kemitraan disepakati'],['KK-0246','Penilaian kelayakan']];
-function portalTrack() {
-  const pt = state.portal, a = pt.open ? find(pt.open) : null;
-  const look = `<div class="formcard"><h2>Cek status pengajuan</h2><p class="muted">Masukkan nomor pengajuan dari email konfirmasi, beserta email atau nomor HP yang kamu daftarkan.</p>
+const PORTAL_DEMO = [['KK-0250','Menunggu persetujuanmu atas quotation'],['KK-0249','Permintaan perubahan sedang diproses'],['KK-0251','Menunggu persetujuan Kopi Koma'],['KK-0252','Kemitraan disepakati'],['KK-0246','Penilaian kelayakan'],['KK-0241','Presentasi bisnis']];
+function portalLogin() {
+  const pt = state.portal;
+  const mine = state.apps.filter(a => a.isNew && a.log.some(l => l.by === FR)).map(a => [a.id, 'Pendaftaran baru dari portal']);
+  return `<div class="formcard" style="margin-top:20px"><h2>Masuk ke Portal Mitra</h2><p class="muted">Masukkan nomor pengajuan dari email konfirmasi, beserta email atau nomor HP yang kamu daftarkan. Di dalam portal kamu bisa memantau status, membaca notifikasi, dan menanggapi quotation.</p>
     <div class="grid2"><div class="field"><label for="pt-id">Nomor pengajuan</label><input id="pt-id" value="${esc(pt.id)}" placeholder="KK-0000"></div>
       <div class="field"><label for="pt-key">Email atau nomor HP</label><input id="pt-key" value="${esc(pt.key)}" onkeydown="if(event.key==='Enter')portalLookup(document.getElementById('pt-id').value,this.value)"></div></div>
     ${pt.err ? `<p class="err" role="alert">${pt.err}</p>` : ''}
-    <button class="btn btn-primary" onclick="portalLookup(document.getElementById('pt-id').value,document.getElementById('pt-key').value)">Cek status</button>
-    <p class="small" style="margin:16px 0 6px">Contoh pengajuan untuk demo:</p>
-    <div class="chips">${PORTAL_DEMO.map(([id,l]) => { const x = find(id); return x ? `<button class="pill" onclick="portalLookup('${id}','${esc(x.email)}')">${id}, ${esc(x.name)}: ${l}</button>` : ''; }).join('')}</div></div>`;
-  return a ? trackerHTML(a) + `<div style="margin-top:16px"><button class="link" onclick="state.portal.open=null;state.portal.fresh=false;render()">Cek pengajuan lain</button></div>` : look;
+    <button class="btn btn-primary" onclick="portalLookup(document.getElementById('pt-id').value,document.getElementById('pt-key').value)">Masuk</button>
+    <p class="small" style="margin:12px 0 0">Versi produksi: setelah nomor dan email cocok, kode OTP dikirim ke email untuk verifikasi.</p>
+    <p class="small" style="margin:16px 0 6px">Akun calon franchisee untuk demo:</p>
+    <div class="chips">${mine.concat(PORTAL_DEMO).map(([id,l]) => { const x = find(id); return x ? `<button class="pill" onclick="portalLookup('${id}','${esc(x.email)}')">${id}, ${esc(x.name)}: ${l}</button>` : ''; }).join('')}</div></div>`;
+}
+function portalStatusChip(a) {
+  const s = a.stage === 'disetujui' ? ['ok','Disepakati kedua pihak'] : a.stage === 'ditolak' ? ['bad','Tidak dilanjutkan'] : a.stage === 'negosiasi' ? ['warn','Menunggu tanggapanmu'] : ['blue','Sedang ditinjau'];
+  return `<span class="chip ${s[0]}">${s[1]}</span>`;
+}
+function portalStatus(a) {
+  const pt = state.portal, cur = curStep(a), L = latest(a), recent = fList(a).slice(0, 3);
+  let next;
+  if (a.stage === 'negosiasi') next = `<div class="callout warn-c"><b>Giliranmu:</b> quotation versi ${L.v} senilai ${rp(qValue(L))} menunggu tanggapanmu.<div class="actions"><button class="btn btn-primary btn-sm" onclick="portalTab('quote')">Tinjau quotation</button></div></div>`;
+  else if (a.stage === 'disetujui') next = `<div class="callout ok"><b>Kemitraan disepakati kedua pihak</b> dengan nilai ${rp(dealValue(a))}. Langkah berikutnya: penandatanganan perjanjian waralaba bersama sales pendamping.</div>`;
+  else if (a.stage === 'ditolak') next = `<div class="callout bad">Pengajuan ini sudah ditutup. Kamu bisa mendaftar kembali kapan saja.<div class="actions"><button class="btn btn-ghost btn-sm" onclick="openPortal('form')">Daftar lagi</button></div></div>`;
+  else next = `<div class="callout"><b>Tahap saat ini:</b> ${PORTAL_STEPS[cur][0]} (langkah ${cur + 1} dari 7). Belum ada yang perlu kamu lakukan. Kamu akan mendapat notifikasi di portal dan email ${esc(a.email)} begitu pengajuanmu pindah tahap.</div>`;
+  return `${pt.fresh ? `<div class="callout ok"><b>Pendaftaran terkirim.</b> Nomor pengajuanmu <b>${a.id}</b>. Simpan nomor ini untuk masuk ke Portal Mitra. Konfirmasi juga dikirim ke ${esc(a.email)}, cek tab Email.</div>` : ''}
+  <div class="pt-head"><div><div class="small">Halo,</div><h1 style="margin:0">${esc(a.name)}</h1><div class="small">${a.id}, paket ${PAKET[a.paket].nama}, ${esc(a.city)}</div></div>${portalStatusChip(a)}</div>
+  <div class="pt-progress" aria-label="Langkah ${Math.min(cur + 1, 7)} dari 7">${PORTAL_STEPS.map((s, i) => `<span class="${i < cur || a.stage === 'disetujui' ? 'done' : i === cur ? (a.stage === 'ditolak' ? 'rej' : 'cur') : ''}"></span>`).join('')}</div>
+  ${next}
+  <div class="pt-grid"><div>${trackerHTML(a)}</div>
+    <div class="formcard"><div class="d-top"><h2>Notifikasi terbaru</h2><button class="link" onclick="portalTab('notif')">Semua</button></div>
+      ${recent.map(n => notifRow(n, true)).join('')}
+      <p class="small" style="margin:12px 0 0">Notifikasi otomatis setiap pengajuanmu pindah tahap, dikirim ke dashboard ini dan ke ${esc(a.email)}.</p></div></div>
+  ${portalSim(a)}`;
 }
 function trackerHTML(a) {
-  const pt = state.portal, cur = curStep(a), rej = a.stage === 'ditolak', ok = a.stage === 'disetujui', L = latest(a), ch = pendingChange(a);
-  const status = ok ? ['ok','Disepakati kedua pihak'] : rej ? ['bad','Tidak dilanjutkan'] : a.stage === 'negosiasi' ? ['warn','Menunggu tanggapanmu'] : ['blue','Sedang ditinjau'];
+  const cur = curStep(a), rej = a.stage === 'ditolak', ok = a.stage === 'disetujui', L = latest(a), ch = pendingChange(a);
   const items = PORTAL_STEPS.map(([t, d], i) => {
     let cls = 'todo', note = '';
     if (i < cur || ok) cls = 'done';
-    else if (i === cur && rej) { cls = 'rej'; note = i === 5 ? 'Kamu memilih tidak melanjutkan.' : 'Mohon maaf, pengajuan belum dapat dilanjutkan. Sales pendamping akan menghubungimu untuk penjelasan.'; }
+    else if (i === cur && rej) { cls = 'rej'; note = a.rejectStep === 5 || a.rejectStep === 1 ? 'Kamu memilih tidak melanjutkan.' : 'Mohon maaf, pengajuan belum dapat dilanjutkan. Sales pendamping akan menghubungimu untuk penjelasan.'; }
     else if (i === cur) {
       cls = 'cur';
-      note = i === 5 ? 'Quotation menunggu tanggapanmu, lihat di bawah.'
+      note = i === 5 ? 'Quotation menunggu tanggapanmu, buka tab Quotation.'
         : i === 4 && ch ? `Permintaan perubahan ${ch.type.toLowerCase()} sedang didiskusikan. Quotation versi ${L.v + 1} akan dikirim ke emailmu.`
         : `Sedang diproses, perkiraan selesai dalam ${SLA[a.stage]} hari kerja.`;
       if (i === 2 && a.survey && a.survey.revisiNote) note = 'Tim kemitraan meminta peninjauan ulang lokasi. Sales pendamping akan menghubungimu.';
@@ -1108,17 +1270,49 @@ function trackerHTML(a) {
   }).join('');
   const salesCard = a.sales ? `<div class="pcard" style="margin:0"><span class="av">${initials(uname(a.sales))}</span><div class="pc-body"><b>${esc(uname(a.sales))}</b><div class="small">Sales pendamping, ${esc(USERS[a.sales].phone)}, ${esc(USERS[a.sales].email)}</div></div></div>`
     : '<p class="small" style="margin:0">Sales pendamping sedang ditentukan oleh tim kemitraan.</p>';
-  return `${pt.fresh ? `<div class="callout ok"><b>Pendaftaran terkirim.</b> Nomor pengajuanmu <b>${a.id}</b>. Simpan nomor ini untuk cek status, konfirmasi juga dikirim ke ${esc(a.email)}.</div>` : ''}
-  <div class="formcard"><div class="d-top"><div><div class="small">${a.id}, paket ${PAKET[a.paket].nama}, ${esc(a.city)}</div><h2 style="margin:2px 0 0">${esc(a.name)}</h2></div><span class="chip ${status[0]}">${status[1]}</span></div>
-    <div style="margin:14px 0 18px">${salesCard}</div>
-    <ol class="timeline">${items}</ol>
-    ${ok ? `<div class="callout ok" style="margin:6px 0 0">Selamat, kemitraan disepakati kedua pihak dengan nilai ${rp(dealValue(a))}. Langkah berikutnya: penandatanganan perjanjian waralaba bersama sales pendamping.</div>` : ''}
-  </div>
-  ${portalQuote(a)}`;
+  return `<div class="formcard"><h2>Tahapan pengajuan</h2>
+    <div style="margin:4px 0 18px">${salesCard}</div>
+    <ol class="timeline">${items}</ol></div>`;
 }
 function doneAt(a, i) {
   const e = a.log.slice().reverse().find(l => STEP_DEF[i][2].test(l.text));
   return e ? fmtDT(e.t).split(',')[0] : '';
+}
+const F_ICON = {info:'i', ok:'✓', action:'!', warn:'!', bad:'×'};
+function notifRow(n, compact) {
+  return `<button class="fn-item ${n.read ? '' : 'unread'}" onclick="portalOpenNotif(${n.id})"><span class="fn-ic ${n.kind}" aria-hidden="true">${F_ICON[n.kind]}</span>
+    <span class="fn-body"><b>${esc(n.title)}</b>${compact ? '' : `<span class="fn-text">${esc(n.body)}</span>`}<span class="small">${fmtDT(n.t)}${compact ? '' : ' · dashboard dan email'}</span></span></button>`;
+}
+function portalNotifs(a) {
+  const list = fList(a);
+  return `<div class="page-head" style="margin-top:20px"><div><h1>Notifikasi</h1><p class="sub">Dikirim otomatis setiap pengajuanmu pindah tahap. Salinan yang sama dikirim ke ${esc(a.email)}.</p></div>
+    ${fUnread(a) ? '<button class="btn btn-ghost btn-sm" onclick="portalMarkAll()">Tandai semua dibaca</button>' : ''}</div>
+  <div class="formcard fn-list">${list.length ? list.map(n => notifRow(n)).join('') : '<p class="np-empty">Belum ada notifikasi.</p>'}</div>
+  <div class="formcard" style="margin-top:16px"><h2>Pengaturan notifikasi</h2>
+    <label class="consent" style="margin:0 0 8px"><input type="checkbox" checked disabled><span>Notifikasi di dashboard Portal Mitra (selalu aktif)</span></label>
+    <label class="consent" style="margin:0"><input type="checkbox" checked onchange="toast(this.checked ? 'Notifikasi email diaktifkan' : 'Notifikasi email dimatikan. Kamu tetap bisa memantau lewat portal.')"><span>Kirim salinan ke email ${esc(a.email)}</span></label></div>`;
+}
+function portalEmail(a) {
+  const list = fList(a), open = state.portal.mail ? a.fn.find(n => n.id === state.portal.mail) : null;
+  if (open) {
+    open.mread = true;
+    const btn = open.cta === 'quote' ? 'Tinjau quotation di Portal Mitra' : 'Lihat status di Portal Mitra';
+    return `<div style="margin-top:20px"><button class="link" onclick="state.portal.mail=null;render()">Kembali ke kotak masuk</button></div>
+    <div class="formcard mail" style="margin-top:12px"><h2>[Kopi Koma] ${esc(open.title)} (${a.id})</h2>
+      <dl class="mail-meta"><dt>Dari</dt><dd>${esc(MAIL_FROM)}</dd><dt>Kepada</dt><dd>${esc(a.name)} &lt;${esc(a.email)}&gt;</dd><dt>Waktu</dt><dd>${fmtDT(open.t)}</dd></dl>
+      <div class="mail-body"><p>Halo ${esc(a.name.split(' ')[0])},</p><p>${esc(open.body)}</p>
+        ${open.cta === 'quote' && latest(a) ? `<div class="preview">${quoteHTML(latest(a))}</div>` : ''}
+        <p><button class="btn btn-primary" onclick="portalTab('${open.cta === 'quote' && latest(a) ? 'quote' : 'status'}')">${btn}</button></p>
+        <p class="small">Nomor pengajuan: ${a.id}. Masuk ke Portal Mitra dengan nomor ini dan email atau nomor HP yang kamu daftarkan.</p>
+        <p>Salam hangat,<br>Tim Kemitraan Kopi Koma</p></div></div>`;
+  }
+  return `<div class="page-head" style="margin-top:20px"><div><h1>Email</h1><p class="sub">Simulasi kotak masuk ${esc(a.email)}: email otomatis dari Kopi Koma untuk pengajuan ini.</p></div></div>
+  <div class="formcard" style="padding:0">${list.map(n => `<button class="mail-row ${n.mread ? '' : 'unread'}" onclick="state.portal.mail=${n.id};render()">
+    <span class="mr-from">Tim Kemitraan Kopi Koma</span><span class="mr-subj"><b>[Kopi Koma] ${esc(n.title)}</b> <span class="small">${esc(n.body.slice(0, 90))}...</span></span><span class="small mr-t">${fmtDT(n.t)}</span></button>`).join('') || '<p class="np-empty">Kotak masuk kosong.</p>'}</div>`;
+}
+function portalQuoteTab(a) {
+  if (!latest(a)) return `<div class="formcard" style="margin-top:20px"><h2>Quotation</h2><p class="muted" style="margin:0">Quotation belum tersedia. Quotation disiapkan setelah kamu lolos penilaian kelayakan (langkah 4), dan kamu akan mendapat notifikasi di portal dan email begitu quotation dikirim.</p></div>`;
+  return `<div style="margin-top:20px">${portalQuote(a)}</div>${portalSim(a)}`;
 }
 function portalQuote(a) {
   const L = latest(a); if (!L) return '';
@@ -1131,10 +1325,12 @@ function portalQuote(a) {
       <div class="actions"><button class="btn btn-primary" onclick="portalChange('${a.id}')">Kirim permintaan</button><button class="btn btn-ghost" onclick="state.portal.resp=null;render()">Batal</button></div></div>`;
     if (pt.resp === 'withdraw') form = `<div class="formbox"><div class="field"><label for="ng-note">Alasan tidak melanjutkan</label><textarea id="ng-note"></textarea></div>
       <div class="actions"><button class="btn btn-danger" onclick="portalWithdraw('${a.id}')">Saya tidak melanjutkan</button><button class="btn btn-ghost" onclick="state.portal.resp=null;render()">Batal</button></div></div>`;
-    act = `<div class="callout">Tinjau quotation di bawah. Dengan menekan <b>Setujui quotation</b>, kamu menyetujui penawaran ini dan pengajuan diteruskan ke Kopi Koma untuk persetujuan akhir.</div>
+    act = `<div class="callout">Tinjau quotation di bawah. Dengan menekan <b>Setujui quotation</b>, kamu menyetujui penawaran ini (persetujuan 1 dari 2) dan pengajuan diteruskan ke Kopi Koma untuk persetujuan akhir (2 dari 2).</div>
       <div class="actions"><button class="btn btn-ok" onclick="portalAgree('${a.id}')">Setujui quotation</button><button class="btn btn-ghost" onclick="state.portal.resp='change';render()">Minta perubahan</button><button class="btn btn-danger" onclick="state.portal.resp='withdraw';render()">Tidak melanjutkan</button></div>${form}`;
-  } else if (L.status === 'disetujui franchisee' && a.stage === 'approval') act = `<div class="callout ok">Kamu sudah menyetujui quotation versi ${L.v}. Menunggu persetujuan akhir dari Kopi Koma.</div>`;
-  return `<div class="formcard" style="margin-top:16px"><div class="d-top"><h2>Quotation versi ${L.v}</h2>${qStatus(a, L)}</div>${act}<div class="preview" style="margin-top:12px">${quoteHTML(L)}</div>
+  } else if (L.status === 'disetujui franchisee' && a.stage === 'approval') act = `<div class="callout ok">Kamu sudah menyetujui quotation versi ${L.v} (1 dari 2). Menunggu persetujuan akhir dari Kopi Koma (2 dari 2).</div>`;
+  else if (L.status === 'perubahan diminta') act = `<div class="callout">Permintaan perubahanmu sedang dibahas. Quotation versi ${L.v + 1} akan dikirim ke portal dan emailmu.</div>`;
+  else if (a.stage === 'disetujui') act = `<div class="callout ok">Quotation ini disepakati kedua pihak (2 dari 2).</div>`;
+  return `<div class="formcard"><div class="d-top"><h2>Quotation versi ${L.v}</h2>${qStatus(a, L)}</div>${act}<div class="preview" style="margin-top:12px">${quoteHTML(L)}</div>
     ${a.quotes.length > 1 ? `<p class="small" style="margin:0">Versi sebelumnya: ${a.quotes.slice(0,-1).map(q => `versi ${q.v} (${rp(qValue(q))})`).join(', ')}.</p>` : ''}</div>`;
 }
 function portalAgree(id) {
@@ -1159,6 +1355,36 @@ function portalWithdraw(id) {
   setStage(a,'ditolak'); a.rejectReason = note; a.rejectStep = 5; log(a, 'Calon franchisee mundur saat negosiasi (lewat portal mitra)', FR);
   notify(a, a.sales, `${a.name} memilih tidak melanjutkan lewat portal mitra: ${note}`);
   state.portal.resp = null; toast('Tanggapanmu tercatat.'); render();
+}
+/* panel demo: mensimulasikan tim Kopi Koma menyelesaikan tahap saat ini, supaya notifikasi perpindahan tahap bisa dilihat tanpa pindah akun */
+const SIM_LABEL = {baru:'Manajer menugaskan sales pendamping', presentasi:'Sales menyelesaikan presentasi bisnis', survei:'Sales menilai lokasi layak',
+  assessment:'Reviewer meloloskan penilaian kelayakan', quotation:'Sales mengirim quotation', approval:'Manajer memberi persetujuan akhir'};
+function portalSim(a) {
+  const l = SIM_LABEL[a.stage]; if (!l) return '';
+  return `<div class="sim"><div><b>Panel demo</b><div class="small">Simulasikan tim Kopi Koma memproses tahap ini untuk melihat notifikasi perpindahan tahap. Bisa juga dengan masuk sebagai staf dari halaman masuk.</div></div>
+    <button class="btn btn-ghost btn-sm" onclick="portalSimulate('${a.id}')">${l}</button></div>`;
+}
+function portalSimulate(id) {
+  const a = find(id), s = a.sales || salesFor(a.city) || 'putri', before = a.fn.length;
+  switch (a.stage) {
+    case 'baru': a.sales = s; a.assignedBy = MANAGER; a.triage = null; setStage(a,'presentasi'); log(a, `Sales ditugaskan oleh manajer: ${uname(s)}`, MANAGER); break;
+    case 'presentasi': a.presentasi = {date:TODAY.toISOString().slice(0,10), mode:PRES_MODE[1], prospektus:true, note:'Calon franchisee siap lanjut ke survei lokasi.'};
+      setStage(a,'survei'); log(a, 'Presentasi bisnis selesai, prospektus penawaran waralaba dikirim', a.sales); break;
+    case 'survei': a.survey = {traffic:150, komp:2, vis:'4', parkir:'Tersedia', ojol:'Mudah', rating:'4', note:'Area ramai pada sore hari.', result:'layak'};
+      log(a, 'Survei lokasi: layak', a.sales); setStage(a, a.assess && a.assess.result === 'lolos' ? 'quotation' : 'assessment'); break;
+    case 'assessment': a.assess = {res:Object.fromEntries(ASSESS.map(x => [x[0],'Lulus'])), note:'Profil, finansial, dan identitas terverifikasi.', result:'lolos'};
+      setStage(a,'quotation'); log(a, 'Assessment: lolos', a.reviewer); break;
+    case 'quotation': {
+      const ch = pendingChange(a), P0 = latest(a), v = a.quotes.length + 1;
+      let diskon = P0 ? P0.diskon : 0, skema = P0 ? P0.skema : 'Lunas', note = 'Termasuk pendampingan grand opening selama 3 hari.';
+      if (ch) { ch.result = 'Disetujui manajer sesuai permintaan.'; if (ch.type === 'Diskon') diskon += 3e6; else if (ch.type === 'Termin pembayaran') skema = '2 termin'; note = `Revisi: ${ch.type.toLowerCase()} sesuai permintaan.`; }
+      a.quotes.push({v, paket:a.paket, lokasi:a.alamat, buka:'Desember 2026', diskon, skema, note, status:'terkirim'});
+      setStage(a,'negosiasi'); log(a, `Quotation versi ${v} dikirim ke calon franchisee${ch ? ' (revisi setelah diskusi dengan manajer)' : ''}`, a.sales); break;
+    }
+    case 'approval': setStage(a,'disetujui'); a.approvedAt = TODAY.toISOString(); log(a, 'Approval akhir: kemitraan disetujui', MANAGER); break;
+  }
+  const n = a.fn.length > before ? a.fn[a.fn.length - 1] : null;
+  toast(n ? `Notifikasi baru: ${n.title}. Salinan dikirim ke ${a.email}.` : 'Tahap diperbarui.'); render();
 }
 
 /* ===================== business process (end-to-end) ===================== */
