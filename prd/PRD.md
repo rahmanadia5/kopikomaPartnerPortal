@@ -118,18 +118,18 @@ The system covers **12 features** across two applications:
 
 | # | App | Feature | Problem | Key question the user can answer |
 |---|---|---|---|---|
-| A | Dashboard | Lead Capture and Auto-Assignment | 1 | "Is every new lead owned by the right sales?" |
-| B | Dashboard | Pipeline and Approval Status | 1, 4 | "Where is each application, and who is it waiting for?" |
-| C | Dashboard | Stage Processing | 5, 7 | "Has this candidate passed each check?" |
-| D | Dashboard | AI Fit Score | 5 | "How well does this candidate fit, and why?" |
-| E | Dashboard | Quotation and Negotiation | 3 | "What is the latest offer, and how did the candidate respond?" |
-| F | Dashboard | Final Approval | 3 | "Have both parties approved?" |
-| G | Dashboard | Tasks and Reminders | 4 | "What do I need to do today?" |
-| H | Dashboard | Target and Sales Performance | 6 | "Are we on pace, and who needs help?" |
-| I | Dashboard | Access Control and Audit Trail | 7 | "Who did what, and who saw this data?" |
-| P1 | Portal | Registration | 1 | "How do I apply?" |
-| P2 | Portal | Status Tracker | 2 | "Where is my application?" |
-| P3 | Portal | Quotation Response | 3 | "How do I accept or change the offer?" |
+| A | Franchisor Dashboard | Lead Capture and Auto-Assignment | 1 | "Is every new lead owned by the right sales?" |
+| B | Franchisor Dashboard | Pipeline and Approval Status | 1, 4 | "Where is each application, and who is it waiting for?" |
+| C | Franchisor Dashboard | Stage Processing | 5, 7 | "Has this candidate passed each check?" |
+| D | Franchisor Dashboard | AI Fit Score | 5 | "How well does this candidate fit, and why?" |
+| E | Franchisor Dashboard | Quotation and Negotiation | 3 | "What is the latest offer, and how did the candidate respond?" |
+| F | Franchisor Dashboard | Final Approval | 3 | "Have both parties approved?" |
+| G | Franchisor Dashboard | Tasks and Reminders | 4 | "What do I need to do today?" |
+| H | Franchisor Dashboard | Target and Sales Performance | 6 | "Are we on pace, and who needs help?" |
+| I | Franchisor Dashboard | Access Control and Audit Trail | 7 | "Who did what, and who saw this data?" |
+| P1 | Partner Portal (Franchisee) | Registration | 1 | "How do I apply?" |
+| P2 | Partner Portal (Franchisee) | Status Tracker | 2 | "Where is my application?" |
+| P3 | Partner Portal (Franchisee) | Quotation Response | 3 | "How do I accept or change the offer?" |
 
 ### Functional Requirements
 
@@ -229,6 +229,8 @@ The system covers **12 features** across two applications:
 
 ### Mock Ups
 
+Try the clickable prototype: **Franchisor Dashboard** https://kopikomapartnerportal.vercel.app (password demo123) and **Partner Portal** https://kopikomapartnerportal.vercel.app/mitra
+
 [[GRID mockups/02_pipeline.png|Pipeline (Manager) ;; mockups/03_detail.png|Application detail: quotation]]
 
 [[GRID mockups/04_status.png|Approval status ;; mockups/05_target.png|Target vs Achievement]]
@@ -270,7 +272,7 @@ I used Claude (Anthropic) throughout the project. The product decisions were min
 
 | Activity | AI did | I did |
 |---|---|---|
-| Case and process | Explored client profiles, pain points, and flow options | Chose the scope and simplified the flow and rules |
+| Pain points and flow | Reviewed my pain points and flow, pointed out edge cases (for example, where a location change should go back to), and proposed options for business rules | Defined the scope and pain points and designed the end-to-end flow, then decided which suggestions to accept |
 | Prototype | Built the HTML prototype through Claude Code over many feedback rounds | Reviewed each version and decided layout, wording, and terminology |
 | Testing | Ran automated browser tests on every role and screen size | Defined what "correct" means and checked results |
 | Research | Searched industry and regulation data | Verified sources, corrected an outdated statistic and replaced PP No. 42/2007 with PP No. 35/2024 |
