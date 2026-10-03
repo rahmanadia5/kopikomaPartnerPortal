@@ -373,10 +373,10 @@ const USERS = {
   laras:{name:'Laras Anggraini', role:'Manajer', email:'laras.anggraini@kopikoma.id', phone:'0811-2000-1002', area:'Semua wilayah', since:'Maret 2024'},
   bima:{name:'Bima Prasetyo', role:'Reviewer', email:'bima.prasetyo@kopikoma.id', phone:'0811-2000-1003', area:'Semua wilayah', since:'Juni 2024'},
   dimas:{name:'Dimas Arya', role:'Reviewer', email:'dimas.arya@kopikoma.id', phone:'0811-2000-1004', area:'Semua wilayah', since:'Februari 2025'},
-  rendi:{name:'Rendi Saputra', role:'Sales', email:'rendi.saputra@kopikoma.id', phone:'0811-2000-1005', area:'Tangerang Raya', since:'April 2024'},
-  putri:{name:'Putri Maharani', role:'Sales', email:'putri.maharani@kopikoma.id', phone:'0811-2000-1006', area:'Jakarta, Bogor, Depok, Bekasi, Cikarang', since:'Mei 2024'},
-  agus:{name:'Agus Setiawan', role:'Sales', email:'agus.setiawan@kopikoma.id', phone:'0811-2000-1007', area:'Bandung Raya', since:'Januari 2025'},
-  wulan:{name:'Wulan Kusuma', role:'Sales', email:'wulan.kusuma@kopikoma.id', phone:'0811-2000-1008', area:'Jawa Tengah', since:'Agustus 2024'}
+  rendi:{name:'Rendi Saputra', role:'Sales', email:'rendi.saputra@kopikoma.id', phone:'0811-2000-1005', area:'Tangerang Raya', since:'April 2024', level:'Senior'},
+  putri:{name:'Putri Maharani', role:'Sales', email:'putri.maharani@kopikoma.id', phone:'0811-2000-1006', area:'Jakarta, Bogor, Depok, Bekasi, Cikarang', since:'Mei 2024', level:'Senior'},
+  agus:{name:'Agus Setiawan', role:'Sales', email:'agus.setiawan@kopikoma.id', phone:'0811-2000-1007', area:'Bandung Raya', since:'Januari 2025', level:'Junior'},
+  wulan:{name:'Wulan Kusuma', role:'Sales', email:'wulan.kusuma@kopikoma.id', phone:'0811-2000-1008', area:'Jawa Tengah', since:'Agustus 2024', level:'Junior'}
 };
 let ME = null; const MANAGER = 'laras';
 const PASSWORD = 'demo123', CAP = 5;
@@ -547,13 +547,14 @@ const MONTHS = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustu
 const CUR_M = TODAY.getMonth() + 1;
 /* Contoh kemitraan yang sudah disetujui selalu jatuh di bulan berjalan agar Achievement bulan ini tidak kosong di awal bulan. */
 const DEAL_DAYS = Math.min(6, TODAY.getDate() - 1);
-/* Target BULANAN per sales dalam angka bulat (Gerobak, Cafe). Tiap sales 1 Gerobak per bulan; Cafe 1 per bulan dipegang Putri
-   (Jabodebek, potensi Cafe terbesar menurut penduduk x PDRB per kapita BPS 2024). Periode lain = target bulanan x jumlah bulan. */
-const SALES_T = {putri:{g:1, c:1}, wulan:{g:1, c:0}, rendi:{g:1, c:0}, agus:{g:1, c:0}};
+/* Target BULANAN per sales dalam angka bulat (Gerobak, Cafe). Junior 1 Gerobak; Senior dapat KPI lebih: Rendi 2 Gerobak,
+   Putri 1 Gerobak + 1 Cafe (Jabodebek, potensi Cafe terbesar menurut penduduk x PDRB per kapita BPS 2024).
+   Periode lain = target bulanan x jumlah bulan. */
+const SALES_T = {putri:{g:1, c:1}, rendi:{g:2, c:0}, wulan:{g:1, c:0}, agus:{g:1, c:0}};
 const tRev = t => t.g * total('gerobak') + t.c * total('cafe');
 function mulberry32(a) { return function() { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
 const DEALS = {
-  rendi:{g:[1,1,1,0,1,1,1,0,1,1,0,1], c:[0,0,0,0,0,1,0,0,0,0,0,0]},
+  rendi:{g:[2,2,1,2,2,2,1,2,2,2,1,2], c:[0,0,0,0,0,1,0,0,0,0,0,0]},
   putri:{g:[1,1,1,0,1,1,1,1,0,1,1,1], c:[1,1,0,1,1,1,1,0,1,1,1,1]},
   agus: {g:[1,0,1,1,0,1,1,1,0,1,1,1], c:[0,0,0,1,0,0,0,0,0,0,0,0]},
   wulan:{g:[1,1,0,1,1,1,0,1,1,1,1,1], c:[0,0,1,0,0,0,1,0,0,0,0,1]}
@@ -958,7 +959,7 @@ function viewProfile() {
     <div class="panel prof-card">
       <span class="av lg">${initials(u.name)}</span>
       <h2 style="margin:12px 0 4px">${esc(u.name)}</h2>
-      <span class="chip ${u.role === 'Super Admin' ? 'dark' : 'aren'}">${u.role}</span>
+      <span class="chip ${u.role === 'Super Admin' ? 'dark' : 'aren'}">${u.role}${u.level ? ' ' + u.level : ''}</span>
       <dl class="kv" style="grid-template-columns:110px 1fr;margin:18px 0 0;text-align:left">
         <dt>Email</dt><dd>${esc(u.email)}</dd><dt>Telepon</dt><dd>${esc(u.phone)}</dd>
         <dt>Wilayah</dt><dd>${esc(u.area)}</dd><dt>Bergabung</dt><dd>${u.since}</dd>
@@ -1729,7 +1730,7 @@ function viewSales() {
   <section class="panel" style="margin-bottom:16px"><div class="table-wrap"><table class="funnel" style="min-width:860px">
     <thead><tr><th style="width:36px">#</th><th>Sales</th><th>Gerobak, ${P.label}</th><th>Cafe, ${P.label}</th><th>Revenue, ${P.label}</th><th>Status</th></tr></thead>
     <tbody>${rows.map((r,i) => { const st = perfStatus(r.score); return `<tr><td class="num" style="font-size:15px;color:var(--muted)">${i + 1}</td>
-      <td><div class="who-cell"><span class="av sm">${initials(uname(r.s))}</span><div><button class="link" style="color:var(--ink);text-decoration:none" onclick="openProfile('${r.s}')">${uname(r.s)}</button><div class="small">${USERS[r.s].area}</div></div></div></td>
+      <td><div class="who-cell"><span class="av sm">${initials(uname(r.s))}</span><div><button class="link" style="color:var(--ink);text-decoration:none" onclick="openProfile('${r.s}')">${uname(r.s)}</button><div class="small">${USERS[r.s].level}, ${USERS[r.s].area}</div></div></div></td>
       <td>${cell(r.a.g, r.t.g, r.xg, 'Gerobak')}</td><td>${cell(r.a.c, r.t.c, r.xc, 'Cafe')}</td><td>${revCell(r.a.rev, r.t.rev, r.xr)}</td>
       <td><span class="chip ${st[0]}">${st[1]}</span></td></tr>`; }).join('')}
       <tr class="sum"><td></td><td><b>Total</b></td><td>${cell(sum.ag, sum.tg, paceOf(sum.tg, sum.ag, P), 'Gerobak')}</td><td>${cell(sum.ac, sum.tc, paceOf(sum.tc, sum.ac, P), 'Cafe')}</td><td>${revCell(sum.ar, sum.tr, paceOf(sum.tr, sum.ar, P))}</td><td><span class="chip ${sSt[0]}">${sSt[1]}</span></td></tr>
