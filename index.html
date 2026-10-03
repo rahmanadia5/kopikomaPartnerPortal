@@ -861,14 +861,14 @@ function boardHTML() {
   }).join('');
 }
 function card(a) {
-  const d = daysIn(a.stageSince), p = picOf(a), sc = aiScore(a);
+  const d = daysIn(a.stageSince), p = picOf(a), sc = aiScore(a), noSales = a.stage === 'baru';
   const dTxt = isDone(a) ? '' : showOverdue(a) ? `<span class="days stuck">Lewat batas ${d - SLA[a.stage]} hari</span>` : `<span class="days">${d === 0 ? 'Masuk hari ini' : d + ' hari di tahap ini'}</span>`;
   return `<article class="card">
     <button class="card-main" onclick="openDetail('${a.id}')">
       <span class="card-name">${esc(a.name)}</span>
-      <span class="card-city">${esc(a.city)}${a.sales ? `, sales ${esc(first(a.sales))}` : ''}</span>
+      <span class="card-city">${esc(a.city)}${a.sales && !noSales ? `, sales ${esc(first(a.sales))}` : ''}</span>
       <span class="card-foot"><span class="chip">${PAKET[a.paket].nama}</span><span class="chip ${sc.level[0]}">Skor ${sc.c}</span>
-        ${!a.inputBy ? '<span class="chip blue">Mandiri</span>' : ''}${a.stage === 'baru' && a.triage ? `<span class="chip ${a.triage.code === 'duplikat' ? 'bad' : 'warn'}">${a.triage.label}</span>` : ''}
+        ${noSales ? '<span class="chip blue">Belum ada sales</span>' : ''}${noSales && a.triage ? `<span class="chip ${a.triage.code === 'duplikat' ? 'bad' : 'warn'}">${a.triage.label}</span>` : ''}
         ${a.stage === 'quotation' && latest(a) ? '<span class="chip aren">Revisi</span>' : ''}${a.stage === 'survei' && a.survey && a.survey.revisiNote ? '<span class="chip aren">Revisi lokasi</span>' : ''}${a.isNew && a.stage === 'presentasi' ? '<span class="chip dark">Baru</span>' : ''}</span>
       ${p ? `<span class="card-pic">Menunggu ${esc(uname(p))}</span>` : ''}
       ${dTxt}

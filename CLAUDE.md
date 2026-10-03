@@ -42,6 +42,7 @@ Aturan penting:
 | Penilai | bima.prasetyo / dimas.arya @kopikoma.id | Pipeline, Tugas saya | Penilaian kelayakan |
 
 - Indikator lewat batas waktu hanya terlihat oleh Super Admin dan Manajer.
+- Kartu pipeline tidak membedakan lead mandiri dan lead dari sales. Lead yang belum punya sales (tahap Lead baru) diberi chip "Belum ada sales" plus alasannya (Luar wilayah / Duplikat? / Sales penuh); setelah ditugaskan, kartu tampil seperti biasa.
 - Wilayah sales: Rendi = Tangerang Raya; Putri = Jakarta, Bogor, Depok, Bekasi, Cikarang; Agus = Bandung Raya; Wulan = Jawa Tengah.
 
 ## Fitur lain
