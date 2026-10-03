@@ -245,10 +245,12 @@ table.cost tr.total td{font-weight:800;border-bottom:0;padding-top:10px}
 .period select{border:1px solid #D2CEC5;border-radius:var(--r-s);padding:7px 10px;background:#fff}
 .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:16px}
 .kpis.two{grid-template-columns:1fr 1fr}
+.kpis.four{grid-template-columns:repeat(4,1fr)}
+@media (max-width:1200px){.kpis.four{grid-template-columns:1fr 1fr}}
 .kpi-num{font-size:30px;font-weight:800;letter-spacing:-.03em;margin:8px 0 2px}
 .sales-t th.grp{text-align:center;border-bottom:1px solid var(--line)}
 .sales-t{min-width:900px}
-@media (max-width:900px){.kpis,.kpis.two{grid-template-columns:1fr}}
+@media (max-width:900px){.kpis,.kpis.two,.kpis.four{grid-template-columns:1fr}}
 tr.sum td{background:#FAF8F4;border-top:2px solid var(--line)}
 .toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:var(--r-s);font-weight:600;font-size:14px;z-index:60;display:none;max-width:90vw;text-align:center}
 .toast.show{display:block}
@@ -391,8 +393,8 @@ const first = k => USERS[k].name.split(' ')[0];
 function salesFor(city) {
   const c = city.toLowerCase();
   if (/tangerang|cikupa|serang/.test(c)) return 'rendi';
-  if (/bandung|cimahi|garut/.test(c)) return 'agus';
-  if (/semarang|solo|yogya|magelang/.test(c)) return 'wulan';
+  if (/bandung|cimahi/.test(c)) return 'agus';
+  if (/semarang|solo|surakarta|magelang|salatiga|klaten|kudus|pekalongan|tegal|purwokerto|jawa tengah/.test(c)) return 'wulan';
   if (/jakarta|bogor|depok|bekasi|cikarang/.test(c)) return 'putri';
   return null;
 }
@@ -545,13 +547,16 @@ const MONTHS = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustu
 const CUR_M = TODAY.getMonth() + 1;
 /* Contoh kemitraan yang sudah disetujui selalu jatuh di bulan berjalan agar Achievement bulan ini tidak kosong di awal bulan. */
 const DEAL_DAYS = Math.min(6, TODAY.getDate() - 1);
-const SALES_T = {rendi:{q:2, r:290e6}, putri:{q:1, r:125e6}, agus:{q:1, r:105e6}, wulan:{q:1, r:125e6}};
+/* Target tahunan per sales (Gerobak, Cafe). Bobot wilayah = penduduk x PDRB per kapita (BPS 2024), dibatasi kapasitas ±12-15 approval per sales per tahun.
+   Revenue target diturunkan dari harga paket. Cafe dievaluasi per kuartal. */
+const SALES_T = {putri:{g:8, c:7}, wulan:{g:10, c:3}, rendi:{g:9, c:1}, agus:{g:9, c:1}};
+const tRev = t => t.g * total('gerobak') + t.c * total('cafe');
 function mulberry32(a) { return function() { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
 const DEALS = {
-  rendi:{g:[2,2,1,2,2,2,3,2,2,1,2,2], c:[0,1,1,0,1,0,0,1,1,1,0,1]},
-  putri:{g:[1,1,0,1,1,1,1,0,1,0,1,1], c:[0,0,1,0,0,0,0,1,0,0,0,0]},
-  agus: {g:[1,0,0,1,0,1,0,0,1,0,1,0], c:[0,0,0,0,0,0,0,0,0,0,0,0]},
-  wulan:{g:[1,1,2,1,2,1,1,0,0,1,1,1], c:[1,0,0,1,0,0,0,0,0,0,0,0]}
+  rendi:{g:[1,1,1,0,1,1,1,0,1,1,0,1], c:[0,0,0,0,0,1,0,0,0,0,0,0]},
+  putri:{g:[1,0,1,1,0,1,1,0,1,1,0,1], c:[1,0,1,0,1,0,1,0,1,0,1,1]},
+  agus: {g:[1,0,1,1,0,1,1,1,0,1,1,1], c:[0,0,0,1,0,0,0,0,0,0,0,0]},
+  wulan:{g:[1,1,0,1,1,1,0,1,1,1,1,1], c:[0,0,1,0,0,0,1,0,0,0,0,1]}
 };
 const HIST = (() => {
   const r = mulberry32(2026), out = {};
@@ -769,7 +774,7 @@ function loginHTML() {
   </div>`;
 }
 function startSession(k) {
-  ME = k; state.loginErr = ''; state.view = 'pipeline'; state.sel = null; state.addOpen = false; state.apv = null; state.hint = true; state.taskFilter = 'all'; state.pview = 'aktif';
+  ME = k; state.loginErr = ''; state.view = 'pipeline'; state.sel = null; state.addOpen = false; state.apv = null; state.hint = true; state.taskFilter = 'all'; state.pview = 'aktif'; state.pkg = '';
   state.notifOpen = false; state.menuOpen = false; state.profile = k; render(); window.scrollTo(0,0);
   toast(`Masuk sebagai ${person(k)}`);
 }
@@ -839,6 +844,9 @@ function viewPipeline() {
   <div class="seg" role="group" aria-label="Tampilan pipeline" style="display:inline-flex;margin-bottom:14px">
     <button aria-pressed="${pv === 'aktif'}" onclick="setPView('aktif')">Aktif (${active})</button><button aria-pressed="${pv === 'selesai'}" onclick="setPView('selesai')">Selesai (${doneN})</button>
   </div>
+  <div class="seg" role="group" aria-label="Filter paket" style="display:inline-flex;margin:0 0 14px 8px">
+    ${[['','Semua paket'],['gerobak','Gerobak'],['cafe','Cafe']].map(([k,l]) => `<button aria-pressed="${(state.pkg || '') === k}" onclick="state.pkg='${k}';refreshPipeline();this.parentNode.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',b===this))">${l}</button>`).join('')}
+  </div>
   ${pv === 'selesai' ? `<div id="done">${doneHTML()}</div>` : `<div class="board" id="board">${boardHTML()}</div>${doneSummary()}
   <p class="small" style="margin-top:10px">Lead baru ditugaskan otomatis ke sales sesuai wilayah. Lead masuk antrean manajer bila kotanya di luar wilayah, terindikasi duplikat, atau sales di wilayah itu sudah memegang ${CAP} lead aktif.</p>`}`;
 }
@@ -864,7 +872,7 @@ function doneSummary() {
 }
 function doneHTML() {
   const f = state.doneF || (state.doneF = {res:'all', per:'semua', s:'all'}), q = state.q.trim().toLowerCase();
-  const list = visibleApps().filter(isDone)
+  const list = visibleApps().filter(isDone).filter(a => !state.pkg || a.paket === state.pkg)
     .filter(a => f.res === 'all' || (f.res === 'ok' ? a.stage === 'disetujui' : a.stage === 'ditolak'))
     .filter(a => inPeriod(a.stageSince, f.per) && (f.s === 'all' || a.sales === f.s))
     .filter(a => !q || a.name.toLowerCase().includes(q) || a.city.toLowerCase().includes(q))
@@ -892,7 +900,7 @@ function doneHTML() {
 }
 function boardHTML() {
   const q = state.q.trim().toLowerCase();
-  const apps = visibleApps().filter(a => !q || a.name.toLowerCase().includes(q) || a.city.toLowerCase().includes(q));
+  const apps = visibleApps().filter(a => (!q || a.name.toLowerCase().includes(q) || a.city.toLowerCase().includes(q)) && (!state.pkg || a.paket === state.pkg));
   return STAGES.filter(s => !(s.k === 'baru' && role() === 'Sales') && s.k !== 'disetujui' && s.k !== 'ditolak').map(s => {
     const list = apps.filter(a => a.stage === s.k).sort((x,y) => new Date(x.stageSince) - new Date(y.stageSince));
     return `<section class="col ${s.k === 'ditolak' ? 'muted-col' : ''}" aria-label="${s.l}">
@@ -907,7 +915,7 @@ function card(a) {
     <button class="card-main" onclick="openDetail('${a.id}')">
       <span class="card-name">${esc(a.name)}</span>
       <span class="card-city">${esc(a.city)}${a.sales && !noSales ? `, sales ${esc(first(a.sales))}` : ''}</span>
-      <span class="card-foot"><span class="chip">${PAKET[a.paket].nama}</span><span class="chip ${sc.level[0]}">Skor ${sc.c}</span>
+      <span class="card-foot"><span class="chip ${a.paket === 'cafe' ? 'dark' : ''}">${PAKET[a.paket].nama}</span><span class="chip ${sc.level[0]}">Skor ${sc.c}</span>
         ${noSales ? '<span class="chip blue">Belum ada sales</span>' : ''}${noSales && a.triage ? `<span class="chip ${a.triage.code === 'duplikat' ? 'bad' : 'warn'}">${a.triage.label}</span>` : ''}
         ${a.stage === 'quotation' && latest(a) ? '<span class="chip aren">Revisi</span>' : ''}${a.stage === 'survei' && a.survey && a.survey.revisiNote ? '<span class="chip aren">Lokasi baru</span>' : ''}${a.isNew && a.stage === 'presentasi' ? '<span class="chip dark">Baru</span>' : ''}</span>
       ${p ? `<span class="card-pic">Menunggu ${esc(uname(p))}</span>` : ''}
@@ -957,7 +965,7 @@ function viewProfile() {
       </dl>
     </div>
     <div class="stack" style="margin:0">
-      ${u.role === 'Sales' ? `<section class="panel"><h2>Target bulanan</h2><p style="margin:0">${SALES_T[k].q} franchisee disetujui dan ${rpS(SALES_T[k].r)} revenue kemitraan.</p></section>` : ''}
+      ${u.role === 'Sales' ? `<section class="panel"><h2>Target tahunan</h2><p style="margin:0">${SALES_T[k].g} Gerobak dan ${SALES_T[k].c} Cafe, revenue kemitraan ${rpS(tRev(SALES_T[k]))} (± ${rpS(tRev(SALES_T[k]) / 12)} per bulan). Cafe dievaluasi per kuartal.</p></section>` : ''}
       <section class="panel"><div class="d-top"><h2>${u.role === 'Super Admin' ? 'Tugas di seluruh tim' : 'Tugas aktif'}</h2><span class="num">${tasks.length}</span></div>
         ${tasks.length ? `<ul class="r-list">${tasks.slice(0,5).map(a => `<li style="grid-template-columns:1fr auto"><div><button class="link" onclick="openDetail('${a.id}')">${esc(a.name)}</button><div class="small">${actionOf(a)}${u.role === 'Super Admin' ? `, ${esc(uname(picOf(a)))}` : ''}</div></div>${overdueOf(a) ? '<span class="chip bad">Lewat batas</span>' : `<span class="small">${daysIn(a.stageSince)} hari</span>`}</li>`).join('')}</ul>${tasks.length > 5 ? `<button class="link" style="margin-top:8px" onclick="setView('tasks')">Lihat semua</button>` : ''}` : '<p class="small">Tidak ada tugas aktif.</p>'}
       </section>
@@ -1639,43 +1647,57 @@ function salesAch(s, P) {
   f[f.length - 1] = g + c;
   return {g, c, qty:g + c, rev, f};
 }
-const salesTarget = (s, P) => ({qty:SALES_T[s].q * P.ms.length, rev:SALES_T[s].r * P.ms.length});
+const salesTarget = (s, P) => { const t = SALES_T[s], f = P.ms.length / 12; return {g:t.g * f, c:t.c * f, qty:(t.g + t.c) * f, rev:tRev(t) * f}; };
+/* Cafe dievaluasi per kuartal: pada tampilan bulanan, kartu Cafe memakai kuartal dari bulan tersebut. */
+function cafePeriod(P) {
+  if (state.ptype !== 'bulan') return P;
+  const keep = {ptype:state.ptype, pkey:state.pkey}; state.ptype = 'kuartal'; state.pkey = Math.ceil(keep.pkey / 3);
+  const Q = periodInfo(); Object.assign(state, keep); return Q;
+}
+const sisa = (target, ach) => Math.max(0, Math.ceil(target - ach - 1e-9));
+const paceOf = (target, ach, P) => { const td = target * P.pace; return td ? ach / td : (ach > 0 || !target ? 1 : 0); };
+function pipeByPkg(pkg, who) {
+  const list = state.apps.filter(a => a.paket === pkg && who.includes(a.sales));
+  return [['approval','persetujuan akhir'],['negosiasi','negosiasi'],['quotation','quotation']].map(([k,l]) => [list.filter(a => a.stage === k).length, l]).filter(([n]) => n);
+}
 function perfStatus(x) { return x >= 1 ? ['ok','Di atas target'] : x >= .85 ? ['ok','Sesuai jalur'] : x >= .65 ? ['warn','Perlu dorongan'] : ['bad','Kritis']; }
 const barColor = st => st[0] === 'ok' ? 'var(--ok)' : st[0] === 'warn' ? '#C98F1E' : 'var(--bad)';
 function totals(P) {
   const A = scope().map(s => salesAch(s, P)).reduce((acc,x) => ({g:acc.g + x.g, c:acc.c + x.c, qty:acc.qty + x.qty, rev:acc.rev + x.rev, f:acc.f.map((v,i) => v + x.f[i])}), {g:0,c:0,qty:0,rev:0,f:FUNNEL.map(() => 0)});
-  const T = scope().reduce((acc,s) => { const t = salesTarget(s,P); return {qty:acc.qty + t.qty, rev:acc.rev + t.rev}; }, {qty:0, rev:0});
+  const T = scope().reduce((acc,s) => { const t = salesTarget(s,P); return {g:acc.g + t.g, c:acc.c + t.c, qty:acc.qty + t.qty, rev:acc.rev + t.rev}; }, {g:0, c:0, qty:0, rev:0});
   return {A, T};
 }
-function kpi(title, target, ach, P, fmt, foot) {
-  const tdT = target * P.pace, pctTD = tdT ? ach / tdT : 0, pct = target ? ach / target : 0, st = perfStatus(pctTD);
+function pkgCard(title, target, ach, P, fmt, unit, pipe) {
+  const tdT = target * P.pace, x = paceOf(target, ach, P), st = perfStatus(x), pct = target ? ach / target : 0, left = unit ? sisa(target, ach) : Math.max(0, target - ach);
   return `<div class="panel kpi"><div class="d-top"><h2 style="margin:0">${title}</h2><span class="chip ${st[0]}">${st[1]}</span></div>
-    <div class="kpi-num">${fmt(ach)}</div>
-    <div class="small">Target ${P.ended ? '' : `${P.td} `}<b style="color:var(--ink)">${fmt(tdT)}</b>, tercapai ${Math.round(pctTD * 100)}%</div>
-    <div class="bar" style="margin:10px 0 4px"><span style="width:${Math.min(pct,1) * 100}%;background:${barColor(st)}"></span>${P.ended ? '' : `<i style="left:${P.pace * 100}%"></i>`}</div>
-    <div class="small">Target ${P.label} ${fmt(target)}, tercapai ${Math.round(pct * 100)}%. ${foot}</div></div>`;
+    <div class="kpi-num">${fmt(ach)}<span class="small" style="font-size:15px;font-weight:600"> dari ${fmt(target)}</span></div>
+    <div style="font-weight:700;margin:2px 0 4px;color:${left ? 'var(--bad)' : 'var(--ok)'}">${left ? `Kurang ${unit ? left + ' ' + unit : fmt(left)}` : 'Target periode tercapai'}</div>
+    <div class="bar" style="margin:8px 0 4px"><span style="width:${Math.min(pct,1) * 100}%;background:${barColor(st)}"></span>${P.ended ? '' : `<i style="left:${P.pace * 100}%"></i>`}</div>
+    <div class="small">${P.label}. Target ${P.ended ? '' : P.td + ' '}${fmt(tdT)}, tercapai ${Math.round(x * 100)}%.</div>
+    ${pipe ? `<div class="small" style="margin-top:6px;color:var(--ink)">${pipe.length ? 'Di pipeline: ' + pipe.map(([n,l]) => `${n} di ${l}`).join(', ') : 'Belum ada di tahap quotation sampai persetujuan akhir.'}</div>` : ''}</div>`;
 }
 function viewDashboard() {
-  const P = periodInfo(), {A, T} = totals(P);
+  const P = periodInfo(), {A, T} = totals(P), CP = cafePeriod(P), {A:AC, T:TC} = totals(CP);
   const pipe = state.apps.filter(a => ['quotation','negosiasi','approval'].includes(a.stage) && scope().includes(a.sales));
   const pipeVal = pipe.reduce((x,a) => x + dealValue(a), 0);
-  const tg = FUNNEL.map(() => 0); tg[tg.length - 1] = T.qty; for (let i = tg.length - 2; i >= 0; i--) tg[i] = Math.ceil(tg[i + 1] / (state.rates[i] / 100));
+  const tg = FUNNEL.map(() => 0); tg[tg.length - 1] = Math.round(T.qty * 10) / 10; for (let i = tg.length - 2; i >= 0; i--) tg[i] = Math.ceil(tg[i + 1] / (state.rates[i] / 100));
   let worst = 0, ws = Infinity;
   const rows = FUNNEL.map((f,i) => {
     const tdT = tg[i] * P.pace, x = tdT ? A.f[i] / tdT : 0, pct = tg[i] ? A.f[i] / tg[i] : 0, st = perfStatus(x);
     if (x < ws) { ws = x; worst = i; }
     const last = i === FUNNEL.length - 1, actual = !last && A.f[i] ? Math.round(A.f[i + 1] / A.f[i] * 100) + '%' : '–';
     return `<tr><td><div class="tl-title">${f.l}</div><div class="small">${f.d}</div></td>
-      <td class="num">${tg[i]}</td><td class="num">${num1(tdT)}</td><td class="num">${A.f[i]}</td>
+      <td class="num">${num1(tg[i])}</td><td class="num">${num1(tdT)}</td><td class="num">${A.f[i]}</td>
       <td><div class="bar"><span style="width:${Math.min(pct,1) * 100}%;background:${barColor(st)}"></span>${P.ended ? '' : `<i style="left:${P.pace * 100}%"></i>`}</div><div class="small">${Math.round(pct * 100)}% dari target periode</div></td>
       <td><span class="chip ${st[0]}">${st[1]}</span></td>
       <td>${!last ? `<input class="rate" type="number" min="1" max="100" value="${state.rates[i]}" aria-label="Rasio konversi ${f.l}" onchange="setRate(${i},this.value)">%<div class="small">Aktual: ${actual}</div>` : '<span class="small">Tahap akhir</span>'}</td></tr>`;
   }).join('');
-  const weak = role() === 'Sales' ? [] : SALES.filter(s => { const t = salesTarget(s,P), a = salesAch(s,P); return Math.min(a.qty / (t.qty * P.pace), a.rev / (t.rev * P.pace)) < .85; });
+  const weak = role() === 'Sales' ? [] : SALES.filter(s => salesScore(s, P, CP).score < .85);
   return `<div class="page-head"><div><h1>${role() === 'Sales' ? 'Target vs Achievement saya' : 'Target vs Achievement'}, ${P.label}</h1><p class="sub">${P.ended ? 'Periode sudah selesai.' : `Data per ${todayLong}, hari ke-${P.el} dari ${P.totalD}.`}</p></div>${periodControls()}</div>
-  <div class="kpis">
-    ${kpi('Franchisee disetujui', T.qty, A.qty, P, v => num1(v), `Gerobak ${A.g}, cafe ${A.c}.`)}
-    ${kpi('Revenue kemitraan', T.rev, A.rev, P, rpS, 'Nilai kesepakatan dari franchisee yang disetujui.')}
+  <div class="kpis four">
+    ${pkgCard('Gerobak', T.g, A.g, P, num1, 'Gerobak', pipeByPkg('gerobak', scope()))}
+    ${pkgCard('Cafe', TC.c, AC.c, CP, num1, 'Cafe', pipeByPkg('cafe', scope()))}
+    ${pkgCard('Revenue kemitraan', T.rev, A.rev, P, rpS, '', null)}
     <div class="panel kpi"><h2 style="margin:0">Nilai pipeline</h2><div class="kpi-num">${rpS(pipeVal)}</div>
       <div class="small">${pipe.length} aplikasi di tahap quotation, negosiasi, dan persetujuan akhir. Potensi revenue jika semuanya disetujui.</div>
       ${role() === 'Sales' ? '' : `<button class="link" style="margin-top:10px" onclick="setView('sales')">Lihat per sales</button>`}</div>
@@ -1687,27 +1709,35 @@ function viewDashboard() {
     <tbody>${rows}</tbody></table></div>
     <p class="small" style="margin:12px 0 0">Target jumlah per tahap dihitung mundur dari target franchisee disetujui dan rasio konversi. ${P.ended ? '' : `Garis hitam di bar menandai Target ${P.td}, yaitu posisi yang seharusnya tercapai hari ini.`}</p></div>`;
 }
+function salesScore(s, P, CP) {
+  const t = salesTarget(s,P), a = salesAch(s,P), tc = salesTarget(s,CP), ac = salesAch(s,CP);
+  const xg = paceOf(t.g, a.g, P), xc = paceOf(tc.c, ac.c, CP), xr = paceOf(t.rev, a.rev, P);
+  return {t, a, tc, ac, xg, xc, xr, score:Math.min(xg, xc, xr)};
+}
 function viewSales() {
-  const P = periodInfo();
-  const data = SALES.map(s => ({s, t:salesTarget(s,P), a:salesAch(s,P)}));
-  const table = (title, key, fmt, note) => {
-    const rows = data.map(d => { const full = d.t[key], should = full * P.pace, ach = d.a[key], pct = should ? ach / should : 0; return {...d, full, should, ach, pct, st:perfStatus(pct)}; }).sort((x,y) => y.pct - x.pct);
-    const sum = rows.reduce((v,r) => ({full:v.full + r.full, should:v.should + r.should, ach:v.ach + r.ach}), {full:0, should:0, ach:0});
-    const sPct = sum.should ? sum.ach / sum.should : 0, sSt = perfStatus(sPct);
-    const gap = g => g >= 0 ? `<span style="color:var(--ok);font-weight:700">+${fmt(g)}</span>` : `<span style="color:var(--bad);font-weight:700">−${fmt(-g)}</span>`;
-    const pc = (pct, st) => `<div class="bar" style="min-width:110px"><span style="width:${Math.min(pct,1) * 100}%;background:${barColor(st)}"></span></div><div class="small">${Math.round(pct * 100)}%</div>`;
-    return `<section class="panel" style="margin-bottom:16px"><h2>${title}</h2><p class="small" style="margin-top:-4px">${note}</p>
-      <div class="table-wrap"><table class="funnel"><thead><tr><th style="width:36px">#</th><th>Sales</th><th>Target ${P.label}</th><th>${P.ended ? 'Target akhir periode' : `Target ${P.td}`}</th><th>Achievement</th><th>Achievement vs ${P.ended ? 'target' : `Target ${P.td}`}</th><th>Selisih</th><th>Status</th></tr></thead>
-      <tbody>${rows.map((r,i) => `<tr><td class="num" style="font-size:15px;color:var(--muted)">${i + 1}</td>
-        <td><div class="who-cell"><span class="av sm">${initials(uname(r.s))}</span><div><button class="link" style="color:var(--ink);text-decoration:none" onclick="openProfile('${r.s}')">${uname(r.s)}</button><div class="small">${USERS[r.s].area}</div></div></div></td>
-        <td>${fmt(r.full)}</td><td><b>${fmt(r.should)}</b></td><td class="num" style="font-size:16px">${fmt(r.ach)}</td><td>${pc(r.pct, r.st)}</td><td>${gap(r.ach - r.should)}</td><td><span class="chip ${r.st[0]}">${r.st[1]}</span></td></tr>`).join('')}
-        <tr class="sum"><td></td><td><b>Total</b></td><td><b>${fmt(sum.full)}</b></td><td><b>${fmt(sum.should)}</b></td><td class="num" style="font-size:16px">${fmt(sum.ach)}</td><td>${pc(sPct, sSt)}</td><td>${gap(sum.ach - sum.should)}</td><td><span class="chip ${sSt[0]}">${sSt[1]}</span></td></tr>
-      </tbody></table></div></section>`;
-  };
-  return `<div class="page-head"><div><h1>Performa Sales, ${P.label}</h1><p class="sub">${P.ended ? 'Periode sudah selesai.' : `Data per ${todayLong}, hari ke-${P.el} dari ${P.totalD}.`} ${P.ended ? '' : `"Target ${P.td}" adalah target yang mestinya sudah tercapai per ${todayShort}, sesuai proporsi hari yang sudah berjalan.`}</p></div>${periodControls()}</div>
-  ${table('Target revenue','rev',rpS,'Revenue dari nilai kesepakatan franchisee yang disetujui. Diurutkan dari sales paling perform.')}
-  ${table('Target kuantitas','qty',num1,'Jumlah franchisee yang disetujui. Diurutkan dari sales paling perform.')}
-  <p class="small">Target bulanan per sales: ${SALES.map(s => `${first(s)} ${SALES_T[s].q} franchisee dan ${rpS(SALES_T[s].r)}`).join('; ')}. Target kuartal, semester, dan tahunan adalah penjumlahan target bulanan.</p>`;
+  const P = periodInfo(), CP = cafePeriod(P);
+  const rows = SALES.map(s => ({s, ...salesScore(s, P, CP)})).sort((x,y) => (y.score - x.score) || (y.xr - x.xr) || (y.a.rev - x.a.rev));
+  const cell = (ach, target, x, unit) => { const st = perfStatus(x), left = sisa(target, ach);
+    return `<div><b style="font-size:16px">${num1(ach)}</b><span class="small"> / ${num1(target)}</span></div>
+      <div class="small" style="font-weight:700;color:${left ? 'var(--bad)' : 'var(--ok)'}">${left ? `Kurang ${left} ${unit}` : 'Tercapai'}</div>
+      <div class="bar" style="min-width:90px;margin-top:4px"><span style="width:${Math.min(target ? ach / target : 1,1) * 100}%;background:${barColor(st)}"></span></div>`; };
+  const revCell = (ach, target, x) => { const st = perfStatus(x);
+    return `<div><b style="font-size:16px">${rpS(ach)}</b><span class="small"> / ${rpS(target)}</span></div>
+      <div class="small">${Math.round(x * 100)}% dari Target ${P.ended ? 'akhir' : P.td}</div>
+      <div class="bar" style="min-width:90px;margin-top:4px"><span style="width:${Math.min(target ? ach / target : 1,1) * 100}%;background:${barColor(st)}"></span></div>`; };
+  const sum = rows.reduce((v,r) => ({ag:v.ag + r.a.g, tg:v.tg + r.t.g, ac:v.ac + r.ac.c, tc:v.tc + r.tc.c, ar:v.ar + r.a.rev, tr:v.tr + r.t.rev}), {ag:0,tg:0,ac:0,tc:0,ar:0,tr:0});
+  const sx = Math.min(paceOf(sum.tg, sum.ag, P), paceOf(sum.tc, sum.ac, CP), paceOf(sum.tr, sum.ar, P)), sSt = perfStatus(sx);
+  const cafeLbl = CP === P ? P.label : `${CP.label}, kuartal berjalan`;
+  return `<div class="page-head"><div><h1>Performa Sales, ${P.label}</h1><p class="sub">${P.ended ? 'Periode sudah selesai.' : `Data per ${todayLong}, hari ke-${P.el} dari ${P.totalD}.`} Sisa target ditampilkan per paket supaya terlihat paket mana yang perlu dikejar. Status mengikuti metrik terlemah.</p></div>${periodControls()}</div>
+  <section class="panel" style="margin-bottom:16px"><div class="table-wrap"><table class="funnel" style="min-width:860px">
+    <thead><tr><th style="width:36px">#</th><th>Sales</th><th>Gerobak, ${P.label}</th><th>Cafe, ${cafeLbl}</th><th>Revenue, ${P.label}</th><th>Status</th></tr></thead>
+    <tbody>${rows.map((r,i) => { const st = perfStatus(r.score); return `<tr><td class="num" style="font-size:15px;color:var(--muted)">${i + 1}</td>
+      <td><div class="who-cell"><span class="av sm">${initials(uname(r.s))}</span><div><button class="link" style="color:var(--ink);text-decoration:none" onclick="openProfile('${r.s}')">${uname(r.s)}</button><div class="small">${USERS[r.s].area}</div></div></div></td>
+      <td>${cell(r.a.g, r.t.g, r.xg, 'Gerobak')}</td><td>${cell(r.ac.c, r.tc.c, r.xc, 'Cafe')}</td><td>${revCell(r.a.rev, r.t.rev, r.xr)}</td>
+      <td><span class="chip ${st[0]}">${st[1]}</span></td></tr>`; }).join('')}
+      <tr class="sum"><td></td><td><b>Total</b></td><td>${cell(sum.ag, sum.tg, paceOf(sum.tg, sum.ag, P), 'Gerobak')}</td><td>${cell(sum.ac, sum.tc, paceOf(sum.tc, sum.ac, CP), 'Cafe')}</td><td>${revCell(sum.ar, sum.tr, paceOf(sum.tr, sum.ar, P))}</td><td><span class="chip ${sSt[0]}">${sSt[1]}</span></td></tr>
+    </tbody></table></div></section>
+  <p class="small">Target tahunan per sales: ${SALES.map(s => `${first(s)} ${SALES_T[s].g} Gerobak dan ${SALES_T[s].c} Cafe (${rpS(tRev(SALES_T[s]))})`).join('; ')}. Target periode lain dihitung proporsional. Cafe dievaluasi per kuartal.</p>`;
 }
 
 /* ===================== keyboard & boot ===================== */

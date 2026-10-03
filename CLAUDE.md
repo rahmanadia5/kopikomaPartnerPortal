@@ -9,7 +9,7 @@
 - Deadline: 6 Oktober 2026, 18:00 WIB.
 
 ## Asumsi bisnis
-- Klien fiktif: Kopi Koma, brand kopi kekinian lokal, sekitar 80 outlet, target ekspansi sekitar 50 outlet per tahun. Tulis "nama fiktif" di PRD (ada brand nyata bernama Titik Koma).
+- Klien fiktif: Kopi Koma, brand kopi kekinian lokal, sekitar 80 outlet, target ekspansi 48 outlet per tahun (36 Gerobak + 12 Cafe). Tulis "nama fiktif" di PRD (ada brand nyata bernama Titik Koma).
 - Paket: Gerobak (Rp 45 jt, tanpa royalti) dan Cafe (Rp 450 jt, royalti 5%). Kiosk sudah dihapus.
 - Data pendukung sektor: F&B 47,77% dari waralaba Indonesia (Kemendag, Feb 2025); jumlah kedai kopi naik hampir 3x dalam 3 tahun (Kemenperin, Mei 2025). Pertumbuhan nilai pasar kopi moderat (proyeksi 3,61% 2024-2029), jadi argumennya adalah ekspansi gerai via franchise, bukan "pasar booming".
 - Revenue = nilai deal paket kemitraan setelah diskon dari franchisee yang disetujui. Royalti tidak dihitung.
@@ -47,15 +47,17 @@ Halaman masuk berisi form email + kata sandi dan daftar akun demo per role (klik
 - Indikator lewat batas waktu hanya terlihat oleh Super Admin dan Manajer.
 - Pipeline punya pengalih Aktif | Selesai (`state.pview`, reset ke Aktif saat login). Kanban hanya 7 tahap aktif (muat di laptop tanpa scroll). Pengajuan disetujui/ditolak/mundur ada di tabel Selesai: hasil, tahap terakhir, alasan, nilai kesepakatan, sales, tanggal selesai; filter hasil, periode, sales, dan pencarian. Di bawah kanban ada ringkasan "Selesai bulan ini" dengan tautan Lihat semua.
 - Kartu pipeline tidak membedakan lead mandiri dan lead dari sales. Lead yang belum punya sales (tahap Lead baru) diberi chip "Belum ada sales" plus alasannya (Luar wilayah / Duplikat? / Sales penuh); setelah ditugaskan, kartu tampil seperti biasa.
-- Wilayah sales: Rendi = Tangerang Raya; Putri = Jakarta, Bogor, Depok, Bekasi, Cikarang; Agus = Bandung Raya; Wulan = Jawa Tengah.
+- Wilayah sales: Rendi = Tangerang Raya; Putri = Jakarta, Bogor, Depok, Bekasi, Cikarang; Agus = Bandung Raya (Bandung, Cimahi); Wulan = Jawa Tengah (Semarang, Solo, Magelang, Salatiga, Klaten, Kudus, Pekalongan, Tegal, Purwokerto). Garut dan Yogyakarta di luar wilayah (masuk antrean manajer).
 
 ## Fitur lain
 - Persetujuan dua pihak: 1 dari 2 = franchisee menyetujui quotation (di portal atau dicatat sales), 2 dari 2 = persetujuan akhir manajer. Di portal, tombol Setujui quotation butuh centang konfirmasi "sudah membaca dan menyetujui isi quotation versi N" (tercatat di audit trail). Setelah disepakati, prototipe hanya menampilkan info langkah berikutnya: perjanjian waralaba dikirim lewat Privy (tanda tangan elektronik tersertifikasi). Integrasi e-sign = di luar cakupan MVP / roadmap.
 - Status persetujuan per aplikasi (modal timeline 7 langkah, PIC + lama menunggu), dari kartu, drawer, dan tabel tugas.
 - Skor kecocokan AI (profil 40%, lokasi 60%) dengan alasan plus/minus. DISIMULASIKAN dengan pembobotan aturan + data peta simulasi; jujur sebutkan di PRD. Alat bantu, bukan penolakan otomatis.
-- Target vs Achievement: periode Bulanan/Kuartal/Semester/Tahunan, target vs "Target MTD/QTD/HTD/YTD" (target proporsional per hari ini), revenue + kuantitas, funnel 6 tahap dihitung mundur dari rasio konversi (bisa diubah).
-- Performa Sales (manajer/super admin): dua tabel terpisah (revenue dan kuantitas), diurutkan dari paling perform, kolom Target, Target MTD/QTD/HTD/YTD, Achievement, Achievement vs Target MTD, Selisih, Status. Status mengikuti metrik terlemah.
-- Profil pengguna (tugas aktif, notifikasi email, aktivitas; target bulanan untuk Sales). Tidak ada menu User/Pengguna, kartu deskripsi peran, maupun matriks akses. Profil sales lain dibuka dari Performa Sales.
+- Target per sales (tahunan, `SALES_T`): Putri 8 Gerobak + 7 Cafe, Wulan 10 + 3, Rendi 9 + 1, Agus 9 + 1 (total 48 = 36 Gerobak + 12 Cafe, revenue Rp 7,02 M/tahun ±Rp 585 jt/bulan). Bobot wilayah = penduduk x PDRB per kapita provinsi (BPS 2024), dibatasi kapasitas ±12-15 approval per sales per tahun (4 sales x maks 5 lead aktif, siklus ±1 bulan, konversi presentasi->disetujui ±20%). Satu sales memegang dua paket; target dipisah per paket. Cafe dievaluasi per kuartal (`cafePeriod`).
+- Target vs Achievement: periode Bulanan/Kuartal/Semester/Tahunan. Kartu Gerobak, Cafe (kuartal berjalan bila tampilan bulanan), Revenue, dan Nilai pipeline. Tiap kartu paket menampilkan "x dari target", "Kurang N", Target MTD/QTD/HTD/YTD, dan peluang di pipeline (quotation/negosiasi/persetujuan akhir) per paket. Funnel 6 tahap dihitung mundur dari rasio konversi (bisa diubah).
+- Performa Sales (manajer/super admin): satu tabel per sales dengan kolom Gerobak, Cafe (kuartal), Revenue (masing-masing achievement / target + "Kurang N" atau % dari Target MTD) dan Status. Status mengikuti metrik terlemah; diurutkan dari paling perform.
+- Pipeline punya filter paket (Semua paket / Gerobak / Cafe, `state.pkg`) yang berlaku untuk kanban dan tabel Selesai. Chip Cafe di kartu berwarna gelap agar menonjol.
+- Profil pengguna (tugas aktif, notifikasi email, aktivitas; target tahunan Gerobak/Cafe/revenue untuk Sales). Tidak ada menu User/Pengguna, kartu deskripsi peran, maupun matriks akses. Profil sales lain dibuka dari Performa Sales.
 - Lead masuk lewat dua jalur: input sales (Tambah lead) dan pendaftaran mandiri di Portal Mitra. Tidak ada tombol simulasi lead di dashboard. Wilayah user non-sales = "Semua wilayah".
 - Audit trail per aplikasi, termasuk akses dokumen. Persetujuan data pribadi (UU PDP) wajib saat input lead.
 - "Hari ini" = tanggal asli (jam 09.00), jadi MTD/QTD/HTD/YTD dan label Target MTD berganti setiap hari. Data contoh (umur lead, riwayat sales per bulan, target pembukaan di quotation) dihitung relatif terhadap tanggal ini. Contoh kemitraan yang sudah disetujui (Maya Putri) selalu jatuh di bulan berjalan (`DEAL_DAYS`). Tidak ada teks "Data demo" di halaman target.
