@@ -297,8 +297,14 @@ footer{max-width:1360px;margin:0 auto;padding:0 24px 30px;font-size:12px;color:v
 .lg-brand .logo b{font-size:30px}
 .lg-brand h1{font-size:clamp(30px,3.6vw,46px);line-height:1.06;letter-spacing:-.035em;max-width:13ch;color:#fff;margin:28px 0 4px}
 .lg-brand p{color:#CDB9A6;max-width:42ch;font-size:16px}
-.lg-form{display:flex;align-items:center;justify-content:center;padding:56px 24px}
+.lg-form{display:flex;align-items:flex-start;justify-content:center;padding:56px 24px}
 .lg-card{width:min(440px,100%)}
+.lg-demo{margin-top:28px;padding-top:20px;border-top:1px solid var(--line)}
+.lg-group{margin-bottom:18px}
+.lg-acc{display:flex;gap:10px;align-items:center;width:100%;text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:var(--r-s);padding:8px 10px;cursor:pointer;margin-bottom:6px}
+.lg-acc:hover{border-color:#C4B29E;background:#FCFAF7}
+.lg-acc b{display:block;font-size:14px}
+.lg-acc .small{display:block}
 @media (max-width:860px){.login{grid-template-columns:1fr}.lg-brand{padding:32px 24px;position:static;height:auto}.lg-brand h1{margin-top:16px}}
 
 /* portal mitra header */
@@ -726,7 +732,15 @@ function render() {
   document.getElementById('main').innerHTML = viewMain();
   renderTop(); renderDrawer(); renderNotif(); renderApproval();
 }
+const DEMO_NOTE = {
+  'Super Admin':'Akses penuh, bisa memproses semua tahap dan mengelola pengguna.',
+  'Manajer':'Menugaskan sales untuk lead yang tidak otomatis, dan persetujuan akhir.',
+  'Sales':'Hanya melihat lead sendiri. Input lead, presentasi, survei, quotation, negosiasi.',
+  'Reviewer':'Melakukan penilaian kelayakan calon franchisee.'
+};
 function loginHTML() {
+  const groups = ROLE_ORDER.map(r => `<div class="lg-group"><p class="sec-title">${r}</p><p class="small" style="margin:-4px 0 8px">${DEMO_NOTE[r]}</p>
+    ${Object.entries(USERS).filter(([,u]) => u.role === r).map(([k,u]) => `<button class="lg-acc" onclick="quickLogin('${k}')"><span class="av sm">${initials(u.name)}</span><span><b>${esc(u.name)}</b><span class="small">${esc(u.email)}</span></span></button>`).join('')}</div>`).join('');
   return `<div class="login">
     <section class="lg-brand">
       <div class="logo"><b>kopi koma<i>,</i></b><span>Partner Portal</span></div>
@@ -740,6 +754,7 @@ function loginHTML() {
         <div class="field"><label for="lg-pw">Kata sandi</label><input id="lg-pw" type="password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
         ${state.loginErr ? `<p class="err" role="alert">${state.loginErr}</p>` : ''}
         <button class="btn btn-primary" style="width:100%;margin-top:6px" onclick="doLogin()">Masuk</button>
+        <div class="lg-demo"><p class="tl-title" style="margin:0 0 2px">Akun demo</p><p class="small" style="margin:0 0 14px">Pilih akun untuk langsung masuk. Kata sandi semua akun: <b>${PASSWORD}</b></p>${groups}</div>
       </div>
     </section>
   </div>`;

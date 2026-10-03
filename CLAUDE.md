@@ -35,7 +35,7 @@ Aturan penting:
 
 ## Peran (password semua akun: demo123)
 
-Halaman masuk hanya berisi email + kata sandi (tanpa daftar akun demo); daftar akun dicantumkan di bagian Batasan prototipe pada PRD. `quickLogin(k)` tetap ada untuk tes.
+Halaman masuk berisi form email + kata sandi dan daftar akun demo per role (klik untuk langsung masuk). Daftar akun demo hanya untuk prototipe, dicatat di bagian Batasan prototipe pada PRD.
 | Peran | Akun | Menu | Bisa memproses |
 |---|---|---|---|
 | Super Admin | arif.hakim@kopikoma.id | Pipeline, Semua tugas, Target vs Achievement, Performa Sales, User | Semua tahap (tercatat atas namanya) |
