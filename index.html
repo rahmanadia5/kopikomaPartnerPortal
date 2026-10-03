@@ -338,7 +338,13 @@ footer{max-width:1360px;margin:0 auto;padding:0 24px 30px;font-size:12px;color:v
 
 
 /* ===================== base ===================== */
-const TODAY = new Date('2026-10-20T09:00:00');
+/* "Hari ini" mengikuti tanggal asli (jam 09.00) agar MTD/QTD/HTD/YTD berganti setiap hari. Data contoh dihitung relatif terhadap tanggal ini. */
+const TODAY = (() => { const d = new Date(); d.setHours(9, 0, 0, 0); return d; })();
+const YEAR = TODAY.getFullYear();
+const isoDate = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+const monthLabel = ahead => { const d = new Date(TODAY.getFullYear(), TODAY.getMonth() + ahead, 1); return d.toLocaleDateString('id-ID',{month:'long', year:'numeric'}); };
+const todayShort = TODAY.toLocaleDateString('id-ID',{day:'numeric', month:'short'}).replace('.','');
+const todayLong = TODAY.toLocaleDateString('id-ID',{day:'numeric', month:'long', year:'numeric'});
 let tick = 0;
 const nowIso = () => new Date(TODAY.getTime() + (++tick) * 7 * 60000).toISOString();
 const daysAgo = n => { const d = new Date(TODAY); d.setDate(d.getDate() - n); return d.toISOString(); };
@@ -492,17 +498,17 @@ function mkApp(n, name, city, paket, stage, days, o = {}) {
     ev.push([a.reviewer,'Penilaian kelayakan: lolos']);
   }
   if (o.flow === 'change') {
-    a.quotes.push({v:1, paket, lokasi:a.alamat, buka:'November 2026', diskon:0, skema:'Lunas', note:'', status:'perubahan diminta'});
+    a.quotes.push({v:1, paket, lokasi:a.alamat, buka:monthLabel(1), diskon:0, skema:'Lunas', note:'', status:'perubahan diminta'});
     a.changes.push({v:1, type:'Termin pembayaran', note:'Minta biaya kemitraan dibayar dalam 2 termin.', result:'Disepakati dengan manajer: 2 termin, termin kedua maksimal 30 hari setelah grand opening.'});
-    a.quotes.push({v:2, paket, lokasi:a.alamat, buka:'November 2026', diskon:0, skema:'2 termin', note:'Biaya kemitraan dibayar dalam 2 termin.', status:'disetujui franchisee'});
+    a.quotes.push({v:2, paket, lokasi:a.alamat, buka:monthLabel(1), diskon:0, skema:'2 termin', note:'Biaya kemitraan dibayar dalam 2 termin.', status:'disetujui franchisee'});
     ev.push([sales,'Quotation versi 1 dikirim ke calon franchisee'],[sales,'Calon franchisee meminta perubahan: Termin pembayaran'],
       [sales,'Quotation versi 2 dikirim ke calon franchisee (revisi setelah diskusi dengan manajer)'],[sales,'Calon franchisee menyetujui quotation versi 2']);
   } else if (o.revisi) {
-    a.quotes.push({v:1, paket, lokasi:a.alamat, buka:'Desember 2026', diskon:0, skema:'Lunas', note:'Termasuk pendampingan grand opening selama 3 hari.', status:'perubahan diminta'});
+    a.quotes.push({v:1, paket, lokasi:a.alamat, buka:monthLabel(2), diskon:0, skema:'Lunas', note:'Termasuk pendampingan grand opening selama 3 hari.', status:'perubahan diminta'});
     a.changes.push({v:1, type:'Diskon', note:'Minta potongan biaya kemitraan Rp 3 jt karena lokasi milik sendiri.', result:null});
     ev.push([sales,'Quotation versi 1 dikirim ke calon franchisee'],[sales,'Calon franchisee meminta perubahan: Diskon']);
   } else if (ri >= 4) {
-    a.quotes.push({v:1, paket, lokasi:a.alamat, buka:'Desember 2026', diskon:0, skema:'Lunas', note:'Termasuk pendampingan grand opening selama 3 hari.', status: ri >= 5 ? 'disetujui franchisee' : 'terkirim'});
+    a.quotes.push({v:1, paket, lokasi:a.alamat, buka:monthLabel(2), diskon:0, skema:'Lunas', note:'Termasuk pendampingan grand opening selama 3 hari.', status: ri >= 5 ? 'disetujui franchisee' : 'terkirim'});
     ev.push([sales,'Quotation versi 1 dikirim ke calon franchisee']);
     if (ri >= 5) ev.push([sales,'Calon franchisee menyetujui quotation versi 1']);
   }
@@ -525,7 +531,7 @@ function seed() {
     mkApp(9,'Lina Marlina','Solo','gerobak','quotation',2,{revisi:true, source:'Kunjungan langsung'}),
     mkApp(10,'Rina Wijaya','Bogor','cafe','negosiasi',3),
     mkApp(11,'Hendra Gunawan','Jakarta Barat','cafe','approval',1,{source:'Referensi'}),
-    mkApp(12,'Maya Putri','Jakarta Selatan','cafe','disetujui',6,{flow:'change'}),
+    mkApp(12,'Maya Putri','Jakarta Selatan','cafe','disetujui',DEAL_DAYS,{flow:'change'}),
     mkApp(13,'Bayu Nugraha','Cikarang','gerobak','ditolak',5,{reason:'Sumber dana tidak dapat diverifikasi dari rekening koran yang diberikan.'}),
     mkApp(14,'Teguh Wibowo','Surabaya','gerobak','baru',2,{self:true}),
     mkApp(15,'Rina W.','Bogor','cafe','baru',0,{self:true, source:'Instagram (mandiri)', phone:'0812-4370-1710', email:'rina.w@mail.com'})
@@ -534,21 +540,23 @@ function seed() {
 
 /* ===================== sales history (demo) ===================== */
 const MONTHS = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
-const CUR_M = 10;
+const CUR_M = TODAY.getMonth() + 1;
+/* Contoh kemitraan yang sudah disetujui selalu jatuh di bulan berjalan agar Achievement bulan ini tidak kosong di awal bulan. */
+const DEAL_DAYS = Math.min(6, TODAY.getDate() - 1);
 const SALES_T = {rendi:{q:2, r:290e6}, putri:{q:1, r:125e6}, agus:{q:1, r:105e6}, wulan:{q:1, r:125e6}};
 function mulberry32(a) { return function() { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
 const DEALS = {
-  rendi:{g:[2,2,1,2,2,2,3,2,2,1], c:[0,1,1,0,1,0,0,1,1,1]},
-  putri:{g:[1,1,0,1,1,1,1,0,1,0], c:[0,0,1,0,0,0,0,1,0,0]},
-  agus: {g:[1,0,0,1,0,1,0,0,1,0], c:[0,0,0,0,0,0,0,0,0,0]},
-  wulan:{g:[1,1,2,1,2,1,1,0,0,1], c:[1,0,0,1,0,0,0,0,0,0]}
+  rendi:{g:[2,2,1,2,2,2,3,2,2,1,2,2], c:[0,1,1,0,1,0,0,1,1,1,0,1]},
+  putri:{g:[1,1,0,1,1,1,1,0,1,0,1,1], c:[0,0,1,0,0,0,0,1,0,0,0,0]},
+  agus: {g:[1,0,0,1,0,1,0,0,1,0,1,0], c:[0,0,0,0,0,0,0,0,0,0,0,0]},
+  wulan:{g:[1,1,2,1,2,1,1,0,0,1,1,1], c:[1,0,0,1,0,0,0,0,0,0,0,0]}
 };
 const HIST = (() => {
   const r = mulberry32(2026), out = {};
   SALES.forEach(s => {
     out[s] = {};
     for (let m = 1; m <= CUR_M; m++) {
-      const part = m === CUR_M ? 20 / 31 : 1, g = DEALS[s].g[m - 1], c = DEALS[s].c[m - 1], n = g + c;
+      const part = m === CUR_M ? TODAY.getDate() / new Date(YEAR, CUR_M, 0).getDate() : 1, g = Math.round(DEALS[s].g[m - 1] * part), c = Math.round(DEALS[s].c[m - 1] * part), n = g + c;
       const quo = n + Math.round((0.8 + r() * 1.0) * part);
       const ass = Math.round(quo * (1.05 + r() * .1));
       const lay = Math.round(ass * (1.25 + r() * .2));
@@ -574,7 +582,7 @@ let nid = 0;
 /* Dua aplikasi terpisah dari file yang sama: dashboard franchisor (/) dan portal calon franchisee (/mitra).
    Data aplikasi dan notifikasi disimpan di localStorage agar keduanya terhubung, juga antar-tab. */
 const MODE = /^\/mitra/.test(location.pathname) || location.hash === '#mitra' ? 'mitra' : 'staff';
-const STORE = 'kopikoma-demo-v2';
+const STORE = 'kopikoma-demo-v3';
 function loadShared() { try { return JSON.parse(localStorage.getItem(STORE)); } catch { return null; } }
 function saveShared() { try { localStorage.setItem(STORE, JSON.stringify({apps:state.apps, notifs:state.notifs, tick, nid})); } catch {} }
 function clearShared() { try { localStorage.removeItem(STORE); } catch {} }
@@ -600,7 +608,7 @@ function initState(fresh) {
   n('bima','KK-0246','Dewi Lestari siap dinilai kelayakannya. Lokasi sudah dinilai layak.',2,false);
   n(MANAGER,'KK-0249','Lina Marlina meminta diskon. Wulan Kusuma akan mendiskusikannya denganmu sebelum mengirim quotation versi 2.',2,false);
   n(MANAGER,'KK-0251','Hendra Gunawan menyetujui quotation. Perlu persetujuan akhir.',1,false);
-  n('putri','KK-0252','Kemitraan Maya Putri disetujui. Lanjutkan ke perjanjian.',6,true);
+  n('putri','KK-0252','Kemitraan Maya Putri disetujui. Lanjutkan ke perjanjian.',DEAL_DAYS,true);
   n(MANAGER,'KK-0254','Lead baru perlu ditugaskan: Teguh Wibowo. Kota Surabaya di luar wilayah sales yang ada.',2,false);
   n(MANAGER,'KK-0255','Lead baru perlu ditugaskan: Rina W. Terindikasi duplikat dengan Rina Wijaya (KK-0250).',0,false);
   st.apps.filter(a => overdueOf(a)).forEach(a => {
@@ -683,7 +691,6 @@ function renderTop() {
   m.hidden = !state.menuOpen;
   if (state.menuOpen) m.innerHTML = `<div class="um-head"><span class="av">${initials(u.name)}</span><div><b>${esc(u.name)}</b><div class="small">${esc(u.email)}</div><span class="chip dark" style="margin-top:4px">${u.role}</span></div></div>
     <button class="um-item" onclick="openProfile('${ME}')">Profil saya</button>
-    ${isSA() ? `<button class="um-item" onclick="state.menuOpen=false;setView('users')">User</button>` : ''}
     <button class="um-item" onclick="resetDemo()">Reset data demo (khusus prototipe)</button>
     <button class="um-item" style="color:var(--bad)" onclick="logout()">Keluar</button>`;
 }
@@ -779,7 +786,7 @@ const pendingAll = () => state.apps.filter(a => picOf(a));
 const myTasks = () => state.apps.filter(a => picOf(a) === ME);
 function tabsFor() {
   const r = role(), m = myTasks().length;
-  if (r === 'Super Admin') return [['pipeline','Pipeline'],['tasks',`Semua tugas (${pendingAll().length})`],['dashboard','Target vs Achievement'],['sales','Performa Sales'],['users','User']];
+  if (r === 'Super Admin') return [['pipeline','Pipeline'],['tasks',`Semua tugas (${pendingAll().length})`],['dashboard','Target vs Achievement'],['sales','Performa Sales']];
   if (r === 'Manajer') return [['pipeline','Pipeline'],['mytasks',`Tugas saya (${m})`],['tasks','Semua tugas'],['dashboard','Target vs Achievement'],['sales','Performa Sales']];
   if (r === 'Sales') return [['pipeline','Pipeline saya'],['mytasks',`Tugas saya (${m})`],['dashboard','Target vs Achievement saya']];
   return [['pipeline','Pipeline'],['mytasks',`Tugas saya (${m})`]];
@@ -787,7 +794,7 @@ function tabsFor() {
 function viewMain() {
   const tabs = tabsFor();
   if (state.view !== 'profile' && !tabs.some(t => t[0] === state.view)) state.view = 'pipeline';
-  const views = {pipeline:viewPipeline, mytasks:viewMyTasks, tasks:viewTasks, dashboard:viewDashboard, sales:viewSales, users:viewUsers, profile:viewProfile};
+  const views = {pipeline:viewPipeline, mytasks:viewMyTasks, tasks:viewTasks, dashboard:viewDashboard, sales:viewSales, profile:viewProfile};
   return `<div class="wrap"><nav class="subnav" aria-label="Menu utama">
     ${tabs.map(([k,l]) => `<button ${state.view === k ? 'aria-current="page"' : ''} onclick="setView('${k}')">${l}</button>`).join('')}
   </nav>${views[state.view]()}</div>`;
@@ -878,27 +885,12 @@ function viewTasks() {
 }
 
 /* ===================== users & roles ===================== */
-function viewUsers() {
-  const rows = Object.entries(USERS).sort((x,y) => ROLE_ORDER.indexOf(x[1].role) - ROLE_ORDER.indexOf(y[1].role)).map(([k,u]) => {
-    const tasks = state.apps.filter(a => picOf(a) === k), od = tasks.filter(overdueOf).length;
-    return `<tr><td><div class="who-cell"><span class="av sm">${initials(u.name)}</span><div><b>${esc(u.name)}</b>${k === ME ? ' <span class="chip">Kamu</span>' : ''}<div class="small">${esc(u.email)}</div></div></div></td>
-      <td><span class="chip ${u.role === 'Super Admin' ? 'dark' : u.role === 'Manajer' ? 'aren' : u.role === 'Sales' ? 'blue' : ''}">${u.role}</span></td>
-      <td class="small">${esc(u.area)}</td>
-      <td class="num" style="font-size:15px">${u.role === 'Super Admin' ? '–' : tasks.length}</td>
-      <td>${u.role === 'Super Admin' ? '' : od ? `<span class="chip bad">${od} lewat batas</span>` : '<span class="chip ok">Aman</span>'}</td>
-      <td><button class="link" onclick="openProfile('${k}')">Lihat profil</button></td></tr>`;
-  }).join('');
-  return `<div class="page-head"><div><h1>User</h1></div></div>
-  <div class="panel" style="margin-bottom:16px"><div class="table-wrap"><table class="funnel">
-    <thead><tr><th>User</th><th>Role</th><th>Wilayah</th><th>Tugas aktif</th><th>Batas waktu</th><th></th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
-}
-
 /* ===================== profile ===================== */
 function viewProfile() {
   const k = state.profile, u = USERS[k], mine = k === ME;
   const tasks = u.role === 'Super Admin' ? pendingAll() : state.apps.filter(a => picOf(a) === k);
   const acts = state.apps.flatMap(a => a.log.filter(l => l.by === k).map(l => ({...l, a}))).sort((x,y) => new Date(y.t) - new Date(x.t)).slice(0, 6);
-  return `${mine ? '' : '<button class="link" style="margin-bottom:14px" onclick="setView(\'users\')">Kembali ke User</button>'}
+  return `${mine ? '' : '<button class="link" style="margin-bottom:14px" onclick="setView(\'sales\')">Kembali ke Performa Sales</button>'}
   <div class="page-head"><div><h1>${mine ? 'Profil saya' : 'Profil pengguna'}</h1></div></div>
   <div class="prof-grid">
     <div class="panel prof-card">
@@ -1148,7 +1140,7 @@ function defaultTab(a) {
 const pendingChange = a => { const L = latest(a); return L && L.status === 'perubahan diminta' ? lastChange(a) : null; };
 function initQb(a) {
   const L = latest(a), ch = pendingChange(a);
-  const qb = {paket:L ? L.paket : a.paket, lokasi:L ? L.lokasi : a.alamat, buka:L ? L.buka : 'Desember 2026', diskon:L ? L.diskon : 0, skema:L ? L.skema : 'Lunas', note:L ? L.note : 'Termasuk pendampingan grand opening selama 3 hari.', result:''};
+  const qb = {paket:L ? L.paket : a.paket, lokasi:L ? L.lokasi : a.alamat, buka:L ? L.buka : monthLabel(2), diskon:L ? L.diskon : 0, skema:L ? L.skema : 'Lunas', note:L ? L.note : 'Termasuk pendampingan grand opening selama 3 hari.', result:''};
   if (ch && ch.type === 'Termin pembayaran') qb.skema = '2 termin';
   return qb;
 }
@@ -1227,7 +1219,7 @@ function tabBaru(a) {
 }
 function tabPresentasi(a) {
   if (a.stage === 'presentasi') return !canAct(a) ? viewOnly(a) : takeover(a) + `<p class="muted">Presentasikan model bisnis, paket, royalti, dan estimasi balik modal. Prospektus penawaran waralaba wajib diberikan sebelum perjanjian ditandatangani.</p>
-    <div class="grid2"><div class="field"><label for="pr-date">Tanggal presentasi</label><input id="pr-date" type="date" value="2026-10-20"></div>
+    <div class="grid2"><div class="field"><label for="pr-date">Tanggal presentasi</label><input id="pr-date" type="date" value="${isoDate(TODAY)}"></div>
       ${selField('pr-mode','Format presentasi',PRES_MODE)}</div>
     <label class="consent" style="margin-bottom:14px"><input type="checkbox" id="pr-prosp"><span>Prospektus penawaran waralaba sudah dikirim ke calon franchisee<br><span class="small">Wajib dicentang untuk lanjut ke survei lokasi.</span></span></label>
     <div class="field"><label for="pr-note">Catatan presentasi</label><textarea id="pr-note" placeholder="Pertanyaan calon franchisee, tingkat minat, rencana lokasi"></textarea></div>
@@ -1254,7 +1246,7 @@ function tabSurvei(a) {
 }
 function tabAssessment(a) {
   if (a.stage === 'assessment') return !canAct(a) ? viewOnly(a) : takeover(a) + scoreCard(a) + `<p class="muted">Nilai setiap aspek. Semua aspek harus lulus agar calon franchisee lanjut ke quotation.</p>
-    <div class="field"><label for="as-date">Tanggal wawancara</label><input id="as-date" type="date" value="2026-10-20"></div>
+    <div class="field"><label for="as-date">Tanggal wawancara</label><input id="as-date" type="date" value="${isoDate(TODAY)}"></div>
     <table class="cost assess"><tbody>${ASSESS.map(([k,l]) => `<tr><td>${l}</td><td><select id="as-${k}" aria-label="${l}"><option value="">Pilih hasil</option><option>Lulus</option><option>Tidak lulus</option></select></td></tr>`).join('')}</tbody></table>
     <div class="field" style="margin-top:12px"><label for="as-note">Catatan penilaian kelayakan</label><textarea id="as-note" placeholder="Wajib diisi jika tidak lolos"></textarea></div>
     <div class="actions"><button class="btn btn-primary" onclick="submitAssessment('${a.id}',true)">Lolos, lanjut ke quotation</button><button class="btn btn-danger" onclick="submitAssessment('${a.id}',false)">Tidak lolos</button><button class="link" onclick="fillAssess()">Isi contoh hasil penilaian kelayakan</button></div>`;
@@ -1546,20 +1538,20 @@ function setRate(i, v) { state.rates[i] = Math.min(100, Math.max(1, parseInt(v, 
 function setPType(t) { state.ptype = t; state.pkey = t === 'bulan' ? CUR_M : t === 'kuartal' ? 4 : t === 'semester' ? 2 : 1; render(); }
 function periodInfo() {
   const {ptype, pkey} = state; let ms, label;
-  if (ptype === 'bulan') { ms = [pkey]; label = MONTHS[pkey - 1] + ' 2026'; }
-  else if (ptype === 'kuartal') { ms = [3 * pkey - 2, 3 * pkey - 1, 3 * pkey]; label = 'Q' + pkey + ' 2026'; }
-  else if (ptype === 'semester') { ms = pkey === 1 ? [1,2,3,4,5,6] : [7,8,9,10,11,12]; label = (pkey === 1 ? 'H1' : 'H2') + ' 2026'; }
-  else { ms = [1,2,3,4,5,6,7,8,9,10,11,12]; label = 'Tahun 2026'; }
-  const start = new Date(2026, ms[0] - 1, 1), end = new Date(2026, ms[ms.length - 1], 1);
+  if (ptype === 'bulan') { ms = [pkey]; label = MONTHS[pkey - 1] + ' ' + YEAR; }
+  else if (ptype === 'kuartal') { ms = [3 * pkey - 2, 3 * pkey - 1, 3 * pkey]; label = 'Q' + pkey + ' ' + YEAR; }
+  else if (ptype === 'semester') { ms = pkey === 1 ? [1,2,3,4,5,6] : [7,8,9,10,11,12]; label = (pkey === 1 ? 'H1' : 'H2') + ' ' + YEAR; }
+  else { ms = [1,2,3,4,5,6,7,8,9,10,11,12]; label = 'Tahun ' + YEAR; }
+  const start = new Date(YEAR, ms[0] - 1, 1), end = new Date(YEAR, ms[ms.length - 1], 1);
   const totalD = Math.round((end - start) / 864e5), el = Math.min(totalD, Math.max(0, Math.floor((TODAY - start) / 864e5) + 1));
   const ended = el >= totalD;
   return {ms, label, totalD, el, pace:el / totalD, ended, td: ended ? 'penuh' : ({bulan:'MTD', kuartal:'QTD', semester:'HTD', tahun:'YTD'})[ptype]};
 }
 function periodControls() {
   const types = [['bulan','Bulanan'],['kuartal','Kuartal'],['semester','Semester'],['tahun','Tahunan']];
-  const opts = state.ptype === 'bulan' ? MONTHS.slice(0, CUR_M).map((m,i) => [i + 1, m + ' 2026'])
-    : state.ptype === 'kuartal' ? [1,2,3,4].map(q => [q, `Q${q} 2026`])
-    : state.ptype === 'semester' ? [[1,'H1 2026, Januari–Juni'],[2,'H2 2026, Juli–Desember']] : [];
+  const opts = state.ptype === 'bulan' ? MONTHS.slice(0, CUR_M).map((m,i) => [i + 1, m + ' ' + YEAR])
+    : state.ptype === 'kuartal' ? [1,2,3,4].map(q => [q, `Q${q} ${YEAR}`])
+    : state.ptype === 'semester' ? [[1,`H1 ${YEAR}, Januari–Juni`],[2,`H2 ${YEAR}, Juli–Desember`]] : [];
   return `<div class="period"><div class="seg" role="group" aria-label="Jenis periode">${types.map(([k,l]) => `<button aria-pressed="${state.ptype === k}" onclick="setPType('${k}')">${l}</button>`).join('')}</div>
     ${opts.length ? `<select aria-label="Pilih periode" onchange="state.pkey=+this.value;render()">${opts.map(([v,l]) => `<option value="${v}" ${state.pkey === v ? 'selected' : ''}>${l}</option>`).join('')}</select>` : ''}</div>`;
 }
@@ -1588,7 +1580,7 @@ function kpi(title, target, ach, P, fmt, foot) {
   const tdT = target * P.pace, pctTD = tdT ? ach / tdT : 0, pct = target ? ach / target : 0, st = perfStatus(pctTD);
   return `<div class="panel kpi"><div class="d-top"><h2 style="margin:0">${title}</h2><span class="chip ${st[0]}">${st[1]}</span></div>
     <div class="kpi-num">${fmt(ach)}</div>
-    <div class="small">Seharusnya ${P.ended ? '' : `per 20 Okt (${P.td}) `}<b style="color:var(--ink)">${fmt(tdT)}</b>, tercapai ${Math.round(pctTD * 100)}%</div>
+    <div class="small">Seharusnya ${P.ended ? '' : `per ${todayShort} (${P.td}) `}<b style="color:var(--ink)">${fmt(tdT)}</b>, tercapai ${Math.round(pctTD * 100)}%</div>
     <div class="bar" style="margin:10px 0 4px"><span style="width:${Math.min(pct,1) * 100}%;background:${barColor(st)}"></span>${P.ended ? '' : `<i style="left:${P.pace * 100}%"></i>`}</div>
     <div class="small">Target ${P.label} ${fmt(target)}, tercapai ${Math.round(pct * 100)}%. ${foot}</div></div>`;
 }
@@ -1609,7 +1601,7 @@ function viewDashboard() {
       <td>${!last ? `<input class="rate" type="number" min="1" max="100" value="${state.rates[i]}" aria-label="Rasio konversi ${f.l}" onchange="setRate(${i},this.value)">%<div class="small">Aktual: ${actual}</div>` : '<span class="small">Tahap akhir</span>'}</td></tr>`;
   }).join('');
   const weak = role() === 'Sales' ? [] : SALES.filter(s => { const t = salesTarget(s,P), a = salesAch(s,P); return Math.min(a.qty / (t.qty * P.pace), a.rev / (t.rev * P.pace)) < .85; });
-  return `<div class="page-head"><div><h1>${role() === 'Sales' ? 'Target vs Achievement saya' : 'Target vs Achievement'}, ${P.label}</h1><p class="sub">${P.ended ? 'Periode sudah selesai.' : `Data per 20 Oktober 2026, hari ke-${P.el} dari ${P.totalD}.`} Data demo.</p></div>${periodControls()}</div>
+  return `<div class="page-head"><div><h1>${role() === 'Sales' ? 'Target vs Achievement saya' : 'Target vs Achievement'}, ${P.label}</h1><p class="sub">${P.ended ? 'Periode sudah selesai.' : `Data per ${todayLong}, hari ke-${P.el} dari ${P.totalD}.`}</p></div>${periodControls()}</div>
   <div class="kpis">
     ${kpi('Franchisee disetujui', T.qty, A.qty, P, v => num1(v), `Gerobak ${A.g}, cafe ${A.c}.`)}
     ${kpi('Revenue kemitraan', T.rev, A.rev, P, rpS, 'Nilai kesepakatan dari franchisee yang disetujui.')}
@@ -1620,12 +1612,12 @@ function viewDashboard() {
   <div class="panel" style="margin-bottom:16px"><h2>Perlu perhatian</h2>${ws >= .85 ? '<p>Semua tahap funnel sesuai jalur untuk periode ini.</p>' : `<p>Tahap <b>${FUNNEL[worst].l}</b> paling tertinggal: ${A.f[worst]} dari seharusnya ${num1(tg[worst] * P.pace)} (${Math.round(ws * 100)}%).</p>`}
     ${weak.length ? `<p style="margin:0">${weak.length} sales di bawah target: ${weak.map(s => uname(s)).join(' dan ')}. <button class="link" onclick="setView('sales')">Lihat performa sales</button></p>` : ''}</div>
   <div class="panel"><h2>Funnel per tahap</h2><div class="table-wrap"><table class="funnel">
-    <thead><tr><th>Tahap</th><th>Target periode</th><th>Seharusnya ${P.ended ? '' : 'per 20 Okt'}</th><th>Pencapaian</th><th>Progres</th><th>Status</th><th>Rasio konversi ke tahap berikutnya</th></tr></thead>
+    <thead><tr><th>Tahap</th><th>Target periode</th><th>Seharusnya ${P.ended ? '' : `per ${todayShort}`}</th><th>Pencapaian</th><th>Progres</th><th>Status</th><th>Rasio konversi ke tahap berikutnya</th></tr></thead>
     <tbody>${rows}</tbody></table></div>
     <p class="small" style="margin:12px 0 0">Target jumlah per tahap dihitung mundur dari target franchisee disetujui dan rasio konversi. ${P.ended ? '' : 'Garis hitam di bar menandai posisi yang seharusnya tercapai hari ini.'}</p></div>`;
 }
 function viewSales() {
-  const P = periodInfo(), dateTxt = P.ended ? '(periode selesai)' : `per 20 Okt (${P.td})`;
+  const P = periodInfo(), dateTxt = P.ended ? '(periode selesai)' : `per ${todayShort} (${P.td})`;
   const data = SALES.map(s => ({s, t:salesTarget(s,P), a:salesAch(s,P)}));
   const table = (title, key, fmt, note) => {
     const rows = data.map(d => { const full = d.t[key], should = full * P.pace, ach = d.a[key], pct = should ? ach / should : 0; return {...d, full, should, ach, pct, st:perfStatus(pct)}; }).sort((x,y) => y.pct - x.pct);
@@ -1641,7 +1633,7 @@ function viewSales() {
         <tr class="sum"><td></td><td><b>Total</b></td><td><b>${fmt(sum.full)}</b></td><td><b>${fmt(sum.should)}</b></td><td class="num" style="font-size:16px">${fmt(sum.ach)}</td><td>${pc(sPct, sSt)}</td><td>${gap(sum.ach - sum.should)}</td><td><span class="chip ${sSt[0]}">${sSt[1]}</span></td></tr>
       </tbody></table></div></section>`;
   };
-  return `<div class="page-head"><div><h1>Performa Sales, ${P.label}</h1><p class="sub">${P.ended ? 'Periode sudah selesai.' : `Data per 20 Oktober 2026, hari ke-${P.el} dari ${P.totalD}.`} "Seharusnya" adalah target yang mestinya sudah tercapai pada tanggal ini, sesuai proporsi hari yang sudah berjalan.</p></div>${periodControls()}</div>
+  return `<div class="page-head"><div><h1>Performa Sales, ${P.label}</h1><p class="sub">${P.ended ? 'Periode sudah selesai.' : `Data per ${todayLong}, hari ke-${P.el} dari ${P.totalD}.`} "Seharusnya" adalah target yang mestinya sudah tercapai pada tanggal ini, sesuai proporsi hari yang sudah berjalan.</p></div>${periodControls()}</div>
   ${table('Target revenue','rev',rpS,'Revenue dari nilai kesepakatan franchisee yang disetujui. Diurutkan dari sales paling perform.')}
   ${table('Target kuantitas','qty',num1,'Jumlah franchisee yang disetujui. Diurutkan dari sales paling perform.')}
   <p class="small">Target bulanan per sales: ${SALES.map(s => `${first(s)} ${SALES_T[s].q} franchisee dan ${rpS(SALES_T[s].r)}`).join('; ')}. Target kuartal, semester, dan tahunan adalah penjumlahan target bulanan.</p>`;

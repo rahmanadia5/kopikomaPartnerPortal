@@ -38,7 +38,7 @@ Aturan penting:
 Halaman masuk berisi form email + kata sandi dan daftar akun demo per role (klik untuk langsung masuk). Daftar akun demo hanya untuk prototipe, dicatat di bagian Batasan prototipe pada PRD.
 | Peran | Akun | Menu | Bisa memproses |
 |---|---|---|---|
-| Super Admin | arif.hakim@kopikoma.id | Pipeline, Semua tugas, Target vs Achievement, Performa Sales, User | Semua tahap (tercatat atas namanya) |
+| Super Admin | arif.hakim@kopikoma.id | Pipeline, Semua tugas, Target vs Achievement, Performa Sales | Semua tahap (tercatat atas namanya) |
 | Manajer | laras.anggraini@kopikoma.id | Pipeline, Tugas saya, Semua tugas, Target vs Achievement, Performa Sales | Penugasan lead baru (pengecualian), persetujuan akhir |
 | Sales | rendi / putri / agus / wulan @kopikoma.id | Pipeline saya (lead sendiri), Tugas saya, Target vs Achievement saya | Input lead, presentasi, survei, quotation, negosiasi |
 | Reviewer | bima.prasetyo / dimas.arya @kopikoma.id | Pipeline, Tugas saya | Penilaian kelayakan |
@@ -52,16 +52,16 @@ Halaman masuk berisi form email + kata sandi dan daftar akun demo per role (klik
 - Status persetujuan per aplikasi (modal timeline 7 langkah, PIC + lama menunggu), dari kartu, drawer, dan tabel tugas.
 - Skor kecocokan AI (profil 40%, lokasi 60%) dengan alasan plus/minus. DISIMULASIKAN dengan pembobotan aturan + data peta simulasi; jujur sebutkan di PRD. Alat bantu, bukan penolakan otomatis.
 - Target vs Achievement: periode Bulanan/Kuartal/Semester/Tahunan, target vs "seharusnya per hari ini" (MTD/QTD/HTD/YTD), revenue + kuantitas, funnel 6 tahap dihitung mundur dari rasio konversi (bisa diubah).
-- Performa Sales (manajer/super admin): dua tabel terpisah (revenue dan kuantitas), diurutkan dari paling perform, kolom Target, Seharusnya per 20 Okt, Achievement, %, Selisih, Status. Status mengikuti metrik terlemah.
-- Profil pengguna (tugas aktif, notifikasi email, aktivitas; target bulanan untuk Sales). Menu User (Super Admin): tabel User, Role, Wilayah, tugas aktif, batas waktu. Tidak ada kartu deskripsi peran maupun matriks akses menu/tugas per tahap.
+- Performa Sales (manajer/super admin): dua tabel terpisah (revenue dan kuantitas), diurutkan dari paling perform, kolom Target, Seharusnya per hari ini, Achievement, %, Selisih, Status. Status mengikuti metrik terlemah.
+- Profil pengguna (tugas aktif, notifikasi email, aktivitas; target bulanan untuk Sales). Tidak ada menu User/Pengguna, kartu deskripsi peran, maupun matriks akses. Profil sales lain dibuka dari Performa Sales.
 - Lead masuk lewat dua jalur: input sales (Tambah lead) dan pendaftaran mandiri di Portal Mitra. Tidak ada tombol simulasi lead di dashboard. Wilayah user non-sales = "Semua wilayah".
 - Audit trail per aplikasi, termasuk akses dokumen. Persetujuan data pribadi (UU PDP) wajib saat input lead.
-- Data demo "hari ini" = 20 Oktober 2026 supaya angka MTD bermakna.
+- "Hari ini" = tanggal asli (jam 09.00), jadi MTD/QTD/HTD/YTD dan label "Seharusnya per ..." berganti setiap hari. Data contoh (umur lead, riwayat sales per bulan, target pembukaan di quotation) dihitung relatif terhadap tanggal ini. Contoh kemitraan yang sudah disetujui (Maya Putri) selalu jatuh di bulan berjalan (`DEAL_DAYS`). Tidak ada teks "Data demo" di halaman target.
 
 ## Struktur kode
 - Satu file `index.html` tanpa build (plus `vercel.json` untuk route `/mitra`): CSS di `<style>`, JS vanilla di `<script>`, font Plus Jakarta Sans dari Google Fonts.
 - Bagian JS ditandai komentar `/* ===================== nama ===================== */`: base, people & roles, flow, AI score, seed data, sales history, state, helpers, top bar, render (login + tab per peran), pipeline, all tasks, users & roles, profile, partner portal (calon franchisee), approval status modal, detail drawer, actions, add lead, target & sales performance.
-- `MODE` (`staff` / `mitra`) menentukan aplikasi yang dirender. Data aplikasi dan notifikasi (`state.apps`, `state.notifs`, `tick`, `nid`) disimpan di localStorage (`kopikoma-demo-v2`; naikkan versinya bila seed atau teks log berubah agar data lama otomatis diganti) supaya kedua aplikasi terhubung, termasuk antar-tab lewat event `storage`. State UI dan login (`ME`) tetap di memori. Tombol "Reset data demo (khusus prototipe)" di menu akun menghapus data tersimpan dan kembali ke seed.
+- `MODE` (`staff` / `mitra`) menentukan aplikasi yang dirender. Data aplikasi dan notifikasi (`state.apps`, `state.notifs`, `tick`, `nid`) disimpan di localStorage (`kopikoma-demo-v3`; naikkan versinya bila seed atau teks log berubah agar data lama otomatis diganti) supaya kedua aplikasi terhubung, termasuk antar-tab lewat event `storage`. State UI dan login (`ME`) tetap di memori. Tombol "Reset data demo (khusus prototipe)" di menu akun menghapus data tersimpan dan kembali ke seed.
 - UI dalam Bahasa Indonesia. Istilah bisnis yang lazim tetap dipakai: Sales, Lead, Quotation, Pipeline, Franchisee, KYC, Super Admin, Reviewer, User, Role, revenue, funnel, Target vs Achievement, Performa Sales. Selain itu pakai Bahasa Indonesia (Penilaian kelayakan, Persetujuan, dasbor, tindak lanjut, kesepakatan, wawancara, prototipe, Wilayah). Hindari em dash di teks UI.
 
 ## Cara tes
