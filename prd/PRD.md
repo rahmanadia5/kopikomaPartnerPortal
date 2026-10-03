@@ -15,6 +15,8 @@
 
 It addresses three core pain points: leads scattered across WhatsApp and personal spreadsheets, applications stuck with no clear owner or deadline, and quotations approved by chat with no traceable agreement.
 
+For the business, this is a growth tool: Kopi Koma grows by opening outlets through partners, so every lead that is not lost and every day cut from the process turns directly into more outlets and revenue, without adding more sales.
+
 Out of scope: everything after both parties approve (agreement signing, outlet opening, royalty). Signing through Privy is shown only as the next step.
 
 **Prototype (Franchisor Dashboard):** https://kopikomapartnerportal.vercel.app
@@ -65,6 +67,20 @@ Franchising is the main expansion channel for Indonesian F&B: the culinary secto
 | Trace two-party approval | ⚠️ Limited | ✅ | Approval 1 of 2 (candidate) and 2 of 2 (Manager) logged |
 | Monitor target during the period | ⚠️ Limited | ✅ | Achievement vs target to date, per sales and package |
 | Audit trail and document access log | ❌ Not available | ✅ | Every action and document access logged |
+
+## Business Impact
+
+Kopi Koma's growth equals the number of new partner outlets. The product supports growth through five levers:
+
+| Lever | How the product drives it | Growth effect | Metric to watch |
+|---|---|---|---|
+| Fewer lost leads | Every lead is recorded and assigned within 1 day, with reminders when it stalls | More candidates reach the quotation stage | Leads assigned within 1 day, lead to approved conversion |
+| Faster closing | Clear PIC and deadline per stage, quotation response directly in the portal | Deals close within the same month instead of dragging on, and fewer candidates move to competitors | Days from lead to decision |
+| More capacity per sales | Auto-assignment, task list, and self-service tracker reduce manual follow-up | Each sales can handle more leads (lead cap 15 senior, 10 junior), so expansion does not need proportional new hires | Active leads per sales |
+| Better outlet quality | Structured assessment and AI fit score with location data | Fewer failing outlets, which protects the brand and brings referrals for the next partners | Outlet survival rate after 12 months (phase 3) |
+| Early course correction | Target vs Achievement shows the gap during the period | Management can push the pipeline before the month ends | Achievement vs target to date |
+
+**Illustration (not a forecast):** with about 92 leads per month, raising lead to approved conversion from 12% to 14% by losing fewer leads adds about 1.8 outlets per month, or about 22 outlets per year. At the target package mix (60% Gerobak, 40% Cafe, average deal around Rp 207 million), that is about Rp 4.5 billion in additional deal value per year with the same team.
 
 ## Success Metrics
 
