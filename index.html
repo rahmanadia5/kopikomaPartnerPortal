@@ -1105,9 +1105,7 @@ function renderApproval() {
     if (i < cur) {
       cls = 'done'; chip = 'ok'; txt = doneTxt;
       const by = entry ? byLabel(entry.by) : nameOf(who);
-      extra = i === 0
-        ? `<div class="small">${a.inputBy ? `Diinput ${esc(uname(a.inputBy))}` : `Pendaftaran mandiri lewat ${esc(a.source.replace(' (mandiri)',''))}`}. Sales: ${esc(uname(a.sales))}, ${a.inputBy ? 'diteruskan otomatis' : a.assignedBy ? 'ditugaskan ' + esc(uname(a.assignedBy)) : 'ditugaskan otomatis sesuai wilayah'}${entry ? ', ' + fmtDT(entry.t) : ''}</div>`
-        : `<div class="small">${esc(by)}${entry ? ', ' + fmtDT(entry.t) : ''}</div>`;
+      extra = `<div class="small">${esc(by)}${entry ? ', ' + fmtDT(entry.t) : ''}</div>`;
     } else if (i === cur && rej) {
       cls = 'rej'; chip = 'bad'; txt = i === 0 ? 'Ditutup' : i === 1 || i === 5 ? 'Tidak lanjut' : 'Ditolak';
       extra = `<div class="small">${esc(nameOf(who))}${entry ? ', ' + fmtDT(entry.t) : ''}. ${esc(a.rejectReason || '')}</div>`;
