@@ -776,9 +776,9 @@ const pendingAll = () => state.apps.filter(a => picOf(a));
 const myTasks = () => state.apps.filter(a => picOf(a) === ME);
 function tabsFor() {
   const r = role();
-  if (r === 'Super Admin') return [['pipeline','Pipeline'],['tasks','Tugas'],['dashboard','Target vs Achievement'],['sales','Performa Sales']];
-  if (r === 'Manajer') return [['pipeline','Pipeline'],['tasks','Tugas'],['dashboard','Target vs Achievement'],['sales','Performa Sales']];
-  if (r === 'Sales') return [['pipeline','Pipeline saya'],['mytasks','Tugas'],['dashboard','Target vs Achievement saya']];
+  if (r === 'Super Admin') return [['pipeline','Pipeline'],['tasks','Tugas'],['dashboard','Target'],['sales','Performa Sales']];
+  if (r === 'Manajer') return [['pipeline','Pipeline'],['tasks','Tugas'],['dashboard','Target'],['sales','Performa Sales']];
+  if (r === 'Sales') return [['pipeline','Pipeline saya'],['mytasks','Tugas'],['dashboard','Target']];
   return [['pipeline','Pipeline'],['mytasks','Tugas']];
 }
 function viewMain() {
@@ -1673,7 +1673,7 @@ function viewDashboard() {
       <td class="hm">${!last ? `<input class="rate" type="number" min="1" max="100" value="${state.rates[i]}" aria-label="Rasio konversi ${f.l}" onchange="setRate(${i},this.value)">%<div class="small">Aktual: ${actual}</div>` : '<span class="small">Tahap akhir</span>'}</td></tr>`;
   }).join('');
   const weak = role() === 'Sales' ? [] : SALES.filter(s => { const r = salesScore(s, P); return !r.early && r.score < .85; });
-  return `<div class="page-head"><div><h1>${role() === 'Sales' ? 'Target vs Achievement saya' : 'Target vs Achievement'}, ${P.label}</h1><p class="sub">${P.ended ? 'Periode sudah selesai.' : `Data per ${todayLong}, hari ke-${P.el} dari ${P.totalD}.`}</p></div>${periodControls()}</div>
+  return `<div class="page-head"><div><h1>Target vs Achievement, ${P.label}</h1><p class="sub">${P.ended ? 'Periode sudah selesai.' : `Data per ${todayLong}, hari ke-${P.el} dari ${P.totalD}.`}</p></div>${periodControls()}</div>
   <div class="kpis">
     ${pkgCard('Gerobak', T.g, A.g, P, num1, 'Gerobak', pipeByPkg('gerobak', scope()))}
     ${pkgCard('Cafe', T.c, A.c, P, num1, 'Cafe', pipeByPkg('cafe', scope()))}
