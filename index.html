@@ -1,0 +1,1531 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kopi Koma Partner Portal | Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F2F3EF; --surface:#FFFFFF; --ink:#24170F; --muted:#6E655C; --line:#E3E1DA;
+  --roast:#3A2318; --aren:#B5701F; --aren-soft:#F6E8D4; --aren-ink:#8A5414;
+  --ok:#2E7A4E; --ok-soft:#E2F0E7; --warn:#9A6A0B; --warn-soft:#FBF0D5; --bad:#AF3A2A; --bad-soft:#F8E2DD;
+  --r-s:6px; --r-m:10px;
+}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 15px/1.55 'Plus Jakarta Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;-webkit-font-smoothing:antialiased;padding-bottom:env(safe-area-inset-bottom,0px)}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--aren);outline-offset:2px}
+h1{font-size:26px;line-height:1.2;letter-spacing:-.02em;margin:0 0 4px;font-weight:800}
+h2{font-size:18px;line-height:1.3;margin:0 0 10px;font-weight:700;letter-spacing:-.01em}
+h3{font-size:15px;margin:18px 0 8px;font-weight:700}
+p{margin:0 0 10px}
+.sub{color:var(--muted);margin:0}
+.muted{color:var(--muted);font-size:14px}
+
+/* top bar */
+.topbar{position:sticky;top:0;z-index:30;background:var(--roast);color:#F7EFE6;padding:10px 24px;padding-top:calc(10px + env(safe-area-inset-top,0px));display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.logo{display:flex;align-items:baseline;gap:12px;margin-right:auto}
+.logo b{font-size:22px;font-weight:800;letter-spacing:-.04em}
+.logo b i{font-style:normal;color:#E39A3B;font-size:32px;line-height:0}
+.logo span{font-size:13px;color:#CDB9A6}
+.switch{display:flex;background:rgba(255,255,255,.09);border-radius:999px;padding:3px}
+.switch button{border:0;background:transparent;color:#E8DCCF;padding:7px 14px;border-radius:999px;cursor:pointer;font-weight:600;font-size:14px}
+.switch button[aria-pressed="true"]{background:#F7EFE6;color:var(--roast)}
+.reset{background:none;border:1px solid rgba(255,255,255,.25);color:#E8DCCF;border-radius:999px;padding:6px 12px;cursor:pointer;font-size:13px}
+
+.wrap{max-width:1360px;margin:0 auto;padding:22px 24px 48px}
+.subnav{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:20px}
+.subnav button,.tabs button{border:0;background:none;padding:10px 14px;cursor:pointer;font-weight:600;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap}
+.subnav button[aria-current="page"],.tabs button[aria-current="page"]{color:var(--ink);border-color:var(--aren)}
+.page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:16px}
+.search{border:1px solid var(--line);background:var(--surface);border-radius:var(--r-s);padding:9px 12px;min-width:240px}
+.hint{display:flex;gap:14px;align-items:center;justify-content:space-between;background:var(--aren-soft);border-radius:var(--r-m);padding:10px 14px;margin-bottom:16px;font-size:14px}
+
+/* buttons */
+.btn{border:1px solid transparent;border-radius:var(--r-s);padding:9px 16px;font-weight:700;cursor:pointer;font-size:14px}
+.btn-primary{background:var(--roast);color:#fff}
+.btn-primary:hover{background:#51311F}
+.btn-ghost{background:var(--surface);border-color:#D6D3CB}
+.btn-ghost:hover{border-color:#B9AC9D}
+.btn-danger{background:var(--surface);border-color:#E3B4AB;color:var(--bad)}
+.btn-ok{background:var(--ok);color:#fff}
+.btn-ok:hover{background:#256641}
+.link{background:none;border:0;color:var(--aren-ink);font-weight:700;cursor:pointer;padding:0;text-decoration:underline;text-underline-offset:3px;font-size:14px}
+.actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:8px}
+
+/* chips */
+.chip{display:inline-flex;align-items:center;border-radius:999px;padding:1px 9px;font-size:12px;font-weight:700;background:#EFEDE8;color:var(--muted);white-space:nowrap}
+.chip.ok{background:var(--ok-soft);color:var(--ok)}
+.chip.warn{background:var(--warn-soft);color:var(--warn)}
+.chip.bad{background:var(--bad-soft);color:var(--bad)}
+.chip.aren{background:var(--aren-soft);color:var(--aren-ink)}
+.chip.dark{background:var(--roast);color:#fff}
+
+/* kanban */
+.board{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(150px,1fr);gap:8px;overflow-x:auto;padding-bottom:10px}
+.col{background:#E8E9E3;border-radius:var(--r-m);display:flex;flex-direction:column;min-height:440px}
+.col.muted-col{background:#EDECE8}
+.col-head{display:flex;justify-content:space-between;align-items:center;padding:12px 12px 8px;font-weight:700;font-size:14px}
+.count{background:var(--surface);border-radius:999px;padding:0 8px;font-size:12px;font-weight:700;line-height:20px}
+.col-body{display:flex;flex-direction:column;gap:8px;padding:0 8px 10px}
+.card{display:flex;flex-direction:column;gap:5px;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-s);padding:10px 12px;cursor:pointer;width:100%}
+.card:hover{border-color:#C4B29E}
+.card-name{font-weight:700;line-height:1.3}
+.card-city{font-size:13px;color:var(--muted)}
+.card-foot{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:12px;margin-top:2px}
+.card-foot .chip{white-space:normal}
+.days{color:var(--muted);font-size:12px}
+.days.stuck{color:var(--warn);font-weight:700}
+.empty{font-size:13px;color:var(--muted);padding:6px 4px;margin:0}
+
+/* drawer */
+.overlay{position:fixed;inset:0;background:rgba(36,23,15,.35);z-index:40;display:none}
+.overlay.open{display:block}
+.drawer{position:fixed;top:0;right:0;height:100%;width:min(720px,100%);background:var(--surface);z-index:50;transform:translateX(100%);visibility:hidden;transition:transform .22s ease,visibility .22s;display:flex;flex-direction:column;box-shadow:-12px 0 30px rgba(36,23,15,.16)}
+.drawer.open{transform:none;visibility:visible}
+@media (prefers-reduced-motion:reduce){.drawer{transition:none}}
+.d-head{padding:18px 22px 0;padding-top:calc(18px + env(safe-area-inset-top,0px));border-bottom:1px solid var(--line)}
+.d-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.close{border:0;background:#F0EEE9;border-radius:999px;width:34px;height:34px;cursor:pointer;font-size:20px;line-height:1;flex:none}
+.tabs{display:flex;gap:2px;margin-top:12px;overflow-x:auto}
+.d-body{padding:20px 22px 48px;overflow-y:auto;flex:1}
+dl.kv{display:grid;grid-template-columns:180px 1fr;gap:8px 16px;margin:0 0 20px}
+dl.kv dt{color:var(--muted);font-size:14px}
+dl.kv dd{margin:0;font-weight:500}
+.sec-title{font-size:13px;font-weight:700;color:var(--muted);margin:0 0 10px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+.callout{border-left:3px solid var(--aren);background:var(--aren-soft);padding:10px 14px;border-radius:0 var(--r-s) var(--r-s) 0;margin-bottom:16px;font-size:14px}
+.callout.ok{border-color:var(--ok);background:var(--ok-soft)}
+.callout.bad{border-color:var(--bad);background:var(--bad-soft)}
+.checks{list-style:none;padding:0;margin:0 0 16px;display:flex;flex-direction:column;gap:9px}
+.checks label,.consent{display:flex;gap:10px;align-items:flex-start;cursor:pointer}
+.checks input,.consent input{margin-top:4px;width:17px;height:17px;accent-color:var(--roast);flex:none}
+.result-list{list-style:none;padding:0;margin:0 0 14px}
+.result-list li{padding:4px 0;font-size:14px}
+.result-list .y{color:var(--ok);font-weight:800;margin-right:8px}
+.result-list .n{color:var(--bad);font-weight:800;margin-right:8px}
+table.cost{width:100%;border-collapse:collapse;font-size:14px;margin-bottom:10px}
+table.cost td{padding:7px 0;border-bottom:1px solid var(--line)}
+table.cost td:last-child{text-align:right;font-variant-numeric:tabular-nums}
+table.cost tr.total td{font-weight:800;border-bottom:0;padding-top:10px}
+.preview{border:1px dashed #CFC6BA;border-radius:var(--r-m);padding:16px;margin-bottom:12px}
+.versions{list-style:none;padding:0;margin:0}
+.versions li{padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}
+.log{list-style:none;padding:0;margin:0}
+.log li{display:grid;grid-template-columns:130px 1fr;gap:12px;padding:9px 0;border-bottom:1px solid var(--line);font-size:14px}
+.log time{color:var(--muted);font-size:13px}
+.who{font-weight:700}
+
+/* forms */
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:14px}
+.field label{font-weight:600;font-size:14px}
+.field input,.field select,.field textarea{border:1px solid #D2CEC5;border-radius:var(--r-s);padding:9px 11px;background:#fff;width:100%}
+.field input[type=file]{padding:7px}
+.field textarea{min-height:76px;resize:vertical}
+.field [aria-invalid="true"]{border-color:var(--bad)}
+.help{font-size:13px;color:var(--muted)}
+.err{font-size:13px;color:var(--bad);font-weight:600}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 16px}
+
+/* dashboard */
+.dash-top{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(260px,1fr);gap:16px;margin-bottom:16px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-m);padding:18px 20px}
+.target-input{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.target-input input{width:96px;font-size:26px;font-weight:800;border:1px solid #D2CEC5;border-radius:var(--r-s);padding:4px 10px;letter-spacing:-.02em}
+.table-wrap{overflow-x:auto}
+.funnel{width:100%;border-collapse:collapse;min-width:760px}
+.funnel th{text-align:left;font-size:13px;color:var(--muted);font-weight:600;padding:8px 10px;border-bottom:1px solid var(--line)}
+.funnel td{padding:14px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+.funnel tr:last-child td{border-bottom:0}
+.num{font-variant-numeric:tabular-nums;font-weight:800;font-size:18px}
+.bar{position:relative;height:10px;background:#ECEBE6;border-radius:999px;min-width:170px;margin-bottom:5px}
+.bar span{position:absolute;left:0;top:0;bottom:0;border-radius:999px}
+.bar i{position:absolute;top:-5px;bottom:-5px;width:2px;background:var(--ink)}
+.rate{width:66px;border:1px solid #D2CEC5;border-radius:var(--r-s);padding:4px 6px;margin-right:4px}
+.small{font-size:13px;color:var(--muted)}
+
+/* franchisee */
+.f-wrap{max-width:820px;margin:0 auto;padding:24px 20px 60px}
+.as{display:flex;align-items:center;gap:10px;margin-bottom:8px;font-size:14px;color:var(--muted);flex-wrap:wrap}
+.as select{border:1px solid #D2CEC5;border-radius:var(--r-s);padding:6px 10px;background:#fff;max-width:100%}
+.hero{padding:30px 0 26px}
+.hero h1{font-size:clamp(32px,5.5vw,48px);line-height:1.05;letter-spacing:-.04em;max-width:15ch;margin-bottom:14px}
+.hero h1 i{font-style:normal;color:var(--aren)}
+.hero p{font-size:17px;color:var(--muted);max-width:50ch;margin:0 0 22px}
+.paket-list{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.paket{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-m);padding:16px}
+.paket h3{margin:0}
+.paket .price{font-size:22px;font-weight:800;letter-spacing:-.02em;margin:2px 0 12px}
+.mini{margin:0;font-size:13px}
+.mini dt{color:var(--muted)}
+.mini dd{margin:0 0 8px;font-weight:600}
+.stepper{display:flex;gap:8px;list-style:none;padding:0;margin:18px 0 20px}
+.stepper li{flex:1;font-size:13px;font-weight:600;color:var(--muted);border-top:3px solid var(--line);padding-top:8px}
+.stepper li.done{color:var(--ink);border-color:var(--roast)}
+.stepper li.cur{color:var(--ink);border-color:var(--aren)}
+.formcard{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-m);padding:22px}
+.timeline{list-style:none;margin:0;padding:0}
+.timeline li{position:relative;padding:0 0 18px 30px}
+.timeline li::before{content:'';position:absolute;left:7px;top:20px;bottom:0;width:2px;background:var(--line)}
+.timeline li:last-child::before{display:none}
+.timeline li.done::before{background:var(--roast)}
+.dot{position:absolute;left:0;top:3px;width:16px;height:16px;border-radius:50%;border:2px solid #CFCBC2;background:var(--surface)}
+.timeline li.done .dot{background:var(--roast);border-color:var(--roast)}
+.timeline li.cur .dot{border-color:var(--aren);background:var(--aren-soft);box-shadow:0 0 0 4px rgba(181,112,31,.16)}
+.tl-title{font-weight:700}
+.timeline li:not(.done):not(.cur) .tl-title{color:var(--muted);font-weight:600}
+.stack{display:flex;flex-direction:column;gap:16px;margin-top:18px}
+
+.bell{position:relative;border:0;background:rgba(255,255,255,.09);color:#F7EFE6;border-radius:999px;width:38px;height:38px;cursor:pointer;display:grid;place-items:center}
+.bell svg{width:19px;height:19px}
+.badge{position:absolute;top:-3px;right:-3px;min-width:19px;height:19px;border-radius:999px;background:#E39A3B;color:var(--roast);font-size:11px;font-weight:800;display:grid;place-items:center;padding:0 5px}
+.notif-pop{position:fixed;top:calc(64px + env(safe-area-inset-top,0px));right:16px;width:min(400px,calc(100vw - 32px));max-height:70vh;overflow-y:auto;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-m);box-shadow:0 14px 34px rgba(36,23,15,.18);z-index:45}
+.np-head{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--surface)}
+.np-list{list-style:none;margin:0;padding:0}
+.np-item{display:flex;flex-direction:column;gap:3px;width:100%;text-align:left;border:0;border-bottom:1px solid var(--line);background:none;padding:12px 16px 12px 28px;cursor:pointer;position:relative}
+.np-item:hover{background:#FAF8F5}
+.np-item.unread{background:#FCF6EE}
+.np-item.unread::before{content:'';position:absolute;left:12px;top:18px;width:8px;height:8px;border-radius:50%;background:var(--aren)}
+.np-ch{display:flex;gap:6px;flex-wrap:wrap;margin-top:3px}
+.np-empty{padding:18px 16px;color:var(--muted);font-size:14px;margin:0}
+.reach{font-size:13px;color:var(--muted);margin-top:6px}
+.subnav{align-items:center}
+.me{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);padding-bottom:6px}
+.me select{border:1px solid #D2CEC5;border-radius:var(--r-s);padding:6px 8px;background:#fff;font-size:14px;color:var(--ink)}
+.filters{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+.pill{border:1px solid #D2CEC5;background:var(--surface);border-radius:999px;padding:6px 14px;font-weight:600;font-size:14px;cursor:pointer}
+.pill[aria-pressed="true"]{background:var(--roast);border-color:var(--roast);color:#fff}
+.x{border:0;background:none;cursor:pointer;font-size:15px;line-height:1;margin-left:4px;color:inherit}
+.card-pic{font-size:12px;color:var(--ink)}
+.remind{margin-bottom:16px;border-color:#EBCFA9}
+.r-list{list-style:none;margin:0;padding:0}
+.r-list li{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.btn-sm{padding:6px 12px;font-size:13px}
+.ai{background:#FBFAF7;border:1px solid var(--line);border-radius:var(--r-m);padding:16px 18px;margin-bottom:20px}
+.ai-num{font-size:36px;font-weight:800;letter-spacing:-.03em;line-height:1.1}
+.ai-num span{font-size:15px;color:var(--muted);font-weight:600}
+.ai-split{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:12px 0}
+.ai-split b{font-size:18px}
+.reasons{list-style:none;padding:0;margin:0 0 10px}
+.reasons li{font-size:14px;padding:3px 0}
+.reasons .y,.reasons .n{display:inline-block;width:18px;font-weight:800}
+.reasons .y{color:var(--ok)} .reasons .n{color:var(--bad)}
+.matrix td,.matrix th{text-align:center}
+.matrix td:first-child,.matrix th:first-child{text-align:left}
+@media (max-width:760px){.me{margin-left:0;width:100%}.subnav{flex-wrap:wrap}.r-list li{grid-template-columns:1fr}.ai-split{grid-template-columns:1fr}}
+.chip.blue{background:#E3ECF8;color:#2C5C9A}
+.card{padding:0;gap:0;cursor:default}
+.card-main{display:flex;flex-direction:column;gap:5px;text-align:left;background:none;border:0;padding:10px 12px 8px;cursor:pointer;width:100%;border-radius:var(--r-s) var(--r-s) 0 0}
+.card-apv{border:0;border-top:1px solid var(--line);background:none;padding:7px 12px;text-align:left;font-size:12px;font-weight:700;color:var(--aren-ink);cursor:pointer;border-radius:0 0 var(--r-s) var(--r-s)}
+.card-apv:hover{background:#FCF6EE}
+.apv{position:fixed;inset:0;background:rgba(36,23,15,.4);z-index:70;display:grid;place-items:center;padding:16px}
+.apv[hidden]{display:none}
+.apv-box{background:var(--surface);border-radius:14px;width:min(540px,100%);max-height:88vh;overflow:auto;box-shadow:0 20px 50px rgba(36,23,15,.25)}
+.apv-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:18px 20px;background:#F4ECE1;position:sticky;top:0;z-index:1}
+.apv-list{list-style:none;margin:0;padding:18px 20px 22px}
+.st{position:relative;padding:0 0 18px 30px}
+.st::before{content:'';position:absolute;left:7px;top:20px;bottom:0;width:2px;background:var(--line)}
+.st:last-child::before{display:none}
+.st.done::before{background:var(--roast)}
+.st .dot{position:absolute;left:0;top:3px;width:16px;height:16px;border-radius:50%;border:2px solid #CFCBC2;background:var(--surface)}
+.st.done .dot{background:var(--roast);border-color:var(--roast)}
+.st.cur .dot{border-color:#2C5C9A;background:#E3ECF8;box-shadow:0 0 0 4px rgba(44,92,154,.14)}
+.st.rej .dot{background:var(--bad);border-color:var(--bad)}
+.st-row{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.st-title{font-weight:700}
+.st.todo .st-title{color:var(--muted);font-weight:600}
+.pcard{display:flex;gap:12px;align-items:center;border:1px solid var(--line);border-radius:var(--r-m);padding:10px 12px;margin-top:8px}
+.av{width:38px;height:38px;border-radius:50%;background:var(--roast);color:#fff;display:grid;place-items:center;font-weight:800;font-size:14px;flex:none}
+.pc-body{flex:1;min-width:0}
+.period{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.seg{display:flex;background:#E6E5DF;border-radius:999px;padding:3px}
+.seg button{border:0;background:none;padding:6px 12px;border-radius:999px;font-weight:600;font-size:13px;cursor:pointer;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.period select{border:1px solid #D2CEC5;border-radius:var(--r-s);padding:7px 10px;background:#fff}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:16px}
+.kpis.two{grid-template-columns:1fr 1fr}
+.kpi-num{font-size:30px;font-weight:800;letter-spacing:-.03em;margin:8px 0 2px}
+.sales-t th.grp{text-align:center;border-bottom:1px solid var(--line)}
+.sales-t{min-width:900px}
+@media (max-width:900px){.kpis,.kpis.two{grid-template-columns:1fr}}
+tr.sum td{background:#FAF8F4;border-top:2px solid var(--line)}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:var(--r-s);font-weight:600;font-size:14px;z-index:60;display:none;max-width:90vw;text-align:center}
+.toast.show{display:block}
+.toast.bad{background:var(--bad)}
+footer{max-width:1360px;margin:0 auto;padding:0 24px 30px;font-size:12px;color:var(--muted)}
+
+@media (max-width:760px){
+  .dash-top,.paket-list,.grid2{grid-template-columns:1fr}
+  dl.kv{grid-template-columns:1fr;gap:0}
+  dl.kv dd{margin-bottom:10px}
+  .wrap{padding:16px 14px 40px}
+  .topbar{padding-left:14px;padding-right:14px}
+  .log li{grid-template-columns:1fr;gap:2px}
+  .search{min-width:0;width:100%}
+  .stepper li span{font-size:12px}
+}
+
+.userbtn{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.09);border:0;color:#F7EFE6;border-radius:999px;padding:4px 14px 4px 4px;cursor:pointer;text-align:left}
+.ub-text{display:flex;flex-direction:column;line-height:1.2}
+.ub-text b{font-size:13px}.ub-text span{font-size:12px;color:#CDB9A6}
+.av.sm{width:30px;height:30px;font-size:12px}
+.av.lg{width:76px;height:76px;font-size:26px}
+.userbtn .av{background:#E39A3B;color:var(--roast)}
+.umenu{position:fixed;top:calc(64px + env(safe-area-inset-top,0px));right:16px;width:min(300px,calc(100vw - 32px));background:var(--surface);border:1px solid var(--line);border-radius:var(--r-m);box-shadow:0 14px 34px rgba(36,23,15,.18);z-index:45;overflow:hidden}
+.um-head{display:flex;gap:12px;align-items:center;padding:14px 16px;border-bottom:1px solid var(--line)}
+.um-item{display:block;width:100%;text-align:left;border:0;background:none;padding:11px 16px;cursor:pointer;font-weight:600;font-size:14px}
+.um-item:hover{background:#FAF8F5}
+.head-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.who-cell{display:flex;gap:10px;align-items:center}
+.role-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:16px}
+.plain{margin:0;padding-left:18px;font-size:14px}.plain li{margin-bottom:4px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.prof-grid{display:grid;grid-template-columns:300px 1fr;gap:16px;align-items:start}
+.prof-card{text-align:center}
+.prof-card .av{margin:0 auto}
+.prof-card dd{overflow-wrap:anywhere}
+.assess td{vertical-align:middle}
+.assess select{border:1px solid #D2CEC5;border-radius:var(--r-s);padding:6px 8px;background:#fff}
+.formbox{border:1px solid var(--line);border-radius:var(--r-m);padding:14px;margin-top:12px;background:#FCFBF8}
+.np-head{align-items:flex-start}
+@media (max-width:1000px){.role-grid{grid-template-columns:1fr 1fr}.prof-grid{grid-template-columns:1fr}}
+@media (max-width:760px){.role-grid{grid-template-columns:1fr}.ub-text{display:none}.userbtn{padding:4px}.head-actions{width:100%}}
+
+[hidden]{display:none !important}
+.login{min-height:100vh;display:grid;grid-template-columns:1.1fr 1fr}
+.lg-brand{background:var(--roast);color:#F7EFE6;padding:48px 56px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;justify-content:center;gap:12px}
+.lg-brand .logo b{font-size:30px}
+.lg-brand h1{font-size:clamp(30px,3.6vw,46px);line-height:1.06;letter-spacing:-.035em;max-width:13ch;color:#fff;margin:28px 0 4px}
+.lg-brand p{color:#CDB9A6;max-width:42ch;font-size:16px}
+.lg-form{display:flex;align-items:flex-start;justify-content:center;padding:56px 24px}
+.lg-card{width:min(440px,100%)}
+.lg-demo{margin-top:28px;padding-top:20px;border-top:1px solid var(--line)}
+.lg-group{margin-bottom:18px}
+.lg-acc{display:flex;gap:10px;align-items:center;width:100%;text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:var(--r-s);padding:8px 10px;cursor:pointer;margin-bottom:6px}
+.lg-acc:hover{border-color:#C4B29E;background:#FCFAF7}
+.lg-acc b{display:block;font-size:14px}
+.lg-acc .small{display:block}
+@media (max-width:860px){.login{grid-template-columns:1fr}.lg-brand{padding:32px 24px;position:static;height:auto}.lg-brand h1{margin-top:16px}}
+</style>
+</head>
+<body>
+<header class="topbar" id="topbar">
+  <div class="logo"><b>kopi koma<i>,</i></b><span>Partner Portal</span></div>
+  <button class="bell" id="bell" onclick="toggleNotif(event)" aria-haspopup="true" aria-expanded="false" aria-label="Notifikasi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span class="badge" id="badge" hidden></span></button>
+  <button class="userbtn" id="userBtn" onclick="toggleMenu(event)" aria-haspopup="true" aria-expanded="false" aria-label="Menu akun"></button>
+</header>
+<main id="main"></main>
+<footer id="foot">Prototype untuk studi kasus. Nama brand, pengguna, data pendaftar, dan angka investasi bersifat fiktif.</footer>
+<div class="overlay" id="overlay" onclick="closeDetail()"></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="dTitle"></aside>
+<div class="apv" id="apv" hidden onclick="if(event.target===this)closeApproval()"></div>
+<div class="notif-pop" id="notifPop" hidden role="dialog" aria-label="Notifikasi"></div>
+<div class="umenu" id="userMenu" hidden role="menu"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+
+
+/* ===================== base ===================== */
+const TODAY = new Date('2026-10-20T09:00:00');
+let tick = 0;
+const nowIso = () => new Date(TODAY.getTime() + (++tick) * 7 * 60000).toISOString();
+const daysAgo = n => { const d = new Date(TODAY); d.setDate(d.getDate() - n); return d.toISOString(); };
+const rp = n => 'Rp ' + Math.round(n).toLocaleString('id-ID');
+const rpS = n => n >= 1e9 ? 'Rp ' + (n / 1e9).toLocaleString('id-ID',{maximumFractionDigits:2}) + ' M' : 'Rp ' + Math.round(n / 1e6).toLocaleString('id-ID') + ' jt';
+const num1 = n => n.toLocaleString('id-ID',{maximumFractionDigits:1});
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmtDT = iso => new Date(iso).toLocaleString('id-ID',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+const daysIn = iso => Math.max(0, Math.floor((TODAY - new Date(iso)) / 86400000));
+const initials = n => n.split(' ').map(w => w[0]).slice(0,2).join('').toUpperCase();
+
+const PAKET = {
+  gerobak:{nama:'Gerobak', items:[['Biaya kemitraan',15e6],['Gerobak dan peralatan',22e6],['Bahan baku awal',5e6],['Pelatihan dan seragam',3e6]], royalti:'Tanpa royalti', bep:'6–9 bulan'},
+  cafe:{nama:'Cafe', items:[['Biaya kemitraan',75e6],['Renovasi dan interior',220e6],['Mesin dan peralatan',110e6],['Bahan baku awal',25e6],['Pelatihan dan rekrutmen',20e6]], royalti:'5% dari omzet bulanan', bep:'18–24 bulan'}
+};
+const total = k => PAKET[k].items.reduce((s,i) => s + i[1], 0);
+const qValue = q => total(q.paket) - (Number(q.diskon) || 0);
+
+/* ===================== people & roles ===================== */
+const USERS = {
+  arif:{name:'Arif Hakim', role:'Super Admin', email:'arif.hakim@kopikoma.id', phone:'0811-2000-1001', area:'Kantor pusat', since:'Januari 2024'},
+  laras:{name:'Laras Anggraini', role:'Manajer', email:'laras.anggraini@kopikoma.id', phone:'0811-2000-1002', area:'Franchise Development', since:'Maret 2024'},
+  bima:{name:'Bima Prasetyo', role:'Reviewer', email:'bima.prasetyo@kopikoma.id', phone:'0811-2000-1003', area:'Franchise Development', since:'Juni 2024'},
+  dimas:{name:'Dimas Arya', role:'Reviewer', email:'dimas.arya@kopikoma.id', phone:'0811-2000-1004', area:'Franchise Development', since:'Februari 2025'},
+  rendi:{name:'Rendi Saputra', role:'Sales', email:'rendi.saputra@kopikoma.id', phone:'0811-2000-1005', area:'Tangerang Raya', since:'April 2024'},
+  putri:{name:'Putri Maharani', role:'Sales', email:'putri.maharani@kopikoma.id', phone:'0811-2000-1006', area:'Jakarta, Bogor, Depok, Bekasi', since:'Mei 2024'},
+  agus:{name:'Agus Setiawan', role:'Sales', email:'agus.setiawan@kopikoma.id', phone:'0811-2000-1007', area:'Bandung Raya', since:'Januari 2025'},
+  wulan:{name:'Wulan Kusuma', role:'Sales', email:'wulan.kusuma@kopikoma.id', phone:'0811-2000-1008', area:'Jawa Tengah', since:'Agustus 2024'}
+};
+let ME = null; const MANAGER = 'laras';
+const PASSWORD = 'demo123', CAP = 5;
+const role = () => USERS[ME].role;
+const isSA = () => role() === 'Super Admin';
+const seesOverdue = () => ['Super Admin','Manajer'].includes(role());
+const SALES = ['rendi','putri','agus','wulan'], REVIEWERS = ['bima','dimas'];
+const ROLE_ORDER = ['Super Admin','Manajer','Sales','Reviewer'];
+const ROLES = {
+  'Super Admin':{desc:'Akses penuh ke semua menu, data, dan pengaturan pengguna. Dapat memproses tahap mana pun bila diperlukan.',
+    menus:['Pipeline','Semua tugas','Target dan pencapaian','Performa sales','Pengguna dan peran'],
+    tasks:['Memantau seluruh tugas dan batas waktu','Mengambil alih tahap mana pun bila diperlukan','Mengelola pengguna dan peran']},
+  'Manajer':{desc:'Akses penuh ke data dan laporan. Menangani lead yang tidak bisa ditugaskan otomatis, mendampingi negosiasi, dan memberi keputusan akhir.',
+    menus:['Pipeline','Tugas saya','Semua tugas','Target dan pencapaian','Performa sales'],
+    tasks:['Menugaskan sales untuk lead yang tidak bisa ditugaskan otomatis','Diskusi negosiasi dengan sales (di luar sistem)','Approval akhir: setujui, tolak, atau minta revisi lokasi']},
+  'Sales':{desc:'Mendampingi calon franchisee di wilayahnya, dari input data awal sampai negosiasi.',
+    menus:['Pipeline (lead sendiri)','Tugas saya','Target dan pencapaian (milik sendiri)'],
+    tasks:['Input data lead ke sistem','Presentasi bisnis dan kirim prospektus','Survei lokasi','Membuat dan merevisi quotation','Negosiasi dengan calon franchisee']},
+  'Reviewer':{desc:'Menilai kelayakan calon franchisee sebelum quotation dibuat.',
+    menus:['Pipeline','Tugas saya'],
+    tasks:['Assessment: interview, background check, verifikasi finansial, dan KYC','Menentukan calon franchisee lolos atau tidak']}
+};
+const MENU_ACCESS = [
+  ['Pipeline', ['Semua lead','Semua lead','Lead sendiri','Semua lead']],
+  ['Tugas saya', ['–','✓','✓','✓']],
+  ['Semua tugas', ['✓','✓','–','–']],
+  ['Target dan pencapaian', ['Semua sales','Semua sales','Milik sendiri','–']],
+  ['Performa sales', ['✓','✓','–','–']],
+  ['Pengguna dan peran', ['✓','–','–','–']]
+];
+const TASK_ACCESS = [
+  ['1. Lead baru: input data', ['✓','–','✓','–']],
+  ['1. Lead baru: tugaskan sales', ['✓','Bila tidak otomatis','–','–']],
+  ['2. Presentasi bisnis', ['✓','–','✓','–']],
+  ['3. Survei lokasi', ['✓','–','✓','–']],
+  ['4. Assessment', ['✓','–','–','✓']],
+  ['5. Quotation', ['✓','–','✓','–']],
+  ['6. Negosiasi', ['✓','Di luar sistem','✓','–']],
+  ['7. Approval akhir', ['✓','✓','–','–']]
+];
+const uname = k => USERS[k].name;
+const person = k => `${USERS[k].name} (${USERS[k].role})`;
+const first = k => USERS[k].name.split(' ')[0];
+function salesFor(city) {
+  const c = city.toLowerCase();
+  if (/tangerang|cikupa|serang/.test(c)) return 'rendi';
+  if (/bandung|cimahi|garut/.test(c)) return 'agus';
+  if (/semarang|solo|yogya|magelang/.test(c)) return 'wulan';
+  if (/jakarta|bogor|depok|bekasi|cikarang/.test(c)) return 'putri';
+  return null;
+}
+
+/* ===================== flow ===================== */
+const STAGES = [
+  {k:'baru',l:'Lead baru'},{k:'presentasi',l:'Presentasi bisnis'},{k:'survei',l:'Survei lokasi'},{k:'assessment',l:'Assessment'},{k:'quotation',l:'Quotation'},
+  {k:'negosiasi',l:'Negosiasi'},{k:'approval',l:'Approval akhir'},{k:'disetujui',l:'Disetujui'},{k:'ditolak',l:'Ditolak'}
+];
+const ORDER = ['baru','presentasi','survei','assessment','quotation','negosiasi','approval','disetujui'];
+const stageLabel = k => STAGES.find(s => s.k === k).l;
+const SLA = {baru:1, presentasi:4, survei:5, assessment:4, quotation:3, negosiasi:7, approval:2};
+const ASSESS = [['interview','Interview calon franchisee'],['background','Background check: riwayat usaha dan reputasi'],['finansial','Verifikasi kemampuan finansial dan sumber dana'],['kyc','KYC: verifikasi identitas (KTP, NPWP)'],['komitmen','Komitmen mengikuti SOP dan pelatihan pusat']];
+const DOCS = [['ktp','KTP'],['npwp','NPWP'],['dana','Bukti dana (rekening koran 3 bulan terakhir)'],['foto','Foto lokasi']];
+const SOURCES = ['Pameran','Referensi','Kunjungan langsung','Event komunitas','Media sosial'];
+const CHANGE_TYPES = ['Diskon','Termin pembayaran','Ganti paket','Jadwal pembukaan','Lainnya'];
+const PRES_MODE = ['Tatap muka di kantor','Online (video call)','Di lokasi pameran'];
+const VIS = [['1','1, tertutup'],['2','2'],['3','3'],['4','4'],['5','5, sangat terlihat']];
+const RATE = [['1','1, tidak layak'],['2','2'],['3','3'],['4','4'],['5','5, sangat layak']];
+
+/* ===================== AI score (simulasi) ===================== */
+function hash(str) { let x = 7; for (const c of str) x = (x * 31 + c.charCodeAt(0)) >>> 0; return x; }
+function genMap(str) { const h = hash(str); return {poi:4 + h % 9, comp:(h >>> 4) % 4, dist:Math.round((1.1 + ((h >>> 8) % 26) / 10) * 10) / 10}; }
+function aiScore(a) {
+  const need = total(a.paket), ratio = a.modal / need, R = [];
+  let p = 0;
+  if (ratio >= 1.2) { p += 30; R.push(['+','Modal di atas kebutuhan paket']); }
+  else if (ratio >= 1) { p += 24; R.push(['+','Modal cukup untuk paket']); }
+  else if (ratio >= .8) { p += 12; R.push(['-','Modal sedikit di bawah kebutuhan paket']); }
+  else { p += 4; R.push(['-','Modal jauh di bawah kebutuhan paket']); }
+  p += ({'Dana pribadi':15,'Patungan dengan rekan':10,'Pinjaman bank':6})[a.sumber] ?? 8;
+  if (a.sumber === 'Pinjaman bank') R.push(['-','Modal berasal dari pinjaman']);
+  const ex = ({'Pernah usaha F&B':25,'Pernah usaha non-F&B':16,'Belum pernah usaha':8})[a.pengalaman] ?? 10; p += ex;
+  if (ex === 25) R.push(['+','Berpengalaman di usaha F&B']); if (ex === 8) R.push(['-','Belum punya pengalaman usaha']);
+  const kl = ({'Dikelola sendiri':20,'Dikelola karyawan, dipantau sendiri':14,'Investor pasif':6})[a.pengelolaan] ?? 10; p += kl;
+  if (kl === 20) R.push(['+','Outlet akan dikelola sendiri']); if (kl === 6) R.push(['-','Pemilik tidak terlibat operasional']);
+  const docsOk = DOCS.every(d => a.docs[d[0]]); p += docsOk ? 10 : 0; if (!docsOk) R.push(['-','Dokumen belum lengkap']);
+  const m = a.map; let l = 0;
+  l += Math.min(m.poi, 12) / 12 * 30;
+  if (m.poi >= 9) R.push(['+',`${m.poi} titik keramaian dalam 500 m`]); if (m.poi <= 5) R.push(['-',`Hanya ${m.poi} titik keramaian dalam 500 m`]);
+  l += m.comp <= 1 ? 20 : m.comp <= 3 ? 13 : 5;
+  if (m.comp >= 4) R.push(['-',`${m.comp} kedai minuman dalam 500 m`]); if (m.comp <= 1) R.push(['+','Sedikit kompetitor di sekitar']);
+  l += m.dist >= 1.5 ? 20 : m.dist >= 1 ? 14 : 4;
+  if (m.dist < 1) R.push(['-',`Outlet Kopi Koma terdekat hanya ${m.dist} km`]);
+  const fit = ({gerobak:['Dekat sekolah/kampus','Pemukiman','Ruko / area perkantoran'], cafe:['Ruko 2 lantai','Mall / foodcourt']})[a.paket].includes(a.jenisLokasi);
+  l += fit ? 10 : 4; if (!fit) R.push(['-','Jenis lokasi kurang cocok dengan paket']);
+  const surveyed = !!(a.survey && a.survey.rating);
+  if (surveyed) { l += Number(a.survey.rating) / 5 * 10 + Math.min(Number(a.survey.traffic) || 0, 200) / 200 * 10; R.push([Number(a.survey.rating) >= 4 ? '+' : '-', `Penilaian survei ${a.survey.rating} dari 5`]); }
+  else l += 10;
+  p = Math.round(p); l = Math.round(l);
+  const c = Math.round(.4 * p + .6 * l);
+  const level = c >= 75 ? ['ok','Tinggi'] : c >= 55 ? ['warn','Sedang'] : ['bad','Perlu ditinjau teliti'];
+  return {p, l, c, level, reasons:R, surveyed};
+}
+function scoreCard(a) {
+  const s = aiScore(a);
+  const bar = v => `<div class="bar"><span style="width:${v}%;background:${v >= 75 ? 'var(--ok)' : v >= 55 ? '#C98F1E' : 'var(--bad)'}"></span></div>`;
+  return `<section class="ai" aria-label="Skor kecocokan AI">
+    <div class="d-top"><div><div class="small">Skor kecocokan AI</div><div class="ai-num">${s.c}<span> / 100</span></div></div><span class="chip ${s.level[0]}">${s.level[1]}</span></div>
+    <div class="ai-split"><div><div class="small">Profil calon franchisee (bobot 40%)</div><b>${s.p}</b>${bar(s.p)}</div>
+      <div><div class="small">Lokasi (bobot 60%)${s.surveyed ? '' : ', sementara karena belum disurvei'}</div><b>${s.l}</b>${bar(s.l)}</div></div>
+    <ul class="reasons">${s.reasons.map(r => `<li><span class="${r[0] === '+' ? 'y' : 'n'}">${r[0] === '+' ? '+' : '−'}</span>${esc(r[1])}</li>`).join('')}</ul>
+    <p class="small">Data peta: ${a.map.poi} titik keramaian dan ${a.map.comp} kedai minuman dalam 500 m, outlet Kopi Koma terdekat ${String(a.map.dist).replace('.',',')} km.</p>
+    <p class="small" style="margin:0">Alat bantu keputusan. Skor rendah berarti perlu ditinjau lebih teliti, bukan ditolak otomatis.</p>
+  </section>`;
+}
+
+/* ===================== seed data ===================== */
+function mkApp(n, name, city, paket, stage, days, o = {}) {
+  const streets = ['Merdeka','Sudirman','Diponegoro','Ahmad Yani','Pemuda','Gatot Subroto','Siliwangi','Kartini','Veteran'];
+  const self = !!o.self, sales = salesFor(city);
+  const a = {
+    id:'KK-' + String(240 + n).padStart(4,'0'), name, city, paket,
+    phone:o.phone || '0812-' + (3000 + n * 137) + '-' + (1000 + n * 71), email:o.email || name.toLowerCase().split(' ')[0].replace('.','') + '@mail.com',
+    modal: o.modal ?? Math.round(total(paket) * 1.2 / 1e6) * 1e6,
+    sumber: n % 3 === 0 ? 'Pinjaman bank' : 'Dana pribadi',
+    pengalaman: ['Belum pernah usaha','Pernah usaha non-F&B','Pernah usaha F&B'][n % 3],
+    pengelolaan: n % 2 ? 'Dikelola sendiri' : 'Dikelola karyawan, dipantau sendiri',
+    alamat:'Jl. ' + streets[n % 9] + ' No. ' + (10 + n * 3) + ', ' + city,
+    jenisLokasi: paket === 'gerobak' ? 'Dekat sekolah/kampus' : 'Ruko 2 lantai',
+    statusLokasi: n % 2 ? 'Sewa 3 tahun' : 'Milik sendiri',
+    docs:{ktp:'ktp_' + n + '.jpg', npwp:'npwp_' + n + '.pdf', dana:'rekening_koran_' + n + '.pdf', foto:'foto_lokasi_' + n + '.jpg'},
+    consent:true, source: o.source || (self ? 'Website (mandiri)' : 'Pameran'), inputBy: self ? null : sales, sales: stage === 'baru' ? null : sales, assignedBy: o.manual ? MANAGER : null, triage:null, reviewer: REVIEWERS[n % 2],
+    stage, stageSince:daysAgo(days), presentasi:null, survey:null, assess:null, quotes:[], changes:[],
+    rejectReason:null, rejectStep:null, log:[], reached:[], map:o.map || genMap(name + city),
+    approvedAt: stage === 'disetujui' ? daysAgo(days) : null, isNew:false
+  };
+  if (o.noDana) a.docs.dana = '';
+  const ev = [];
+  if (self) {
+    ev.push([null, `Lead masuk dari ${a.source.replace(' (mandiri)','')} (pendaftaran mandiri)`]);
+    if (stage !== 'baru') {
+      if (o.manual) ev.push([null, `Perlu penugasan manual: ${o.manual}`], [MANAGER, `Sales ditugaskan oleh manajer: ${uname(sales)}`]);
+      else ev.push([null, `Sales ditugaskan otomatis sesuai wilayah: ${uname(sales)}`]);
+    }
+  } else ev.push([sales, `Input data lead (sumber: ${a.source})`], [null, 'Diteruskan otomatis ke presentasi bisnis (lead diinput sales)']);
+  const rej = stage === 'ditolak', ri = rej ? 3 : ORDER.indexOf(stage) - 1;
+  if (ri >= 1) { a.presentasi = {date:'', mode:PRES_MODE[n % 3], prospektus:true, note:'Calon franchisee tertarik dan siap lanjut ke survei lokasi.'}; ev.push([sales,'Presentasi bisnis selesai, prospektus penawaran waralaba dikirim']); }
+  if (ri >= 2) { a.survey = {traffic:140, komp:2, vis:'4', parkir:'Tersedia', ojol:'Mudah', rating:'4', note:'Area ramai pekerja kantor saat jam makan siang.', result:'layak'}; ev.push([sales,'Survei lokasi: layak']); }
+  if (rej) {
+    a.assess = {res:{interview:'Lulus', background:'Lulus', finansial:'Tidak lulus', kyc:'Lulus', komitmen:'Lulus'}, note:o.reason, result:'tidak lolos'};
+    a.rejectReason = o.reason; a.rejectStep = 3; ev.push([a.reviewer,'Assessment: tidak lolos, aplikasi ditolak']);
+  } else if (ri >= 3) {
+    a.assess = {res:Object.fromEntries(ASSESS.map(x => [x[0],'Lulus'])), note:'Profil, finansial, dan identitas terverifikasi.', result:'lolos'};
+    ev.push([a.reviewer,'Assessment: lolos']);
+  }
+  if (o.flow === 'change') {
+    a.quotes.push({v:1, paket, lokasi:a.alamat, buka:'November 2026', diskon:0, skema:'Lunas', note:'', status:'perubahan diminta'});
+    a.changes.push({v:1, type:'Termin pembayaran', note:'Minta biaya kemitraan dibayar dalam 2 termin.', result:'Disepakati dengan manajer: 2 termin, termin kedua maksimal 30 hari setelah grand opening.'});
+    a.quotes.push({v:2, paket, lokasi:a.alamat, buka:'November 2026', diskon:0, skema:'2 termin', note:'Biaya kemitraan dibayar dalam 2 termin.', status:'disetujui franchisee'});
+    ev.push([sales,'Quotation versi 1 dikirim ke calon franchisee'],[sales,'Calon franchisee meminta perubahan: Termin pembayaran'],
+      [sales,'Quotation versi 2 dikirim ke calon franchisee (revisi setelah diskusi dengan manajer)'],[sales,'Calon franchisee menyetujui quotation versi 2']);
+  } else if (o.revisi) {
+    a.quotes.push({v:1, paket, lokasi:a.alamat, buka:'Desember 2026', diskon:0, skema:'Lunas', note:'Termasuk pendampingan grand opening selama 3 hari.', status:'perubahan diminta'});
+    a.changes.push({v:1, type:'Diskon', note:'Minta potongan biaya kemitraan Rp 3 jt karena lokasi milik sendiri.', result:null});
+    ev.push([sales,'Quotation versi 1 dikirim ke calon franchisee'],[sales,'Calon franchisee meminta perubahan: Diskon']);
+  } else if (ri >= 4) {
+    a.quotes.push({v:1, paket, lokasi:a.alamat, buka:'Desember 2026', diskon:0, skema:'Lunas', note:'Termasuk pendampingan grand opening selama 3 hari.', status: ri >= 5 ? 'disetujui franchisee' : 'terkirim'});
+    ev.push([sales,'Quotation versi 1 dikirim ke calon franchisee']);
+    if (ri >= 5) ev.push([sales,'Calon franchisee menyetujui quotation versi 1']);
+  }
+  if (stage === 'disetujui') ev.push([MANAGER,'Approval akhir: kemitraan disetujui']);
+  const end = new Date(daysAgo(days)).getTime(), start = new Date(daysAgo(days + 3 * ev.length)).getTime();
+  a.log = ev.map((e,i) => ({t:new Date(ev.length === 1 ? end : start + (end - start) * i / (ev.length - 1)).toISOString(), by:e[0], text:e[1]}));
+  if (a.presentasi) a.presentasi.date = a.log.find(l => /Presentasi bisnis selesai/.test(l.text)).t.slice(0,10);
+  return a;
+}
+function seed() {
+  return [
+    mkApp(1,'Budi Santoso','Bekasi','gerobak','presentasi',1,{modal:60e6}),
+    mkApp(2,'Siti Rahmawati','Depok','gerobak','presentasi',5,{self:true, modal:40e6, noDana:true, manual:'Putri Maharani sudah memegang 5 lead aktif (batas 5)'}),
+    mkApp(3,'Agung Firmansyah','Cimahi','gerobak','presentasi',0,{self:true, source:'Instagram (mandiri)'}),
+    mkApp(4,'Yusuf Hidayat','Tangerang Selatan','gerobak','survei',2,{source:'Referensi'}),
+    mkApp(5,'Andi Pratama','Bandung','cafe','survei',8),
+    mkApp(6,'Dewi Lestari','Tangerang','cafe','assessment',2,{self:true}),
+    mkApp(7,'Fajar Nugroho','Semarang','gerobak','assessment',6,{source:'Event komunitas'}),
+    mkApp(8,'Kevin Santoso','Bekasi','cafe','quotation',1,{source:'Referensi'}),
+    mkApp(9,'Lina Marlina','Solo','gerobak','quotation',2,{revisi:true, source:'Kunjungan langsung'}),
+    mkApp(10,'Rina Wijaya','Bogor','cafe','negosiasi',3),
+    mkApp(11,'Hendra Gunawan','Jakarta Barat','cafe','approval',1,{source:'Referensi'}),
+    mkApp(12,'Maya Putri','Jakarta Selatan','cafe','disetujui',6,{flow:'change'}),
+    mkApp(13,'Bayu Nugraha','Cikarang','gerobak','ditolak',5,{reason:'Sumber dana tidak dapat diverifikasi dari rekening koran yang diberikan.'}),
+    mkApp(14,'Teguh Wibowo','Surabaya','gerobak','baru',2,{self:true}),
+    mkApp(15,'Rina W.','Bogor','cafe','baru',0,{self:true, source:'Instagram (mandiri)', phone:'0812-4370-1710', email:'rina.w@mail.com'})
+  ];
+}
+
+/* ===================== sales history (demo) ===================== */
+const MONTHS = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+const CUR_M = 10;
+const SALES_T = {rendi:{q:2, r:290e6}, putri:{q:1, r:125e6}, agus:{q:1, r:105e6}, wulan:{q:1, r:125e6}};
+function mulberry32(a) { return function() { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+const DEALS = {
+  rendi:{g:[2,2,1,2,2,2,3,2,2,1], c:[0,1,1,0,1,0,0,1,1,1]},
+  putri:{g:[1,1,0,1,1,1,1,0,1,0], c:[0,0,1,0,0,0,0,1,0,0]},
+  agus: {g:[1,0,0,1,0,1,0,0,1,0], c:[0,0,0,0,0,0,0,0,0,0]},
+  wulan:{g:[1,1,2,1,2,1,1,0,0,1], c:[1,0,0,1,0,0,0,0,0,0]}
+};
+const HIST = (() => {
+  const r = mulberry32(2026), out = {};
+  SALES.forEach(s => {
+    out[s] = {};
+    for (let m = 1; m <= CUR_M; m++) {
+      const part = m === CUR_M ? 20 / 31 : 1, g = DEALS[s].g[m - 1], c = DEALS[s].c[m - 1], n = g + c;
+      const quo = n + Math.round((0.8 + r() * 1.0) * part);
+      const ass = Math.round(quo * (1.05 + r() * .1));
+      const lay = Math.round(ass * (1.25 + r() * .2));
+      const pres = Math.round(lay * (1.7 + r() * .3));
+      const leads = Math.round(pres * (s === 'agus' ? 2.6 + r() * .4 : 1.55 + r() * .25));
+      out[s][m] = {g, c, f:[leads, pres, lay, ass, quo]};
+    }
+  });
+  return out;
+})();
+const FUNNEL = [
+  {l:'Lead masuk', key:'lead', d:'Input sales dan pendaftaran mandiri'},
+  {l:'Presentasi selesai', key:'survei', d:'Lanjut ke survei lokasi'},
+  {l:'Lokasi layak', key:'assessment', d:'Lanjut ke assessment'},
+  {l:'Lolos assessment', key:'quotation', d:'Lanjut ke quotation'},
+  {l:'Quotation terkirim', key:'negosiasi', d:'Masuk tahap negosiasi'},
+  {l:'Disetujui', key:'disetujui', d:'Approval akhir diberikan'}
+];
+
+/* ===================== state ===================== */
+const blankForm = () => ({name:'',phone:'',email:'',city:'',paket:'gerobak',modal:'',sumber:'',pengalaman:'',kelola:'',alamat:'',jenis:'',status:'',source:'',salesk:'',ktp:'',npwp:'',dana:'',foto:'',consent:false});
+let nid = 0;
+function initState() {
+  tick = 0; nid = 0;
+  const st = {view:'pipeline', q:'', hint:true, sel:null, tab:'ringkasan', qb:null, negoForm:null, addOpen:false, form:blankForm(), formErr:{},
+    rates:[60,55,75,90,55], apps:seed(), notifs:[], notifOpen:false, menuOpen:false, apv:null, ptype:'bulan', pkey:CUR_M, taskFilter:'all', profile:ME,
+    pref:{email:true}, loginErr:''};
+  st.apps.filter(a => a.stage === 'baru').forEach(a => {
+    a.triage = triage(a, st.apps);
+    a.log.push({t:a.log[0].t, by:null, text:`Perlu penugasan manual: ${a.triage.text}`});
+  });
+  const n = (user, appId, text, d, read) => st.notifs.push({id:++nid, user, appId, text, t:daysAgo(d), read});
+  n('putri','KK-0241','Lead baru: Budi Santoso (Bekasi, Gerobak). Jadwalkan presentasi bisnis.',1,true);
+  n('agus','KK-0243','Lead mandiri baru di wilayahmu: Agung Firmansyah (Cimahi). Jadwalkan presentasi bisnis.',0,false);
+  n('bima','KK-0246','Dewi Lestari siap di-assessment. Lokasi sudah dinilai layak.',2,false);
+  n(MANAGER,'KK-0249','Lina Marlina meminta diskon. Wulan Kusuma akan mendiskusikannya denganmu sebelum mengirim quotation versi 2.',2,false);
+  n(MANAGER,'KK-0251','Hendra Gunawan menyetujui quotation. Perlu approval akhir.',1,false);
+  n('putri','KK-0252','Kemitraan Maya Putri disetujui. Lanjutkan ke perjanjian.',6,true);
+  n(MANAGER,'KK-0254','Lead baru perlu ditugaskan: Teguh Wibowo. Kota Surabaya di luar wilayah sales yang ada.',2,false);
+  n(MANAGER,'KK-0255','Lead baru perlu ditugaskan: Rina W. Terindikasi duplikat dengan Rina Wijaya (KK-0250).',0,false);
+  st.apps.filter(a => overdueOf(a)).forEach(a => {
+    const p = picOf(a), d = daysIn(a.stageSince);
+    st.notifs.push({id:++nid, user:p, appId:a.id, text:`Pengingat otomatis: ${a.name} sudah ${d} hari di tahap ${stageLabel(a.stage)} (batas ${SLA[a.stage]} hari).`, t:TODAY.toISOString(), read:false});
+    if (p !== MANAGER) st.notifs.push({id:++nid, user:MANAGER, appId:a.id, text:`Eskalasi otomatis: ${a.name} tertahan ${d} hari di tahap ${stageLabel(a.stage)}, menunggu ${uname(p)}.`, t:TODAY.toISOString(), read:false});
+    a.log.push({t:TODAY.toISOString(), by:null, text:`Pengingat otomatis dikirim ke ${uname(p)}${p !== MANAGER ? ' dan manajer' : ''} lewat dashboard dan email`});
+  });
+  st.notifs.sort((x,y) => new Date(y.t) - new Date(x.t));
+  return st;
+}
+let state;
+
+/* ===================== helpers ===================== */
+const find = id => state.apps.find(a => a.id === id);
+const latest = a => a.quotes[a.quotes.length - 1];
+const lastChange = a => a.changes[a.changes.length - 1];
+const isDone = a => a.stage === 'disetujui' || a.stage === 'ditolak';
+const dealValue = a => latest(a) ? qValue(latest(a)) : total(a.paket);
+const activeLoad = (s, apps = state.apps) => apps.filter(a => a.sales === s && !isDone(a)).length;
+function triage(a, apps = state.apps) {
+  const dup = apps.find(o => o !== a && !isDone(o) && (o.phone === a.phone || o.email === a.email));
+  if (dup) return {code:'duplikat', text:`Terindikasi duplikat dengan ${dup.name} (${dup.id})`, dupId:dup.id, label:'Duplikat?'};
+  const s = a.sales || salesFor(a.city);
+  if (!s) return {code:'wilayah', text:`Kota ${a.city} di luar wilayah sales yang ada`, label:'Luar wilayah'};
+  if (!a.inputBy && activeLoad(s, apps) >= CAP) return {code:'kapasitas', text:`${uname(s)} sudah memegang ${activeLoad(s, apps)} lead aktif (batas ${CAP})`, sug:s, label:'Sales penuh'};
+  return null;
+}
+const canAct = a => isSA() || picOf(a) === ME;
+const visibleApps = () => role() === 'Sales' ? state.apps.filter(a => a.sales === ME) : state.apps;
+const scope = () => role() === 'Sales' ? [ME] : SALES;
+function viewOnly(a) {
+  const p = picOf(a);
+  return `<div class="callout">Tahap ini tugas <b>${esc(person(p))}</b>. Kamu bisa melihat detailnya, tetapi hanya penanggung jawab yang dapat memproses.</div>`;
+}
+function picOf(a) {
+  switch (a.stage) {
+    case 'baru': return MANAGER;
+    case 'presentasi': case 'survei': case 'quotation': case 'negosiasi': return a.sales;
+    case 'assessment': return a.reviewer;
+    case 'approval': return MANAGER;
+    default: return null;
+  }
+}
+function actionOf(a) {
+  switch (a.stage) {
+    case 'baru': return `Tugaskan sales${a.triage ? ` (${a.triage.label.toLowerCase().replace('?','')})` : ''}`;
+    case 'presentasi': return 'Presentasi bisnis dan kirim prospektus';
+    case 'survei': return a.survey && a.survey.revisiNote ? 'Survei ulang lokasi (revisi dari manajer)' : 'Survei lokasi';
+    case 'assessment': return 'Assessment calon franchisee';
+    case 'quotation': return latest(a) ? `Revisi quotation ke versi ${latest(a).v + 1}` : 'Buat dan kirim quotation';
+    case 'negosiasi': return 'Follow up dan catat tanggapan calon franchisee';
+    case 'approval': return 'Approval akhir kemitraan';
+    default: return '';
+  }
+}
+const overdueOf = a => !isDone(a) && SLA[a.stage] !== undefined && daysIn(a.stageSince) > SLA[a.stage];
+const showOverdue = a => overdueOf(a) && seesOverdue();
+function log(a, text, by = ME) { a.log.push({t:nowIso(), by, text}); }
+function setStage(a, k) { a.stage = k; a.stageSince = nowIso(); a.reached.push(k); }
+function notify(a, user, text) { state.notifs.unshift({id:++nid, user, appId:a.id, text, t:nowIso(), read:false}); }
+let toastTimer;
+function toast(msg, kind) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast show' + (kind === 'bad' ? ' bad' : '');
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => t.className = 'toast', 3200);
+}
+function stageChip(k) { return k === 'disetujui' ? 'ok' : k === 'ditolak' ? 'bad' : k === 'approval' ? 'aren' : ''; }
+function takeover(a) {
+  const p = picOf(a);
+  return p && p !== ME ? `<div class="callout">Tahap ini tugas <b>${esc(person(p))}</b>. Sebagai Super Admin kamu bisa memprosesnya, dan tindakanmu tercatat atas namamu di riwayat.</div>` : '';
+}
+
+/* ===================== top bar: notif & user menu ===================== */
+function renderTop() {
+  const u = USERS[ME];
+  document.getElementById('userBtn').innerHTML = `<span class="av sm">${initials(u.name)}</span><span class="ub-text"><b>${esc(u.name)}</b><span>${u.role}</span></span>`;
+  document.getElementById('userBtn').setAttribute('aria-expanded', state.menuOpen);
+  const m = document.getElementById('userMenu');
+  m.hidden = !state.menuOpen;
+  if (state.menuOpen) m.innerHTML = `<div class="um-head"><span class="av">${initials(u.name)}</span><div><b>${esc(u.name)}</b><div class="small">${esc(u.email)}</div><span class="chip dark" style="margin-top:4px">${u.role}</span></div></div>
+    <button class="um-item" onclick="openProfile('${ME}')">Profil saya</button>
+    ${isSA() ? `<button class="um-item" onclick="state.menuOpen=false;setView('users')">Pengguna dan peran</button>` : ''}
+    <button class="um-item" onclick="resetDemo()">Reset data demo</button>
+    <button class="um-item" style="color:var(--bad)" onclick="logout()">Keluar</button>`;
+}
+function toggleMenu(e) { e.stopPropagation(); state.menuOpen = !state.menuOpen; state.notifOpen = false; renderTop(); renderNotif(); }
+function renderNotif() {
+  const list = myNotifs(), unread = list.filter(n => !n.read).length;
+  const badge = document.getElementById('badge'), bell = document.getElementById('bell'), pop = document.getElementById('notifPop');
+  badge.hidden = !unread; badge.textContent = unread;
+  bell.setAttribute('aria-label', unread ? `Notifikasi, ${unread} belum dibaca` : 'Notifikasi');
+  bell.setAttribute('aria-expanded', state.notifOpen);
+  pop.hidden = !state.notifOpen;
+  if (!state.notifOpen) return;
+  pop.innerHTML = `<div class="np-head"><div><b>${isSA() ? 'Notifikasi sistem' : 'Notifikasi'}</b><div class="small">${isSA() ? 'Semua notifikasi tim, terkirim lewat dashboard dan email' : 'Juga dikirim ke ' + esc(USERS[ME].email)}</div></div>${unread ? '<button class="link" onclick="markAll()">Tandai dibaca</button>' : ''}</div>
+    ${list.length ? `<ul class="np-list">${list.map(n => `<li><button class="np-item ${n.read ? '' : 'unread'}" onclick="openNotif(${n.id})">
+      <span>${esc(n.text)}</span><span class="small">${isSA() ? `Untuk ${esc(person(n.user))}, ` : ''}${fmtDT(n.t)}</span></button></li>`).join('')}</ul>` : '<p class="np-empty">Belum ada notifikasi.</p>'}`;
+}
+function toggleNotif(e) { e.stopPropagation(); state.notifOpen = !state.notifOpen; state.menuOpen = false; renderNotif(); renderTop(); }
+const myNotifs = () => isSA() ? state.notifs : state.notifs.filter(n => n.user === ME);
+function markAll() { myNotifs().forEach(n => n.read = true); renderNotif(); }
+function openNotif(id) { const n = state.notifs.find(x => x.id === id); n.read = true; state.notifOpen = false; state.view = 'pipeline'; openDetail(n.appId); }
+document.addEventListener('click', e => {
+  if (!ME) return;
+  let changed = false;
+  if (state.notifOpen && !e.target.closest('#notifPop') && !e.target.closest('#bell')) { state.notifOpen = false; changed = true; }
+  if (state.menuOpen && !e.target.closest('#userMenu') && !e.target.closest('#userBtn')) { state.menuOpen = false; changed = true; }
+  if (changed) { renderNotif(); renderTop(); }
+});
+
+/* ===================== render ===================== */
+function render() {
+  const top = document.getElementById('topbar'), foot = document.getElementById('foot');
+  if (!ME) {
+    top.hidden = true; foot.hidden = true;
+    document.getElementById('main').innerHTML = loginHTML();
+    ['drawer','overlay'].forEach(id => document.getElementById(id).classList.remove('open'));
+    document.getElementById('apv').hidden = true; document.getElementById('notifPop').hidden = true; document.getElementById('userMenu').hidden = true;
+    return;
+  }
+  top.hidden = false; foot.hidden = false;
+  document.getElementById('main').innerHTML = viewMain();
+  renderTop(); renderDrawer(); renderNotif(); renderApproval();
+}
+const DEMO_NOTE = {
+  'Super Admin':'Akses penuh, bisa memproses semua tahap dan mengelola pengguna.',
+  'Manajer':'Menugaskan sales untuk lead yang tidak otomatis, dan approval akhir.',
+  'Sales':'Hanya melihat lead sendiri. Input lead, presentasi, survei, quotation, negosiasi.',
+  'Reviewer':'Melakukan assessment calon franchisee.'
+};
+function loginHTML() {
+  const groups = ROLE_ORDER.map(r => `<div class="lg-group"><p class="sec-title">${r}</p><p class="small" style="margin:-4px 0 8px">${DEMO_NOTE[r]}</p>
+    ${Object.entries(USERS).filter(([,u]) => u.role === r).map(([k,u]) => `<button class="lg-acc" onclick="quickLogin('${k}')"><span class="av sm">${initials(u.name)}</span><span><b>${esc(u.name)}</b><span class="small">${esc(u.email)}</span></span></button>`).join('')}</div>`).join('');
+  return `<div class="login">
+    <section class="lg-brand">
+      <div class="logo"><b>kopi koma<i>,</i></b><span>Partner Portal</span></div>
+      <h1>Satu tempat untuk seluruh proses kemitraan.</h1>
+      <p>Dari lead pertama sampai approval akhir, semua tahap, tugas, dan target tim kemitraan Kopi Koma terpantau di sini.</p>
+    </section>
+    <section class="lg-form">
+      <div class="lg-card">
+        <h2>Masuk ke Partner Portal</h2>
+        <p class="small" style="margin:-4px 0 16px">Gunakan akun kantor Kopi Koma.</p>
+        <div class="field"><label for="lg-email">Email</label><input id="lg-email" type="email" autocomplete="username" placeholder="nama@kopikoma.id" onkeydown="if(event.key==='Enter')doLogin()"></div>
+        <div class="field"><label for="lg-pw">Kata sandi</label><input id="lg-pw" type="password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
+        ${state.loginErr ? `<p class="err" role="alert">${state.loginErr}</p>` : ''}
+        <button class="btn btn-primary" style="width:100%;margin-top:6px" onclick="doLogin()">Masuk</button>
+        <div class="lg-demo"><p class="tl-title" style="margin:0 0 2px">Akun demo</p><p class="small" style="margin:0 0 14px">Pilih akun untuk langsung masuk. Kata sandi semua akun: <b>${PASSWORD}</b></p>${groups}</div>
+      </div>
+    </section>
+  </div>`;
+}
+function startSession(k) {
+  ME = k; state.loginErr = ''; state.view = 'pipeline'; state.sel = null; state.addOpen = false; state.apv = null; state.hint = true; state.taskFilter = 'all';
+  state.notifOpen = false; state.menuOpen = false; state.profile = k; render(); window.scrollTo(0,0);
+  toast(`Masuk sebagai ${person(k)}`);
+}
+function doLogin() {
+  const email = document.getElementById('lg-email').value.trim().toLowerCase(), pw = document.getElementById('lg-pw').value;
+  const k = Object.keys(USERS).find(x => USERS[x].email === email);
+  if (!k || pw !== PASSWORD) { state.loginErr = 'Email atau kata sandi salah.'; render(); document.getElementById('lg-email').value = email; return; }
+  startSession(k);
+}
+function quickLogin(k) { startSession(k); }
+function logout() { ME = null; state.menuOpen = false; state.sel = null; state.addOpen = false; state.apv = null; render(); window.scrollTo(0,0); }
+function setView(v) { state.view = v; state.menuOpen = false; render(); window.scrollTo(0,0); }
+function openProfile(k) { state.profile = k; state.menuOpen = false; state.view = 'profile'; render(); window.scrollTo(0,0); }
+function resetDemo() { state = initState(); state.profile = ME; render(); toast('Data demo dikembalikan ke kondisi awal'); }
+const pendingAll = () => state.apps.filter(a => picOf(a));
+const myTasks = () => state.apps.filter(a => picOf(a) === ME);
+function tabsFor() {
+  const r = role(), m = myTasks().length;
+  if (r === 'Super Admin') return [['pipeline','Pipeline'],['tasks',`Semua tugas (${pendingAll().length})`],['dashboard','Target dan pencapaian'],['sales','Performa sales'],['users','Pengguna dan peran']];
+  if (r === 'Manajer') return [['pipeline','Pipeline'],['mytasks',`Tugas saya (${m})`],['tasks','Semua tugas'],['dashboard','Target dan pencapaian'],['sales','Performa sales']];
+  if (r === 'Sales') return [['pipeline','Pipeline saya'],['mytasks',`Tugas saya (${m})`],['dashboard','Target dan pencapaian saya']];
+  return [['pipeline','Pipeline'],['mytasks',`Tugas saya (${m})`]];
+}
+function viewMain() {
+  const tabs = tabsFor();
+  if (state.view !== 'profile' && !tabs.some(t => t[0] === state.view)) state.view = 'pipeline';
+  const views = {pipeline:viewPipeline, mytasks:viewMyTasks, tasks:viewTasks, dashboard:viewDashboard, sales:viewSales, users:viewUsers, profile:viewProfile};
+  return `<div class="wrap"><nav class="subnav" aria-label="Menu utama">
+    ${tabs.map(([k,l]) => `<button ${state.view === k ? 'aria-current="page"' : ''} onclick="setView('${k}')">${l}</button>`).join('')}
+  </nav>${views[state.view]()}</div>`;
+}
+function viewMyTasks() {
+  const list = myTasks().sort((x,y) => (overdueOf(y) - overdueOf(x)) || (daysIn(y.stageSince) - daysIn(x.stageSince))), mgr = seesOverdue();
+  const intro = {Manajer:'Lead baru yang tidak bisa ditugaskan otomatis, dan aplikasi yang menunggu approval akhir.', Sales:'Calon franchisee yang kamu dampingi dan sedang menunggu tindakanmu.', Reviewer:'Calon franchisee yang menunggu assessment.'}[role()];
+  return `<div class="page-head"><div><h1>Tugas saya</h1><p class="sub">${intro} Pengingat otomatis dikirim lewat dashboard dan email bila mendekati batas waktu.</p></div></div>
+  <div class="panel">${list.length ? `<div class="table-wrap"><table class="funnel">
+    <thead><tr><th>Calon franchisee</th><th>Yang perlu dilakukan</th><th>Menunggu</th>${mgr ? '<th>Batas waktu</th>' : ''}<th></th></tr></thead>
+    <tbody>${list.map(a => { const d = daysIn(a.stageSince), od = overdueOf(a); return `<tr>
+      <td><div class="tl-title">${esc(a.name)}</div><div class="small">${a.id}, ${esc(a.city)}, ${PAKET[a.paket].nama}</div></td>
+      <td>${actionOf(a)}<div class="small">Tahap ${stageLabel(a.stage)}</div></td>
+      <td class="num" style="font-size:15px">${d} hari</td>
+      ${mgr ? `<td>${od ? `<span class="chip bad">Lewat ${d - SLA[a.stage]} hari</span>` : `<span class="chip ok">Batas ${SLA[a.stage]} hari</span>`}</td>` : ''}
+      <td style="white-space:nowrap"><button class="btn btn-ghost btn-sm" onclick="openApproval('${a.id}')">Status approval</button> <button class="btn btn-primary btn-sm" onclick="openDetail('${a.id}')">Proses</button></td>
+    </tr>`; }).join('')}</tbody></table></div>` : '<p class="np-empty" style="padding:4px 0">Tidak ada tugas yang menunggu tindakanmu saat ini.</p>'}</div>`;
+}
+
+/* ===================== pipeline ===================== */
+const HINTS = {
+  'Super Admin':'Coba alur lengkap: klik <b>Tambah lead</b> atau <b>Simulasikan lead dari website</b>, lalu proses kartunya sampai Approval akhir. Sebagai Super Admin kamu bisa memproses semua tahap.',
+  'Manajer':'Tugasmu: menugaskan sales untuk lead di kolom <b>Lead baru</b> yang tidak bisa ditugaskan otomatis, dan <b>Approval akhir</b>. Coba <b>Simulasikan lead dari website</b> untuk melihat penugasan otomatis bekerja.',
+  'Sales':'Kamu hanya melihat calon franchisee yang kamu dampingi. Input lead baru lewat <b>Tambah lead</b> setelah calon franchisee menunjukkan minat.',
+  'Reviewer':'Tugasmu: assessment calon franchisee di kolom <b>Assessment</b>. Tahap lain bisa kamu lihat, tapi tidak bisa kamu proses.'
+};
+function viewPipeline() {
+  const apps = visibleApps(), active = apps.filter(a => !isDone(a)).length, od = apps.filter(overdueOf).length;
+  const canAdd = isSA() || role() === 'Sales', canSim = isSA() || role() === 'Manajer';
+  const autoN = state.apps.filter(a => !a.inputBy && a.assignedBy === null && a.stage !== 'baru' && a.sales).length;
+  return `${state.hint ? `<div class="hint"><span>${HINTS[role()]}</span><button class="link" onclick="state.hint=false;render()">Tutup</button></div>` : ''}
+  <div class="page-head">
+    <div><h1>${role() === 'Sales' ? 'Pipeline saya' : 'Pipeline calon franchisee'}</h1><p class="sub">${active} aplikasi aktif${od && seesOverdue() ? `, <button class="link" onclick="setView('${isSA() ? 'tasks' : 'tasks'}')">${od} lewat batas waktu</button>, pengingat otomatis sudah terkirim` : ''}</p></div>
+    <div class="head-actions">
+      <input class="search" type="search" placeholder="Cari nama atau kota" aria-label="Cari aplikasi" value="${esc(state.q)}" oninput="state.q=this.value;document.getElementById('board').innerHTML=boardHTML()">
+      ${canSim ? '<button class="btn btn-ghost" onclick="simulateSelf()">Simulasikan lead dari website</button>' : ''}
+      ${canAdd ? '<button class="btn btn-primary" onclick="openAdd()">Tambah lead</button>' : ''}
+    </div>
+  </div>
+  <div class="board" id="board">${boardHTML()}</div>
+  <p class="small" style="margin-top:10px">Lead baru ditugaskan otomatis ke sales sesuai wilayah. Lead masuk antrean manajer bila kotanya di luar wilayah, terindikasi duplikat, atau sales di wilayah itu sudah memegang ${CAP} lead aktif.</p>`;
+}
+function boardHTML() {
+  const q = state.q.trim().toLowerCase();
+  const apps = visibleApps().filter(a => !q || a.name.toLowerCase().includes(q) || a.city.toLowerCase().includes(q));
+  return STAGES.filter(s => !(s.k === 'baru' && role() === 'Sales')).map(s => {
+    const list = apps.filter(a => a.stage === s.k).sort((x,y) => new Date(x.stageSince) - new Date(y.stageSince));
+    return `<section class="col ${s.k === 'ditolak' ? 'muted-col' : ''}" aria-label="${s.l}">
+      <header class="col-head"><span>${s.l}</span><span class="count">${list.length}</span></header>
+      <div class="col-body">${list.map(card).join('') || '<p class="empty">Belum ada aplikasi.</p>'}</div></section>`;
+  }).join('');
+}
+function card(a) {
+  const d = daysIn(a.stageSince), p = picOf(a), sc = aiScore(a);
+  const dTxt = isDone(a) ? '' : showOverdue(a) ? `<span class="days stuck">Lewat batas ${d - SLA[a.stage]} hari</span>` : `<span class="days">${d === 0 ? 'Masuk hari ini' : d + ' hari di tahap ini'}</span>`;
+  return `<article class="card">
+    <button class="card-main" onclick="openDetail('${a.id}')">
+      <span class="card-name">${esc(a.name)}</span>
+      <span class="card-city">${esc(a.city)}${a.sales ? `, sales ${esc(first(a.sales))}` : ''}</span>
+      <span class="card-foot"><span class="chip">${PAKET[a.paket].nama}</span><span class="chip ${sc.level[0]}">Skor ${sc.c}</span>
+        ${!a.inputBy ? '<span class="chip blue">Mandiri</span>' : ''}${a.stage === 'baru' && a.triage ? `<span class="chip ${a.triage.code === 'duplikat' ? 'bad' : 'warn'}">${a.triage.label}</span>` : ''}
+        ${a.stage === 'quotation' && latest(a) ? '<span class="chip aren">Revisi</span>' : ''}${a.stage === 'survei' && a.survey && a.survey.revisiNote ? '<span class="chip aren">Revisi lokasi</span>' : ''}${a.isNew && a.stage === 'presentasi' ? '<span class="chip dark">Baru</span>' : ''}</span>
+      ${p ? `<span class="card-pic">Menunggu ${esc(uname(p))}</span>` : ''}
+      ${dTxt}
+    </button>
+    <button class="card-apv" onclick="openApproval('${a.id}',event)">Status approval</button>
+  </article>`;
+}
+
+/* ===================== all tasks ===================== */
+function viewTasks() {
+  const all = pendingAll(), roleOf = a => USERS[picOf(a)].role;
+  const f = state.taskFilter;
+  const list = all.filter(a => f === 'all' || roleOf(a) === f).sort((x,y) => (overdueOf(y) - overdueOf(x)) || (daysIn(y.stageSince) - daysIn(x.stageSince)));
+  const pills = [['all','Semua'],['Reviewer','Reviewer'],['Sales','Sales'],['Manajer','Manajer']];
+  return `<div class="page-head"><div><h1>Semua tugas</h1><p class="sub">Tugas yang sedang menunggu di setiap anggota tim. Saat batas waktu terlewati, sistem otomatis mengirim pengingat ke penanggung jawab dan manajer lewat dashboard dan email.</p></div></div>
+  <div class="filters">${pills.map(([k,l]) => { const c = k === 'all' ? all.length : all.filter(a => roleOf(a) === k).length; return `<button class="pill" aria-pressed="${f === k}" onclick="state.taskFilter='${k}';render()">${l} (${c})</button>`; }).join('')}</div>
+  <div class="panel">${list.length ? `<div class="table-wrap"><table class="funnel">
+    <thead><tr><th>Calon franchisee</th><th>Yang perlu dilakukan</th><th>Penanggung jawab</th><th>Menunggu</th><th>Batas waktu</th><th>Pengingat otomatis</th><th></th></tr></thead>
+    <tbody>${list.map(a => { const d = daysIn(a.stageSince), od = overdueOf(a), p = picOf(a); return `<tr>
+      <td><div class="tl-title">${esc(a.name)}</div><div class="small">${a.id}, ${esc(a.city)}, ${PAKET[a.paket].nama}</div></td>
+      <td>${actionOf(a)}<div class="small">Tahap ${stageLabel(a.stage)}</div></td>
+      <td><div class="who-cell"><span class="av sm">${initials(uname(p))}</span><div><b>${esc(uname(p))}</b><div class="small">${USERS[p].role}</div></div></div></td>
+      <td class="num" style="font-size:15px">${d} hari</td>
+      <td>${od ? `<span class="chip bad">Lewat ${d - SLA[a.stage]} hari</span>` : `<span class="chip ok">Batas ${SLA[a.stage]} hari</span>`}</td>
+      <td class="small">${od ? 'Terkirim ke penanggung jawab dan manajer' : 'Belum perlu'}</td>
+      <td style="white-space:nowrap"><button class="btn btn-ghost btn-sm" onclick="openApproval('${a.id}')">Status approval</button> <button class="btn btn-primary btn-sm" onclick="openDetail('${a.id}')">Buka</button></td>
+    </tr>`; }).join('')}</tbody></table></div>` : '<p class="np-empty" style="padding:4px 0">Tidak ada tugas di kategori ini.</p>'}</div>`;
+}
+
+/* ===================== users & roles ===================== */
+function viewUsers() {
+  const rows = Object.entries(USERS).sort((x,y) => ROLE_ORDER.indexOf(x[1].role) - ROLE_ORDER.indexOf(y[1].role)).map(([k,u]) => {
+    const tasks = state.apps.filter(a => picOf(a) === k), od = tasks.filter(overdueOf).length;
+    return `<tr><td><div class="who-cell"><span class="av sm">${initials(u.name)}</span><div><b>${esc(u.name)}</b>${k === ME ? ' <span class="chip">Kamu</span>' : ''}<div class="small">${esc(u.email)}</div></div></div></td>
+      <td><span class="chip ${u.role === 'Super Admin' ? 'dark' : u.role === 'Manajer' ? 'aren' : u.role === 'Sales' ? 'blue' : ''}">${u.role}</span></td>
+      <td class="small">${esc(u.area)}</td>
+      <td class="num" style="font-size:15px">${u.role === 'Super Admin' ? '–' : tasks.length}</td>
+      <td>${u.role === 'Super Admin' ? '' : od ? `<span class="chip bad">${od} lewat batas</span>` : '<span class="chip ok">Aman</span>'}</td>
+      <td><button class="link" onclick="openProfile('${k}')">Lihat profil</button></td></tr>`;
+  }).join('');
+  const matrix = (title, data) => `<div class="panel"><h2>${title}</h2><div class="table-wrap"><table class="funnel matrix" style="min-width:520px">
+    <thead><tr><th></th>${ROLE_ORDER.map(r => `<th>${r}</th>`).join('')}</tr></thead>
+    <tbody>${data.map(([l,v]) => `<tr><td>${l}</td>${v.map(x => `<td>${x === '✓' ? '<span style="color:var(--ok);font-weight:800">✓</span>' : x === '–' ? '<span class="small">–</span>' : `<span class="small" style="color:var(--ink)">${x}</span>`}</td>`).join('')}</tr>`).join('')}</tbody></table></div></div>`;
+  return `<div class="page-head"><div><h1>Pengguna dan peran</h1><p class="sub">${Object.keys(USERS).length} pengguna dalam 4 peran. Hanya Super Admin yang dapat melihat halaman ini.</p></div></div>
+  <div class="panel" style="margin-bottom:16px"><div class="table-wrap"><table class="funnel">
+    <thead><tr><th>Pengguna</th><th>Peran</th><th>Wilayah atau tim</th><th>Tugas aktif</th><th>Batas waktu</th><th></th></tr></thead><tbody>${rows}</tbody></table></div></div>
+  <div class="role-grid">${ROLE_ORDER.map(r => `<div class="panel"><div class="d-top"><h2 style="margin:0">${r}</h2><span class="small">${Object.values(USERS).filter(u => u.role === r).length} pengguna</span></div>
+    <p class="small" style="margin:6px 0 12px">${ROLES[r].desc}</p>
+    <p class="sec-title">Tugas dalam alur</p><ul class="plain">${ROLES[r].tasks.map(t => `<li>${t}</li>`).join('')}</ul></div>`).join('')}</div>
+  <div class="dash-top" style="grid-template-columns:1fr 1fr">${matrix('Akses menu', MENU_ACCESS)}${matrix('Tugas per tahap', TASK_ACCESS)}</div>`;
+}
+
+/* ===================== profile ===================== */
+function viewProfile() {
+  const k = state.profile, u = USERS[k], R = ROLES[u.role], mine = k === ME;
+  const tasks = u.role === 'Super Admin' ? pendingAll() : state.apps.filter(a => picOf(a) === k);
+  const acts = state.apps.flatMap(a => a.log.filter(l => l.by === k).map(l => ({...l, a}))).sort((x,y) => new Date(y.t) - new Date(x.t)).slice(0, 6);
+  return `${mine ? '' : '<button class="link" style="margin-bottom:14px" onclick="setView(\'users\')">Kembali ke Pengguna dan peran</button>'}
+  <div class="page-head"><div><h1>${mine ? 'Profil saya' : 'Profil pengguna'}</h1></div></div>
+  <div class="prof-grid">
+    <div class="panel prof-card">
+      <span class="av lg">${initials(u.name)}</span>
+      <h2 style="margin:12px 0 4px">${esc(u.name)}</h2>
+      <span class="chip ${u.role === 'Super Admin' ? 'dark' : 'aren'}">${u.role}</span>
+      <dl class="kv" style="grid-template-columns:110px 1fr;margin:18px 0 0;text-align:left">
+        <dt>Email</dt><dd>${esc(u.email)}</dd><dt>Telepon</dt><dd>${esc(u.phone)}</dd>
+        <dt>${u.role === 'Sales' ? 'Wilayah' : 'Tim'}</dt><dd>${esc(u.area)}</dd><dt>Bergabung</dt><dd>${u.since}</dd>
+      </dl>
+    </div>
+    <div class="stack" style="margin:0">
+      <section class="panel"><h2>Peran: ${u.role}</h2><p class="small" style="margin-top:-4px">${R.desc}</p>
+        <p class="sec-title">Menu yang bisa diakses</p><div class="chips">${R.menus.map(m => `<span class="chip">${m}</span>`).join('')}</div>
+        <p class="sec-title" style="margin-top:16px">Tugas dalam alur</p><ul class="plain">${R.tasks.map(t => `<li>${t}</li>`).join('')}</ul>
+        ${u.role === 'Sales' ? `<p class="sec-title" style="margin-top:16px">Target bulanan</p><p style="margin:0">${SALES_T[k].q} franchisee disetujui dan ${rpS(SALES_T[k].r)} revenue kemitraan.</p>` : ''}
+      </section>
+      <section class="panel"><div class="d-top"><h2>${u.role === 'Super Admin' ? 'Tugas di seluruh tim' : 'Tugas aktif'}</h2><span class="num">${tasks.length}</span></div>
+        ${tasks.length ? `<ul class="r-list">${tasks.slice(0,5).map(a => `<li style="grid-template-columns:1fr auto"><div><button class="link" onclick="openDetail('${a.id}')">${esc(a.name)}</button><div class="small">${actionOf(a)}${u.role === 'Super Admin' ? `, ${esc(uname(picOf(a)))}` : ''}</div></div>${overdueOf(a) ? '<span class="chip bad">Lewat batas</span>' : `<span class="small">${daysIn(a.stageSince)} hari</span>`}</li>`).join('')}</ul>${tasks.length > 5 ? `<button class="link" style="margin-top:8px" onclick="setView('tasks')">Lihat semua</button>` : ''}` : '<p class="small">Tidak ada tugas aktif.</p>'}
+      </section>
+      ${mine ? `<section class="panel"><h2>Notifikasi</h2>
+        <label class="consent" style="margin-bottom:10px"><input type="checkbox" checked disabled><span>Notifikasi dashboard<br><span class="small">Selalu aktif agar tidak ada tugas yang terlewat.</span></span></label>
+        <label class="consent"><input type="checkbox" ${state.pref.email ? 'checked' : ''} onchange="state.pref.email=this.checked;toast(this.checked?'Notifikasi email diaktifkan':'Notifikasi email dimatikan')"><span>Notifikasi email<br><span class="small">Pengingat otomatis dan tugas baru dikirim ke ${esc(u.email)}.</span></span></label>
+      </section>` : ''}
+      <section class="panel"><h2>Aktivitas terakhir</h2>${acts.length ? `<ul class="log">${acts.map(l => `<li><time>${fmtDT(l.t)}</time><span>${esc(l.text)}, <button class="link" onclick="openDetail('${l.a.id}')">${esc(l.a.name)}</button></span></li>`).join('')}</ul>` : '<p class="small">Belum ada aktivitas.</p>'}</section>
+    </div>
+  </div>`;
+}
+
+/* ===================== approval status modal ===================== */
+const STEP_DEF = [
+  ['1. Lead baru', a => a.stage === 'baru' || (a.stage === 'ditolak' && a.rejectStep === 0) ? MANAGER : (a.assignedBy || 'auto'), /Sales ditugaskan|Diteruskan otomatis/, 'Ditugaskan'],
+  ['2. Presentasi bisnis', a => a.sales, /Presentasi bisnis selesai|tidak melanjutkan setelah presentasi/, 'Selesai'],
+  ['3. Survei lokasi', a => a.sales, /Survei lokasi:/, 'Layak'],
+  ['4. Assessment', a => a.reviewer, /Assessment:/, 'Lolos'],
+  ['5. Quotation', a => a.sales, /Quotation versi \d+ dikirim/, 'Terkirim'],
+  ['6. Negosiasi', a => a.sales, /menyetujui quotation/, 'Sepakat'],
+  ['7. Approval akhir', a => MANAGER, /Approval akhir/, 'Disetujui']
+];
+function curStep(a) {
+  const i = ORDER.indexOf(a.stage);
+  return i >= 0 ? i : (a.rejectStep ?? 0);
+}
+function openApproval(id, e) { if (e) e.stopPropagation(); state.apv = id; renderApproval(); setTimeout(() => document.querySelector('#apv .close')?.focus(), 30); }
+function closeApproval() { state.apv = null; renderApproval(); }
+function renderApproval() {
+  const el = document.getElementById('apv'), a = state.apv ? find(state.apv) : null;
+  if (!a) { el.hidden = true; el.innerHTML = ''; return; }
+  el.hidden = false;
+  const cur = curStep(a), rej = a.stage === 'ditolak', L = latest(a), ch = lastChange(a);
+  const revisi = a.stage === 'quotation' && L && L.status === 'perubahan diminta';
+  const nameOf = k => k === 'self' ? 'Pendaftar mandiri' : k === 'auto' ? 'Sistem (otomatis)' : uname(k);
+  const items = STEP_DEF.map(([label, whoFn, re, doneTxt], i) => {
+    const who = whoFn(a), entry = a.log.slice().reverse().find(l => re.test(l.text));
+    let cls, chip, txt, extra = '';
+    if (i < cur) {
+      cls = 'done'; chip = 'ok'; txt = doneTxt;
+      const by = entry ? (entry.by ? uname(entry.by) : 'Sistem (otomatis)') : nameOf(who);
+      extra = i === 0
+        ? `<div class="small">${a.inputBy ? `Diinput ${esc(uname(a.inputBy))}` : `Pendaftaran mandiri lewat ${esc(a.source.replace(' (mandiri)',''))}`}. Sales: ${esc(uname(a.sales))}, ${a.inputBy ? 'diteruskan otomatis' : a.assignedBy ? 'ditugaskan ' + esc(uname(a.assignedBy)) : 'ditugaskan otomatis sesuai wilayah'}${entry ? ', ' + fmtDT(entry.t) : ''}</div>`
+        : `<div class="small">${esc(by)}${entry ? ', ' + fmtDT(entry.t) : ''}</div>`;
+    } else if (i === cur && rej) {
+      cls = 'rej'; chip = 'bad'; txt = i === 0 ? 'Ditutup' : i === 1 || i === 5 ? 'Tidak lanjut' : 'Ditolak';
+      extra = `<div class="small">${esc(nameOf(who))}${entry ? ', ' + fmtDT(entry.t) : ''}. ${esc(a.rejectReason || '')}</div>`;
+    } else if (i === cur && a.stage !== 'disetujui') {
+      cls = 'cur'; chip = revisi ? 'warn' : 'blue'; txt = revisi ? 'Revisi' : 'Sedang berjalan';
+      const d = daysIn(a.stageSince), od = showOverdue(a);
+      let ctx = '';
+      if (i === 0 && a.triage) ctx = `Tidak bisa ditugaskan otomatis: ${esc(a.triage.text)}.`;
+      if (revisi) ctx = `Calon franchisee meminta perubahan ${ch.type.toLowerCase()}. Sales berdiskusi dengan manajer di luar sistem, lalu mengirim quotation versi ${L.v + 1}.`;
+      if (i === 5) ctx = `Menunggu tanggapan ${esc(a.name)} atas quotation versi ${L.v}. Sales melakukan follow up.`;
+      extra = `${ctx ? `<div class="small">${ctx}</div>` : ''}
+        <div class="pcard"><span class="av">${initials(uname(who))}</span><div class="pc-body"><b>${esc(uname(who))}</b><div class="small">${USERS[who].role}, menunggu ${d} hari${seesOverdue() ? ` (batas ${SLA[a.stage]} hari)` : ''}</div>
+        ${od ? '<div class="small" style="color:var(--bad)">Pengingat otomatis sudah dikirim ke penanggung jawab dan manajer</div>' : ''}</div>
+        <span class="chip ${od ? 'bad' : 'blue'}">${od ? 'Lewat batas' : 'Sedang berjalan'}</span></div>`;
+    } else {
+      cls = 'todo'; chip = ''; txt = rej ? 'Tidak dilanjutkan' : 'Belum mulai';
+      extra = `<div class="small">${who === 'auto' ? 'Otomatis sesuai wilayah, atau manajer' : who ? esc(person(who)) : 'Sales belum ditugaskan'}</div>`;
+    }
+    return `<li class="st ${cls}"><span class="dot"></span><div class="st-row"><span class="st-title">${label}</span><span class="chip ${chip}">${txt}</span></div>${extra}</li>`;
+  }).join('');
+  el.innerHTML = `<div class="apv-box" role="dialog" aria-modal="true" aria-labelledby="apvT">
+    <div class="apv-head"><div><h2 id="apvT" style="margin:0">Status approval</h2><p class="small" style="margin:2px 0 0">${esc(a.name)}, ${a.id}, paket ${PAKET[a.paket].nama}</p></div><button class="close" onclick="closeApproval()" aria-label="Tutup status approval">×</button></div>
+    <ol class="apv-list">${items}</ol></div>`;
+}
+
+/* ===================== detail drawer ===================== */
+function defaultTab(a) {
+  return ({baru:'baru', presentasi:'presentasi', survei:'survei', assessment:'assessment', quotation:'quotation', negosiasi:'nego', approval:'nego'})[a.stage] || 'ringkasan';
+}
+const pendingChange = a => { const L = latest(a); return L && L.status === 'perubahan diminta' ? lastChange(a) : null; };
+function initQb(a) {
+  const L = latest(a), ch = pendingChange(a);
+  const qb = {paket:L ? L.paket : a.paket, lokasi:L ? L.lokasi : a.alamat, buka:L ? L.buka : 'Desember 2026', diskon:L ? L.diskon : 0, skema:L ? L.skema : 'Lunas', note:L ? L.note : 'Termasuk pendampingan grand opening selama 3 hari.', result:''};
+  if (ch && ch.type === 'Termin pembayaran') qb.skema = '2 termin';
+  return qb;
+}
+function saveQb() {
+  if (!state.qb) return;
+  [['paket','qb-paket'],['lokasi','qb-lokasi'],['buka','qb-buka'],['diskon','qb-diskon'],['skema','qb-skema'],['note','qb-note'],['result','qb-result']].forEach(([k,id]) => { const el = document.getElementById(id); if (el) state.qb[k] = el.value; });
+}
+function openDetail(id) {
+  const a = find(id); state.addOpen = false; state.sel = id; state.tab = defaultTab(a); state.qb = initQb(a); state.negoForm = null; state.menuOpen = false;
+  render(); setTimeout(() => document.querySelector('.drawer .close')?.focus(), 60);
+}
+function closeDetail() { state.sel = null; state.addOpen = false; render(); }
+function setTab(t) { saveQb(); state.tab = t; state.negoForm = null; renderDrawer(); }
+function renderDrawer() {
+  const el = document.getElementById('drawer'), ov = document.getElementById('overlay');
+  if (state.addOpen) { el.classList.add('open'); ov.classList.add('open'); el.innerHTML = addFormHTML(); return; }
+  const a = state.sel ? find(state.sel) : null;
+  if (!a) { el.classList.remove('open'); ov.classList.remove('open'); return; }
+  el.classList.add('open'); ov.classList.add('open');
+  const tabs = [['ringkasan','Ringkasan'],['baru','Lead baru'],['presentasi','Presentasi'],['survei','Survei lokasi'],['assessment','Assessment'],['quotation','Quotation'],['nego','Negosiasi dan approval'],['riwayat','Riwayat']];
+  const d = daysIn(a.stageSince), p = picOf(a);
+  const body = {ringkasan:tabRingkasan, baru:tabBaru, presentasi:tabPresentasi, survei:tabSurvei, assessment:tabAssessment, quotation:tabQuotation, nego:tabNego, riwayat:tabRiwayat}[state.tab](a);
+  el.innerHTML = `<div class="d-head">
+      <div class="d-top"><div><h2 id="dTitle" style="margin:0">${esc(a.name)}</h2><p class="sub">${a.id}, ${esc(a.city)}, paket ${PAKET[a.paket].nama}</p></div>
+      <div style="display:flex;gap:8px;align-items:center"><button class="btn btn-ghost btn-sm" onclick="openApproval('${a.id}')">Status approval</button><button class="close" onclick="closeDetail()" aria-label="Tutup detail">×</button></div></div>
+      <div style="margin-top:10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span class="chip ${stageChip(a.stage)}">${stageLabel(a.stage)}</span>
+        ${isDone(a) ? '' : `<span class="small">${d === 0 ? 'Masuk tahap ini hari ini' : d + ' hari di tahap ini'}${seesOverdue() ? `, batas ${SLA[a.stage]} hari` : ''}</span>`}${showOverdue(a) ? '<span class="chip bad">Lewat batas</span>' : ''}</div>
+      ${p ? `<p class="small" style="margin:8px 0 0">Menunggu: <b style="color:var(--ink)">${esc(person(p))}</b>, ${actionOf(a).toLowerCase()}</p>` : ''}
+      <nav class="tabs" aria-label="Bagian detail">${tabs.map(([k,l]) => `<button ${state.tab === k ? 'aria-current="page"' : ''} onclick="setTab('${k}')">${l}</button>`).join('')}</nav>
+    </div>
+    <div class="d-body">${body}</div>`;
+}
+function tabRingkasan(a) {
+  const need = total(a.paket), ok = a.modal >= need;
+  return `${scoreCard(a)}<p class="sec-title">Calon franchisee</p>
+  <dl class="kv">
+    <dt>Kontak</dt><dd>${esc(a.phone)}<br>${esc(a.email)}</dd>
+    <dt>Paket diminati</dt><dd>${PAKET[a.paket].nama} (${rp(need)})</dd>
+    <dt>Modal tersedia</dt><dd>${rp(a.modal)} <span class="chip ${ok ? 'ok' : 'warn'}">${ok ? 'Cukup untuk paket' : 'Kurang ' + rp(need - a.modal)}</span></dd>
+    <dt>Sumber modal</dt><dd>${esc(a.sumber)}</dd><dt>Pengalaman usaha</dt><dd>${esc(a.pengalaman)}</dd><dt>Pengelolaan outlet</dt><dd>${esc(a.pengelolaan)}</dd>
+  </dl>
+  <p class="sec-title">Sumber dan penanggung jawab</p>
+  <dl class="kv">
+    <dt>Sumber lead</dt><dd>${esc(a.source)}</dd>
+    <dt>Diinput oleh</dt><dd>${a.inputBy ? esc(person(a.inputBy)) : 'Pendaftar mandiri lewat ' + esc(a.source.replace(' (mandiri)',''))}</dd>
+    <dt>Sales pendamping</dt><dd>${a.sales ? esc(person(a.sales)) + (a.inputBy ? '' : `<div class="small">${a.assignedBy ? 'Ditugaskan ' + esc(uname(a.assignedBy)) : 'Ditugaskan otomatis sesuai wilayah'}</div>`) : '<span class="chip warn">Belum ditugaskan</span>'}</dd>
+    <dt>Reviewer assessment</dt><dd>${esc(person(a.reviewer))}</dd>
+  </dl>
+  <p class="sec-title">Rencana lokasi</p>
+  <dl class="kv"><dt>Alamat</dt><dd>${esc(a.alamat)}</dd><dt>Jenis lokasi</dt><dd>${esc(a.jenisLokasi)}</dd><dt>Status lokasi</dt><dd>${esc(a.statusLokasi)}</dd></dl>
+  <p class="sec-title">Dokumen</p>
+  <dl class="kv">${DOCS.map(([k,l]) => `<dt>${l.split(' (')[0]}</dt><dd>${a.docs[k] ? `${esc(a.docs[k])} <button class="link" onclick="viewDoc('${a.id}','${k}')">Buka</button>` : '<span class="chip warn">Belum diunggah</span>'}</dd>`).join('')}
+    <dt>Persetujuan data pribadi</dt><dd><span class="chip ok">Diberikan</span></dd></dl>`;
+}
+function viewDoc(id, k) {
+  const a = find(id), label = DOCS.find(d => d[0] === k)[1].split(' (')[0];
+  log(a, `Membuka dokumen ${label}`); toast('Dokumen dibuka (simulasi). Akses tercatat di riwayat.'); renderDrawer();
+}
+function tabBaru(a) {
+  if (a.stage !== 'baru') {
+    if (!a.sales) return '<p class="muted">Lead ditutup sebelum ditugaskan ke sales.</p>';
+    return `<div class="callout ok">Sales pendamping: <b>${esc(person(a.sales))}</b>. ${a.inputBy ? `Lead diinput ${esc(uname(a.inputBy))}, langsung diteruskan ke presentasi bisnis.` : a.assignedBy ? `Ditugaskan ${esc(uname(a.assignedBy))} karena tidak bisa ditugaskan otomatis.` : 'Ditugaskan otomatis oleh sistem sesuai wilayah.'}</div>`;
+  }
+  const t = a.triage || {text:'Belum ditugaskan'}, rec = t.sug || salesFor(a.city), dup = t.dupId ? find(t.dupId) : null;
+  const head = `<div class="callout ${t.code === 'duplikat' ? 'bad' : ''}"><b>Tidak bisa ditugaskan otomatis.</b> ${esc(t.text)}.</div>
+    ${dup ? `<div class="formbox" style="margin:0 0 16px"><p class="sec-title">Data yang mirip</p><dl class="kv" style="margin:0">
+      <dt>Lead ini</dt><dd>${esc(a.name)}, ${esc(a.phone)}, ${esc(a.email)}, ${esc(a.source)}</dd>
+      <dt>Sudah ada</dt><dd>${esc(dup.name)}, ${esc(dup.phone)}, ${esc(dup.email)}, tahap ${stageLabel(dup.stage)}, sales ${esc(uname(dup.sales))} <button class="link" onclick="openDetail('${dup.id}')">Buka</button></dd></dl></div>` : ''}`;
+  if (!canAct(a)) return head + viewOnly(a);
+  return takeover(a) + head + `
+    <div class="field"><label for="tb-sales">Tugaskan ke sales</label><select id="tb-sales"><option value="">Pilih sales</option>
+      ${SALES.map(s => { const l = activeLoad(s); return `<option value="${s}">${uname(s)}, ${USERS[s].area}, ${l} lead aktif${s === rec ? ' (sesuai wilayah)' : ''}${l >= CAP ? ' (penuh)' : ''}</option>`; }).join('')}</select>
+      <span class="help">${t.code === 'wilayah' ? 'Pilih sales terdekat atau yang bisa melayani secara online.' : t.code === 'kapasitas' ? 'Pilih sales lain dengan beban lebih ringan, atau tetap tugaskan ke sales wilayah bila memang perlu.' : 'Bila ternyata bukan duplikat, tugaskan seperti biasa.'}</span></div>
+    <div class="field"><label for="tb-note">Catatan</label><textarea id="tb-note" placeholder="Wajib diisi jika lead ditutup"></textarea></div>
+    <div class="actions"><button class="btn btn-primary" onclick="assignSales('${a.id}')">Tugaskan dan teruskan ke presentasi</button><button class="btn btn-danger" onclick="closeLead('${a.id}')">${t.code === 'duplikat' ? 'Tutup sebagai duplikat' : 'Tutup lead'}</button></div>`;
+}
+function tabPresentasi(a) {
+  if (a.stage === 'presentasi') return !canAct(a) ? viewOnly(a) : takeover(a) + `<p class="muted">Presentasikan model bisnis, paket, royalti, dan estimasi balik modal. Prospektus penawaran waralaba wajib diberikan sebelum perjanjian ditandatangani.</p>
+    <div class="grid2"><div class="field"><label for="pr-date">Tanggal presentasi</label><input id="pr-date" type="date" value="2026-10-20"></div>
+      ${selField('pr-mode','Format presentasi',PRES_MODE)}</div>
+    <label class="consent" style="margin-bottom:14px"><input type="checkbox" id="pr-prosp"><span>Prospektus penawaran waralaba sudah dikirim ke calon franchisee<br><span class="small">Wajib dicentang untuk lanjut ke survei lokasi.</span></span></label>
+    <div class="field"><label for="pr-note">Catatan presentasi</label><textarea id="pr-note" placeholder="Pertanyaan calon franchisee, tingkat minat, rencana lokasi"></textarea></div>
+    <div class="actions"><button class="btn btn-primary" onclick="submitPresentasi('${a.id}',true)">Lanjut ke survei lokasi</button><button class="btn btn-danger" onclick="submitPresentasi('${a.id}',false)">Calon franchisee tidak melanjutkan</button></div>`;
+  if (a.presentasi) { const p = a.presentasi; return `<div class="callout ok">Presentasi selesai, prospektus penawaran waralaba sudah dikirim.</div>
+    <dl class="kv"><dt>Tanggal</dt><dd>${esc(p.date)}</dd><dt>Format</dt><dd>${esc(p.mode)}</dd><dt>Prospektus</dt><dd>${p.prospektus ? 'Terkirim' : 'Belum'}</dd>${p.note ? `<dt>Catatan</dt><dd>${esc(p.note)}</dd>` : ''}</dl>`; }
+  return '<p class="muted">Belum ada data presentasi.</p>';
+}
+function selField(id, label, opts) {
+  return `<div class="field"><label for="${id}">${label}</label><select id="${id}"><option value="">Pilih</option>${opts.map(o => { const [v,l] = Array.isArray(o) ? o : [o,o]; return `<option value="${esc(v)}">${esc(l)}</option>`; }).join('')}</select></div>`;
+}
+function tabSurvei(a) {
+  const head = `<div class="callout">Lokasi yang diajukan: ${esc(a.alamat)} (${esc(a.jenisLokasi)}, ${esc(a.statusLokasi).toLowerCase()})</div>`;
+  if (a.stage === 'survei') return !canAct(a) ? viewOnly(a) : takeover(a) + head + (a.survey && a.survey.revisiNote ? `<div class="callout bad">Manajer meminta revisi lokasi: ${esc(a.survey.revisiNote)}</div>` : '') + `<div class="grid2">
+      <div class="field"><label for="sv-traffic">Pejalan kaki per jam saat jam sibuk</label><input id="sv-traffic" type="number" min="0"></div>
+      <div class="field"><label for="sv-komp">Kedai minuman dalam radius 500 m</label><input id="sv-komp" type="number" min="0"></div>
+      ${selField('sv-vis','Visibilitas dari jalan',VIS)}${selField('sv-parkir','Parkir',['Tersedia','Terbatas','Tidak ada'])}
+      ${selField('sv-ojol','Akses driver ojol',['Mudah','Cukup','Sulit'])}${selField('sv-rating','Penilaian lokasi',RATE)}</div>
+    <div class="field"><label for="sv-note">Catatan survei</label><textarea id="sv-note" placeholder="Wajib diisi jika lokasi tidak layak"></textarea></div>
+    <div class="actions"><button class="btn btn-primary" onclick="submitSurvey('${a.id}',true)">Lokasi layak, lanjut</button><button class="btn btn-danger" onclick="submitSurvey('${a.id}',false)">Lokasi tidak layak</button><button class="link" onclick="fillSurvey()">Isi contoh hasil survei</button></div>`;
+  if (a.survey && a.survey.result) { const s = a.survey; return head + `<div class="callout ${s.result === 'layak' ? 'ok' : 'bad'}">Hasil survei: lokasi ${s.result}</div>
+    <dl class="kv"><dt>Pejalan kaki per jam</dt><dd>${s.traffic}</dd><dt>Kedai minuman radius 500 m</dt><dd>${s.komp}</dd><dt>Visibilitas</dt><dd>${s.vis} dari 5</dd><dt>Parkir</dt><dd>${esc(s.parkir)}</dd><dt>Akses ojol</dt><dd>${esc(s.ojol)}</dd><dt>Penilaian lokasi</dt><dd>${s.rating} dari 5</dd>${s.note ? `<dt>Catatan</dt><dd>${esc(s.note)}</dd>` : ''}</dl>`; }
+  return head + '<p class="muted">Survei dilakukan sales setelah presentasi bisnis.</p>';
+}
+function tabAssessment(a) {
+  if (a.stage === 'assessment') return !canAct(a) ? viewOnly(a) : takeover(a) + scoreCard(a) + `<p class="muted">Nilai setiap aspek. Semua aspek harus lulus agar calon franchisee lanjut ke quotation.</p>
+    <div class="field"><label for="as-date">Tanggal interview</label><input id="as-date" type="date" value="2026-10-20"></div>
+    <table class="cost assess"><tbody>${ASSESS.map(([k,l]) => `<tr><td>${l}</td><td><select id="as-${k}" aria-label="${l}"><option value="">Pilih hasil</option><option>Lulus</option><option>Tidak lulus</option></select></td></tr>`).join('')}</tbody></table>
+    <div class="field" style="margin-top:12px"><label for="as-note">Catatan assessment</label><textarea id="as-note" placeholder="Wajib diisi jika tidak lolos"></textarea></div>
+    <div class="actions"><button class="btn btn-primary" onclick="submitAssessment('${a.id}',true)">Lolos, lanjut ke quotation</button><button class="btn btn-danger" onclick="submitAssessment('${a.id}',false)">Tidak lolos</button><button class="link" onclick="fillAssess()">Isi contoh hasil assessment</button></div>`;
+  if (a.assess) return `<div class="callout ${a.assess.result === 'lolos' ? 'ok' : 'bad'}">Hasil assessment: ${a.assess.result}</div>
+    <ul class="result-list">${ASSESS.map(([k,l]) => `<li><span class="${a.assess.res[k] === 'Lulus' ? 'y' : 'n'}">${a.assess.res[k] === 'Lulus' ? '✓' : '✗'}</span>${l}</li>`).join('')}</ul>${a.assess.note ? `<p><b>Catatan:</b> ${esc(a.assess.note)}</p>` : ''}`;
+  return `${scoreCard(a)}<p class="muted">Assessment dilakukan reviewer setelah lokasi dinilai layak.</p>`;
+}
+function quoteHTML(q) {
+  const pk = PAKET[q.paket], disc = Number(q.diskon) || 0;
+  return `<dl class="kv"><dt>Paket</dt><dd>${pk.nama}</dd><dt>Lokasi outlet</dt><dd>${esc(q.lokasi)}</dd><dt>Target pembukaan</dt><dd>${esc(q.buka)}</dd><dt>Skema pembayaran</dt><dd>${esc(q.skema)}</dd><dt>Royalti</dt><dd>${pk.royalti}</dd><dt>Estimasi balik modal</dt><dd>${pk.bep}</dd></dl>
+  <table class="cost"><tbody>${pk.items.map(i => `<tr><td>${i[0]}</td><td>${rp(i[1])}</td></tr>`).join('')}
+  ${disc ? `<tr><td>Diskon</td><td style="color:var(--bad)">−${rp(disc)}</td></tr>` : ''}<tr class="total"><td>Total nilai quotation</td><td>${rp(qValue(q))}</td></tr></tbody></table>
+  ${q.note ? `<p><b>Catatan:</b> ${esc(q.note)}</p>` : ''}`;
+}
+function qStatus(a, q) {
+  if (a.stage === 'disetujui' && q === latest(a)) return '<span class="chip ok">Deal</span>';
+  return ({'terkirim':'<span class="chip warn">Menunggu tanggapan</span>','perubahan diminta':'<span class="chip aren">Perubahan diminta</span>','disetujui franchisee':'<span class="chip ok">Disetujui calon franchisee</span>'})[q.status];
+}
+function versionsHTML(a) {
+  if (!a.quotes.length) return '';
+  return `<h3>Riwayat versi quotation</h3><ul class="versions">${a.quotes.slice().reverse().map(q => `<li><b>Versi ${q.v}</b>, ${PAKET[q.paket].nama}, ${rp(qValue(q))}, ${esc(q.skema).toLowerCase()} ${qStatus(a,q)}</li>`).join('')}</ul>`;
+}
+function changesHTML(a) {
+  if (!a.changes.length) return '';
+  return `<h3>Riwayat permintaan perubahan</h3><ul class="versions">${a.changes.slice().reverse().map(c => `<li><b>${c.type}</b> pada versi ${c.v} ${c.result ? '<span class="chip ok">Sudah direvisi</span>' : '<span class="chip warn">Belum direvisi</span>'}<div class="small">Permintaan: ${esc(c.note)}</div>${c.result ? `<div class="small">Hasil diskusi dengan manajer: ${esc(c.result)}</div>` : ''}</li>`).join('')}</ul>`;
+}
+function tabQuotation(a) {
+  if (a.stage === 'quotation') {
+    const qb = state.qb, N = a.quotes.length + 1, ch = pendingChange(a);
+    return !canAct(a) ? viewOnly(a) : takeover(a) + (ch
+      ? `<div class="callout">Calon franchisee meminta perubahan <b>${ch.type.toLowerCase()}</b>: ${esc(ch.note)}<br>Diskusikan dengan manajer di luar sistem, lalu kirim quotation versi ${N} sesuai hasil diskusi.</div>`
+      : '<p class="muted">Pilih paket, nilai terisi otomatis dari template. Quotation dikirim ke email calon franchisee.</p>') + `
+      <div class="grid2">
+        <div class="field"><label for="qb-paket">Paket</label><select id="qb-paket" onchange="saveQb();renderDrawer()">${Object.entries(PAKET).map(([k,p]) => `<option value="${k}" ${qb.paket === k ? 'selected' : ''}>${p.nama} (${rp(total(k))})</option>`).join('')}</select></div>
+        <div class="field"><label for="qb-skema">Skema pembayaran</label><select id="qb-skema" onchange="saveQb();renderDrawer()">${['Lunas','2 termin','3 termin'].map(x => `<option ${qb.skema === x ? 'selected' : ''}>${x}</option>`).join('')}</select></div>
+        <div class="field"><label for="qb-lokasi">Lokasi outlet</label><input id="qb-lokasi" value="${esc(qb.lokasi)}"></div>
+        <div class="field"><label for="qb-buka">Target pembukaan</label><input id="qb-buka" value="${esc(qb.buka)}"></div>
+        <div class="field"><label for="qb-diskon">Diskon (Rp)</label><input id="qb-diskon" type="number" min="0" step="500000" value="${esc(qb.diskon)}" onchange="saveQb();renderDrawer()"></div>
+      </div>
+      ${ch ? `<div class="field"><label for="qb-result">Hasil diskusi dengan manajer</label><textarea id="qb-result" placeholder="Contoh: disepakati diskon Rp 2 jt">${esc(qb.result)}</textarea><span class="help">Wajib diisi untuk quotation revisi, tercatat di riwayat.</span></div>` : ''}
+      <div class="field"><label for="qb-note">Catatan untuk calon franchisee</label><textarea id="qb-note">${esc(qb.note)}</textarea></div>
+      <h3>Pratinjau quotation versi ${N}</h3><div class="preview">${quoteHTML(qb)}</div>
+      <div class="actions"><button class="btn btn-primary" onclick="sendQuote('${a.id}')">Kirim quotation versi ${N}</button></div>${versionsHTML(a)}${changesHTML(a)}`;
+  }
+  if (a.quotes.length) return `<div class="d-top"><h3 style="margin-top:0">Quotation versi ${latest(a).v}</h3>${qStatus(a, latest(a))}</div>${quoteHTML(latest(a))}${versionsHTML(a)}${changesHTML(a)}`;
+  return '<p class="muted">Quotation dibuat sales setelah calon franchisee lolos assessment.</p>';
+}
+function tabNego(a) {
+  const L = latest(a);
+  if (a.stage === 'negosiasi') {
+    let form = '';
+    if (state.negoForm === 'change') form = `<div class="formbox"><div class="field"><label for="ng-type">Jenis perubahan yang diminta</label><select id="ng-type">${CHANGE_TYPES.map(t => `<option>${t}</option>`).join('')}</select></div>
+      <div class="field"><label for="ng-note">Detail permintaan</label><textarea id="ng-note" placeholder="Contoh: minta potongan biaya kemitraan Rp 3 jt"></textarea></div>
+      <p class="small">Setelah dicatat, aplikasi kembali ke tahap Quotation. Sales mendiskusikan permintaan ini dengan manajer di luar sistem, lalu mengirim quotation versi ${L.v + 1}.</p>
+      <div class="actions"><button class="btn btn-primary" onclick="negoChange('${a.id}')">Catat permintaan</button><button class="btn btn-ghost" onclick="state.negoForm=null;renderDrawer()">Batal</button></div></div>`;
+    if (state.negoForm === 'withdraw') form = `<div class="formbox"><div class="field"><label for="ng-note">Alasan calon franchisee mundur</label><textarea id="ng-note"></textarea></div>
+      <div class="actions"><button class="btn btn-danger" onclick="negoWithdraw('${a.id}')">Tutup aplikasi</button><button class="btn btn-ghost" onclick="state.negoForm=null;renderDrawer()">Batal</button></div></div>`;
+    return !canAct(a) ? viewOnly(a) : takeover(a) + `<div class="callout">Quotation versi ${L.v} senilai ${rp(qValue(L))} sudah dikirim. Follow up calon franchisee, lalu catat tanggapannya.</div>
+      <h3 style="margin-top:0">Tanggapan calon franchisee</h3>
+      <div class="actions"><button class="btn btn-ok" onclick="negoAgree('${a.id}')">Setuju dengan quotation</button><button class="btn btn-ghost" onclick="state.negoForm='change';renderDrawer()">Minta perubahan</button><button class="btn btn-danger" onclick="state.negoForm='withdraw';renderDrawer()">Mundur</button></div>
+      ${form}<h3>Quotation versi ${L.v}</h3>${quoteHTML(L)}${changesHTML(a)}`;
+  }
+  if (a.stage === 'approval') return !canAct(a) ? viewOnly(a) : takeover(a) + `<div class="callout ok">${esc(a.name)} menyetujui quotation versi ${L.v} senilai <b>${rp(qValue(L))}</b>. Tinjau laporan survei, hasil assessment, dan quotation sebelum memutuskan.</div>
+      ${scoreCard(a)}${quoteHTML(L)}
+      <div class="field"><label for="mg-note">Catatan keputusan</label><textarea id="mg-note" placeholder="Wajib diisi jika ditolak atau minta revisi lokasi"></textarea></div>
+      <div class="actions"><button class="btn btn-ok" onclick="finalDecision('${a.id}','ok')">Setujui kemitraan</button><button class="btn btn-ghost" onclick="finalDecision('${a.id}','lokasi')">Minta revisi lokasi</button><button class="btn btn-danger" onclick="finalDecision('${a.id}','tolak')">Tolak</button></div>${changesHTML(a)}`;
+  if (a.stage === 'disetujui') return `<div class="callout ok">Kemitraan disetujui. Nilai deal ${rp(dealValue(a))}. Proses berlanjut ke penandatanganan perjanjian.</div>${quoteHTML(L)}${versionsHTML(a)}${changesHTML(a)}`;
+  if (a.stage === 'ditolak') return `<div class="callout bad">Aplikasi ditutup${a.rejectReason ? ': ' + esc(a.rejectReason) : '.'}</div>${changesHTML(a)}`;
+  return '<p class="muted">Negosiasi dimulai setelah quotation dikirim.</p>';
+}
+function tabRiwayat(a) {
+  return `<p class="muted">Setiap keputusan, perubahan, dan akses dokumen tercatat otomatis.</p>
+  <ul class="log">${a.log.slice().reverse().map(l => `<li><time>${fmtDT(l.t)}</time><span><span class="who">${l.by ? esc(person(l.by)) : 'Sistem'}</span>: ${esc(l.text)}</span></li>`).join('')}</ul>`;
+}
+
+/* ===================== actions ===================== */
+function reject(a, step, reason, text) { setStage(a,'ditolak'); a.rejectReason = reason; a.rejectStep = step; log(a, text); }
+function assignSales(id) {
+  const a = find(id), s = document.getElementById('tb-sales').value, note = document.getElementById('tb-note').value.trim();
+  if (!s) return toast('Pilih sales terlebih dulu.','bad');
+  a.sales = s; a.assignedBy = ME; a.triage = null; setStage(a,'presentasi');
+  log(a, `Sales ditugaskan oleh ${role().toLowerCase()}: ${uname(s)}${note ? ` (${note})` : ''}`);
+  notify(a, s, `Kamu ditugaskan mendampingi ${a.name} (${a.city}). Jadwalkan presentasi bisnis.`);
+  state.tab = 'presentasi'; toast(`Ditugaskan ke ${uname(s)}. Notifikasi otomatis terkirim lewat dashboard dan email.`); render();
+}
+function closeLead(id) {
+  const a = find(id), note = document.getElementById('tb-note').value.trim();
+  if (!note) return toast('Tulis alasan menutup lead.','bad');
+  reject(a, 0, note, `Lead ditutup: ${note}`); toast('Lead ditutup.'); render();
+}
+function submitPresentasi(id, lanjut) {
+  const a = find(id), date = document.getElementById('pr-date').value, mode = document.getElementById('pr-mode').value;
+  const prosp = document.getElementById('pr-prosp').checked, note = document.getElementById('pr-note').value.trim();
+  if (lanjut && (!date || !mode)) return toast('Isi tanggal dan format presentasi.','bad');
+  if (lanjut && !prosp) return toast('Kirim prospektus penawaran waralaba terlebih dulu.','bad');
+  if (!lanjut && !note) return toast('Tulis alasan calon franchisee tidak melanjutkan.','bad');
+  a.presentasi = {date, mode, prospektus:prosp, note};
+  if (lanjut) { setStage(a,'survei'); log(a,'Presentasi bisnis selesai, prospektus penawaran waralaba dikirim'); state.tab = 'survei'; toast('Presentasi tercatat. Lanjut ke survei lokasi.'); }
+  else { reject(a, 1, note, 'Calon franchisee tidak melanjutkan setelah presentasi'); toast('Aplikasi ditutup.'); }
+  render();
+}
+function fillSurvey() {
+  const v = {'sv-traffic':150,'sv-komp':2,'sv-vis':'4','sv-parkir':'Tersedia','sv-ojol':'Mudah','sv-rating':'4','sv-note':'Ramai mahasiswa dan pekerja pabrik pada sore hari.'};
+  Object.entries(v).forEach(([id,val]) => { const el = document.getElementById(id); if (el) el.value = val; });
+}
+function submitSurvey(id, layak) {
+  const a = find(id), g = x => document.getElementById(x).value;
+  const s = {traffic:g('sv-traffic'), komp:g('sv-komp'), vis:g('sv-vis'), parkir:g('sv-parkir'), ojol:g('sv-ojol'), rating:g('sv-rating'), note:g('sv-note').trim()};
+  if (layak && (!s.traffic || !s.komp || !s.vis || !s.parkir || !s.ojol || !s.rating)) return toast('Lengkapi semua hasil survei.','bad');
+  if (!layak && !s.note) return toast('Tulis alasan lokasi tidak layak.','bad');
+  s.result = layak ? 'layak' : 'tidak layak'; a.survey = s;
+  if (!layak) { reject(a, 2, s.note, 'Survei lokasi: tidak layak, aplikasi ditolak'); toast('Aplikasi ditolak.'); return render(); }
+  log(a,'Survei lokasi: layak');
+  if (a.assess && a.assess.result === 'lolos') {
+    setStage(a,'quotation'); state.tab = 'quotation'; state.qb = initQb(a);
+    toast('Lokasi baru layak. Calon franchisee sudah lolos assessment, lanjut ke quotation revisi.');
+  } else {
+    setStage(a,'assessment'); state.tab = 'assessment';
+    notify(a, a.reviewer, `${a.name} siap di-assessment. Lokasi sudah dinilai layak.`);
+    toast(`Lokasi layak. Notifikasi otomatis dikirim ke ${uname(a.reviewer)} untuk assessment.`);
+  }
+  render();
+}
+function fillAssess() {
+  ASSESS.forEach(([k]) => { document.getElementById('as-' + k).value = 'Lulus'; });
+  document.getElementById('as-note').value = 'Calon franchisee komunikatif, dana terverifikasi, identitas sesuai.';
+}
+function submitAssessment(id, pass) {
+  const a = find(id), res = Object.fromEntries(ASSESS.map(([k]) => [k, document.getElementById('as-' + k).value]));
+  const note = document.getElementById('as-note').value.trim();
+  if (pass && !ASSESS.every(([k]) => res[k] === 'Lulus')) return toast('Semua aspek harus lulus untuk meloloskan calon franchisee.','bad');
+  if (!pass && !note) return toast('Tulis alasan tidak lolos di catatan.','bad');
+  a.assess = {res, note, result:pass ? 'lolos' : 'tidak lolos'};
+  if (pass) {
+    setStage(a,'quotation'); log(a,'Assessment: lolos'); state.tab = 'quotation'; state.qb = initQb(a);
+    notify(a, a.sales, `${a.name} lolos assessment. Buat dan kirim quotation.`);
+    toast(`Lolos assessment. Notifikasi otomatis dikirim ke ${uname(a.sales)} untuk membuat quotation.`);
+  } else {
+    reject(a, 3, note, 'Assessment: tidak lolos, aplikasi ditolak');
+    notify(a, a.sales, `${a.name} tidak lolos assessment.`); toast('Aplikasi ditolak.');
+  }
+  render();
+}
+function sendQuote(id) {
+  saveQb(); const a = find(id), q = state.qb, ch = pendingChange(a);
+  if (!q.lokasi.trim() || !q.buka.trim()) return toast('Lengkapi lokasi outlet dan target pembukaan.','bad');
+  if ((Number(q.diskon) || 0) >= total(q.paket)) return toast('Diskon tidak boleh melebihi nilai paket.','bad');
+  if (ch && !q.result.trim()) return toast('Isi hasil diskusi dengan manajer untuk quotation revisi.','bad');
+  const v = a.quotes.length + 1;
+  if (ch) ch.result = q.result.trim();
+  a.quotes.push({v, paket:q.paket, lokasi:q.lokasi.trim(), buka:q.buka.trim(), diskon:Number(q.diskon) || 0, skema:q.skema, note:q.note.trim(), status:'terkirim'});
+  setStage(a,'negosiasi');
+  log(a, `Quotation versi ${v} dikirim ke calon franchisee${ch ? ' (revisi setelah diskusi dengan manajer)' : ''}`);
+  state.tab = 'nego'; toast(`Quotation versi ${v} dikirim ke email ${a.email}.`); render();
+}
+function negoAgree(id) {
+  const a = find(id), L = latest(a); L.status = 'disetujui franchisee';
+  setStage(a,'approval'); log(a, `Calon franchisee menyetujui quotation versi ${L.v}`);
+  notify(a, MANAGER, `${a.name} menyetujui quotation versi ${L.v} (${rp(qValue(L))}). Perlu approval akhir.`);
+  toast(`Tercatat. Notifikasi otomatis dikirim ke ${uname(MANAGER)} untuk approval akhir.`); render();
+}
+function negoChange(id) {
+  const a = find(id), L = latest(a), type = document.getElementById('ng-type').value, note = document.getElementById('ng-note').value.trim();
+  if (!note) return toast('Tulis detail permintaan perubahan.','bad');
+  L.status = 'perubahan diminta'; a.changes.push({v:L.v, type, note, result:null}); state.negoForm = null;
+  setStage(a,'quotation'); log(a, `Calon franchisee meminta perubahan: ${type}`);
+  state.qb = initQb(a); state.tab = 'quotation';
+  notify(a, MANAGER, `${a.name} meminta perubahan ${type.toLowerCase()}. ${uname(a.sales)} akan mendiskusikannya denganmu sebelum mengirim quotation versi ${L.v + 1}.`);
+  toast(`Permintaan tercatat. Diskusikan dengan manajer, lalu kirim quotation versi ${L.v + 1}.`); render();
+}
+function negoWithdraw(id) {
+  const a = find(id), note = document.getElementById('ng-note').value.trim();
+  if (!note) return toast('Tulis alasan calon franchisee mundur.','bad');
+  state.negoForm = null; reject(a, 5, note, 'Calon franchisee mundur saat negosiasi'); toast('Aplikasi ditutup.'); render();
+}
+function finalDecision(id, act) {
+  const a = find(id), note = document.getElementById('mg-note').value.trim();
+  if (act !== 'ok' && !note) return toast('Tulis alasan di catatan keputusan.','bad');
+  if (act === 'ok') {
+    setStage(a,'disetujui'); a.approvedAt = TODAY.toISOString(); log(a,'Approval akhir: kemitraan disetujui');
+    notify(a, a.sales, `Kemitraan ${a.name} disetujui. Lanjutkan ke perjanjian.`); toast(`Kemitraan disetujui. Nilai deal ${rp(dealValue(a))}.`);
+  } else if (act === 'lokasi') {
+    a.survey = {revisiNote:note}; setStage(a,'survei'); log(a, `Approval akhir: minta revisi lokasi (${note})`);
+    notify(a, a.sales, `Manajer meminta revisi lokasi untuk ${a.name}: ${note}`); state.tab = 'survei';
+    toast(`Dikembalikan ke survei lokasi. Notifikasi otomatis dikirim ke ${uname(a.sales)}.`);
+  } else {
+    reject(a, 6, note, 'Approval akhir: ditolak'); notify(a, a.sales, `Kemitraan ${a.name} ditolak pada approval akhir.`); toast('Aplikasi ditolak.');
+  }
+  render();
+}
+
+/* ===================== add lead ===================== */
+function openAdd() { state.sel = null; state.addOpen = true; state.form = blankForm(); state.formErr = {}; render(); setTimeout(() => document.getElementById('f-name')?.focus(), 80); }
+const FIELDS = ['name','phone','email','city','paket','modal','sumber','pengalaman','kelola','alamat','jenis','status','source','salesk'];
+function saveForm() {
+  FIELDS.forEach(k => { const el = document.getElementById('f-' + k); if (el) state.form[k] = el.value; });
+  const c = document.getElementById('f-consent'); if (c) state.form.consent = c.checked;
+}
+function setFile(k, input) { saveForm(); state.form[k] = input.files[0] ? input.files[0].name : ''; delete state.formErr[k]; renderDrawer(); }
+function demoFill() {
+  Object.assign(state.form, {name:'Rizky Ramadhan', phone:'0813-5520-1188', email:'rizky.ramadhan@mail.com', city:'Tangerang', paket:'cafe', modal:'500000000',
+    sumber:'Dana pribadi', pengalaman:'Pernah usaha F&B', kelola:'Dikelola sendiri', alamat:'Ruko Citra Raya Blok B2 No. 15, Cikupa, Tangerang',
+    jenis:'Ruko 2 lantai', status:'Sewa 5 tahun', source:'Pameran', salesk:'', ktp:'ktp_rizky.jpg', npwp:'npwp_rizky.pdf', dana:'rekening_koran_3bulan.pdf', foto:'foto_ruko_depan.jpg', consent:true});
+  state.formErr = {}; renderDrawer();
+}
+function fIn(k, label, type = 'text', help = '') {
+  const e = state.formErr[k];
+  return `<div class="field"><label for="f-${k}">${label}</label><input id="f-${k}" type="${type}" value="${esc(state.form[k])}" ${e ? 'aria-invalid="true"' : ''}>${help ? `<span class="help">${help}</span>` : ''}${e ? `<span class="err">${e}</span>` : ''}</div>`;
+}
+function fSel(k, label, opts, extra = '', help = '') {
+  const e = state.formErr[k];
+  return `<div class="field"><label for="f-${k}">${label}</label><select id="f-${k}" ${extra} ${e ? 'aria-invalid="true"' : ''}>${opts.map(o => { const [v,l] = Array.isArray(o) ? o : [o,o]; return `<option value="${esc(v)}" ${state.form[k] === v ? 'selected' : ''}>${esc(l)}</option>`; }).join('')}</select>${help ? `<span class="help">${help}</span>` : ''}${e ? `<span class="err">${e}</span>` : ''}</div>`;
+}
+const P = l => [['','Pilih'], ...l.map(x => [x,x])];
+function addFormHTML() {
+  const f = state.form, auto = f.city ? salesFor(f.city) : null;
+  return `<div class="d-head"><div class="d-top"><div><h2 id="dTitle" style="margin:0">Tambah lead</h2><p class="sub">Input data calon franchisee setelah menunjukkan minat. Lead masuk ke tahap Lead baru dan langsung diteruskan ke presentasi bisnis bila sales sudah jelas.</p></div>
+    <button class="close" onclick="closeDetail()" aria-label="Tutup">×</button></div><div style="height:14px"></div></div>
+  <div class="d-body">
+    <div class="actions" style="margin:0 0 16px"><button class="link" onclick="saveForm();demoFill()">Isi data contoh</button></div>
+    <p class="sec-title">Calon franchisee</p>
+    <div class="grid2">${fIn('name','Nama lengkap')}${fIn('phone','Nomor WhatsApp','tel')}${fIn('email','Email','email')}${fIn('city','Kota domisili','text','Dipakai untuk menentukan sales sesuai wilayah')}</div>
+    <p class="sec-title">Paket dan modal</p>
+    <div class="grid2">${fSel('paket','Paket yang diminati', Object.entries(PAKET).map(([k,p]) => [k, `${p.nama} (${rp(total(k))})`]))}
+      ${fIn('modal','Modal tersedia (Rp)','number')}
+      ${fSel('sumber','Sumber modal',P(['Dana pribadi','Patungan dengan rekan','Pinjaman bank']))}
+      ${fSel('pengalaman','Pengalaman usaha',P(['Belum pernah usaha','Pernah usaha non-F&B','Pernah usaha F&B']))}
+      ${fSel('kelola','Rencana pengelolaan',P(['Dikelola sendiri','Dikelola karyawan, dipantau sendiri','Investor pasif']))}</div>
+    <p class="sec-title">Rencana lokasi</p>
+    ${fIn('alamat','Alamat lokasi yang diajukan')}
+    <div class="grid2">${fSel('jenis','Jenis lokasi',P(['Dekat sekolah/kampus','Ruko / area perkantoran','Ruko 2 lantai','Mall / foodcourt','Pemukiman']))}
+      ${fSel('status','Status lokasi',P(['Milik sendiri','Sewa 1 tahun','Sewa 3 tahun','Sewa 5 tahun']))}</div>
+    <p class="sec-title">Sumber dan sales</p>
+    <div class="grid2">${fSel('source','Sumber lead',P(SOURCES))}
+      ${role() === 'Sales' ? `<div class="field"><label>Sales pendamping</label><input value="${esc(uname(ME))} (kamu)" disabled></div>` : fSel('salesk','Sales pendamping',[['','Otomatis sesuai wilayah'], ...SALES.map(s => [s, `${uname(s)}, ${USERS[s].area}`])], '', auto ? `Otomatis: ${uname(auto)}` : 'Bila kota di luar wilayah, lead masuk antrean manajer')}</div>
+    <p class="sec-title">Dokumen</p>
+    ${DOCS.map(([k,l]) => `<div class="field"><label for="f-${k}">${l}${k === 'ktp' ? '' : ' (opsional saat input)'}</label><input id="f-${k}" type="file" accept=".jpg,.jpeg,.png,.pdf" onchange="setFile('${k}',this)">${f[k] ? `<span class="help">Terunggah: ${esc(f[k])}</span>` : ''}${state.formErr[k] ? `<span class="err">${state.formErr[k]}</span>` : ''}</div>`).join('')}
+    <label class="consent"><input type="checkbox" id="f-consent" ${f.consent ? 'checked' : ''}><span>Calon franchisee sudah menyetujui Kopi Koma memproses data pribadinya, termasuk dokumen identitas dan keuangan, untuk keperluan seleksi kemitraan.</span></label>
+    ${state.formErr.consent ? `<p class="err" style="margin-top:6px">${state.formErr.consent}</p>` : ''}
+    <div class="actions" style="margin-top:20px"><button class="btn btn-primary" onclick="submitLead()">Simpan lead</button><button class="btn btn-ghost" onclick="closeDetail()">Batal</button></div>
+  </div>`;
+}
+function leastLoadedReviewer() {
+  const load = r => state.apps.filter(a => !isDone(a) && a.reviewer === r).length;
+  return REVIEWERS.slice().sort((x,y) => load(x) - load(y))[0];
+}
+function newApp(o) {
+  const id = 'KK-' + String(300 + state.apps.length + 1).padStart(4,'0'), t = nowIso();
+  const a = Object.assign({id, consent:true, stage:'baru', assignedBy:null, triage:null, stageSince:t, presentasi:null, survey:null, assess:null, quotes:[], changes:[], rejectReason:null, rejectStep:null,
+    log:[], reached:['lead'], approvedAt:null, isNew:true, reviewer:leastLoadedReviewer()}, o);
+  a.map = o.map || genMap(a.alamat + a.city);
+  state.apps.unshift(a); return a;
+}
+function routeNew(a) {
+  const t = triage(a);
+  if (!t) {
+    a.sales = a.sales || salesFor(a.city); setStage(a,'presentasi');
+    log(a, a.inputBy ? 'Diteruskan otomatis ke presentasi bisnis (lead diinput sales)' : `Sales ditugaskan otomatis sesuai wilayah: ${uname(a.sales)}`, null);
+    notify(a, a.sales, `${a.inputBy && a.inputBy === a.sales ? 'Lead tersimpan' : 'Lead baru untukmu'}: ${a.name} (${a.city}, ${PAKET[a.paket].nama}). Jadwalkan presentasi bisnis.`);
+    return null;
+  }
+  a.triage = t; if (t.code !== 'kapasitas' && !a.inputBy) a.sales = null;
+  log(a, `Perlu penugasan manual: ${t.text}`, null);
+  notify(a, MANAGER, `Lead baru perlu ditugaskan: ${a.name}. ${t.text}.`);
+  return t;
+}
+function submitLead() {
+  saveForm(); const f = state.form, err = {};
+  ['name','phone','email','city','modal','sumber','pengalaman','kelola','alamat','jenis','status','source'].forEach(k => { if (!f[k]) err[k] = 'Wajib diisi.'; });
+  if (f.email && !/^\S+@\S+\.\S+$/.test(f.email)) err.email = 'Format email belum benar.';
+  if (!f.ktp) err.ktp = 'KTP wajib diunggah.';
+  if (!f.consent) err.consent = 'Persetujuan calon franchisee diperlukan sebelum data disimpan.';
+  state.formErr = err;
+  if (Object.keys(err).length) { renderDrawer(); toast('Lengkapi isian yang ditandai.','bad'); return; }
+  const sales = role() === 'Sales' ? ME : (f.salesk || salesFor(f.city));
+  const a = newApp({name:f.name, phone:f.phone, email:f.email, city:f.city, paket:f.paket, modal:Number(f.modal), sumber:f.sumber, pengalaman:f.pengalaman,
+    pengelolaan:f.kelola, alamat:f.alamat, jenisLokasi:f.jenis, statusLokasi:f.status, docs:{ktp:f.ktp, npwp:f.npwp, dana:f.dana, foto:f.foto},
+    source:f.source, inputBy:ME, sales, map: f.name === 'Rizky Ramadhan' ? {poi:11, comp:2, dist:2.4} : null, stage:'baru'});
+  if (!a.sales) a.sales = null;
+  log(a, `Input data lead (sumber: ${a.source})`);
+  a.reached = ['lead'];
+  const t = routeNew(a);
+  state.addOpen = false; state.form = blankForm();
+  toast(t ? `Lead ${a.id} masuk antrean manajer: ${t.text}.` : `Lead ${a.id} tersimpan dan diteruskan ke presentasi bisnis${a.sales !== ME ? ` dengan sales ${uname(a.sales)}` : ''}.`);
+  render();
+}
+const SELF_POOL = [['Nadya Pertiwi','Bandung','gerobak'],['Fikri Maulana','Bekasi','cafe'],['Yohanes Tan','Medan','cafe'],['Reza Pahlevi','Tangerang','gerobak']];
+let selfIdx = 0;
+function simulateSelf() {
+  const [name, city, paket] = SELF_POOL[selfIdx++ % SELF_POOL.length];
+  const a = newApp({name, city, paket, phone:'0857-' + (4100 + selfIdx * 77) + '-' + (2200 + selfIdx * 13), email:name.toLowerCase().split(' ')[0] + '@mail.com',
+    modal:Math.round(total(paket) * 1.1 / 1e6) * 1e6, sumber:'Dana pribadi', pengalaman:'Pernah usaha non-F&B', pengelolaan:'Dikelola sendiri',
+    alamat:'Jl. Melati No. ' + (5 + selfIdx * 4) + ', ' + city, jenisLokasi: paket === 'gerobak' ? 'Dekat sekolah/kampus' : 'Ruko 2 lantai', statusLokasi:'Sewa 3 tahun',
+    docs:{ktp:'ktp.jpg', npwp:'npwp.pdf', dana:'rekening_koran.pdf', foto:'foto_lokasi.jpg'}, source:'Website (mandiri)', inputBy:null, sales:null, assignedBy:null});
+  log(a, 'Lead masuk dari Website (pendaftaran mandiri)', null);
+  const t = routeNew(a);
+  toast(t ? `Lead mandiri masuk: ${a.name}. Tidak bisa ditugaskan otomatis (${t.text}), masuk antrean manajer.` : `Lead mandiri masuk: ${a.name}. Ditugaskan otomatis ke ${uname(a.sales)} sesuai wilayah.`); render();
+}
+
+/* ===================== target & sales performance ===================== */
+function setRate(i, v) { state.rates[i] = Math.min(100, Math.max(1, parseInt(v, 10) || 1)); render(); }
+function setPType(t) { state.ptype = t; state.pkey = t === 'bulan' ? CUR_M : t === 'kuartal' ? 4 : t === 'semester' ? 2 : 1; render(); }
+function periodInfo() {
+  const {ptype, pkey} = state; let ms, label;
+  if (ptype === 'bulan') { ms = [pkey]; label = MONTHS[pkey - 1] + ' 2026'; }
+  else if (ptype === 'kuartal') { ms = [3 * pkey - 2, 3 * pkey - 1, 3 * pkey]; label = 'Q' + pkey + ' 2026'; }
+  else if (ptype === 'semester') { ms = pkey === 1 ? [1,2,3,4,5,6] : [7,8,9,10,11,12]; label = (pkey === 1 ? 'H1' : 'H2') + ' 2026'; }
+  else { ms = [1,2,3,4,5,6,7,8,9,10,11,12]; label = 'Tahun 2026'; }
+  const start = new Date(2026, ms[0] - 1, 1), end = new Date(2026, ms[ms.length - 1], 1);
+  const totalD = Math.round((end - start) / 864e5), el = Math.min(totalD, Math.max(0, Math.floor((TODAY - start) / 864e5) + 1));
+  const ended = el >= totalD;
+  return {ms, label, totalD, el, pace:el / totalD, ended, td: ended ? 'penuh' : ({bulan:'MTD', kuartal:'QTD', semester:'HTD', tahun:'YTD'})[ptype]};
+}
+function periodControls() {
+  const types = [['bulan','Bulanan'],['kuartal','Kuartal'],['semester','Semester'],['tahun','Tahunan']];
+  const opts = state.ptype === 'bulan' ? MONTHS.slice(0, CUR_M).map((m,i) => [i + 1, m + ' 2026'])
+    : state.ptype === 'kuartal' ? [1,2,3,4].map(q => [q, `Q${q} 2026`])
+    : state.ptype === 'semester' ? [[1,'H1 2026, Januari–Juni'],[2,'H2 2026, Juli–Desember']] : [];
+  return `<div class="period"><div class="seg" role="group" aria-label="Jenis periode">${types.map(([k,l]) => `<button aria-pressed="${state.ptype === k}" onclick="setPType('${k}')">${l}</button>`).join('')}</div>
+    ${opts.length ? `<select aria-label="Pilih periode" onchange="state.pkey=+this.value;render()">${opts.map(([v,l]) => `<option value="${v}" ${state.pkey === v ? 'selected' : ''}>${l}</option>`).join('')}</select>` : ''}</div>`;
+}
+function salesAch(s, P) {
+  let g = 0, c = 0, rev = 0; const f = FUNNEL.map(() => 0);
+  P.ms.filter(m => m <= CUR_M).forEach(m => { const h = HIST[s][m]; g += h.g; c += h.c; h.f.forEach((v,i) => f[i] += v); });
+  rev = g * total('gerobak') + c * total('cafe');
+  if (P.ms.includes(CUR_M)) {
+    state.apps.filter(a => a.sales === s).forEach(a => {
+      FUNNEL.slice(0,-1).forEach((fn,i) => { if (a.reached.includes(fn.key)) f[i]++; });
+      if (a.stage === 'disetujui' && a.approvedAt && new Date(a.approvedAt).getMonth() + 1 === CUR_M) { a.paket === 'cafe' ? c++ : g++; rev += dealValue(a); }
+    });
+  }
+  f[f.length - 1] = g + c;
+  return {g, c, qty:g + c, rev, f};
+}
+const salesTarget = (s, P) => ({qty:SALES_T[s].q * P.ms.length, rev:SALES_T[s].r * P.ms.length});
+function perfStatus(x) { return x >= 1 ? ['ok','Di atas target'] : x >= .85 ? ['ok','Sesuai jalur'] : x >= .65 ? ['warn','Perlu dorongan'] : ['bad','Kritis']; }
+const barColor = st => st[0] === 'ok' ? 'var(--ok)' : st[0] === 'warn' ? '#C98F1E' : 'var(--bad)';
+function totals(P) {
+  const A = scope().map(s => salesAch(s, P)).reduce((acc,x) => ({g:acc.g + x.g, c:acc.c + x.c, qty:acc.qty + x.qty, rev:acc.rev + x.rev, f:acc.f.map((v,i) => v + x.f[i])}), {g:0,c:0,qty:0,rev:0,f:FUNNEL.map(() => 0)});
+  const T = scope().reduce((acc,s) => { const t = salesTarget(s,P); return {qty:acc.qty + t.qty, rev:acc.rev + t.rev}; }, {qty:0, rev:0});
+  return {A, T};
+}
+function kpi(title, target, ach, P, fmt, foot) {
+  const tdT = target * P.pace, pctTD = tdT ? ach / tdT : 0, pct = target ? ach / target : 0, st = perfStatus(pctTD);
+  return `<div class="panel kpi"><div class="d-top"><h2 style="margin:0">${title}</h2><span class="chip ${st[0]}">${st[1]}</span></div>
+    <div class="kpi-num">${fmt(ach)}</div>
+    <div class="small">Seharusnya ${P.ended ? '' : `per 20 Okt (${P.td}) `}<b style="color:var(--ink)">${fmt(tdT)}</b>, tercapai ${Math.round(pctTD * 100)}%</div>
+    <div class="bar" style="margin:10px 0 4px"><span style="width:${Math.min(pct,1) * 100}%;background:${barColor(st)}"></span>${P.ended ? '' : `<i style="left:${P.pace * 100}%"></i>`}</div>
+    <div class="small">Target ${P.label} ${fmt(target)}, tercapai ${Math.round(pct * 100)}%. ${foot}</div></div>`;
+}
+function viewDashboard() {
+  const P = periodInfo(), {A, T} = totals(P);
+  const pipe = state.apps.filter(a => ['quotation','negosiasi','approval'].includes(a.stage) && scope().includes(a.sales));
+  const pipeVal = pipe.reduce((x,a) => x + dealValue(a), 0);
+  const tg = FUNNEL.map(() => 0); tg[tg.length - 1] = T.qty; for (let i = tg.length - 2; i >= 0; i--) tg[i] = Math.ceil(tg[i + 1] / (state.rates[i] / 100));
+  let worst = 0, ws = Infinity;
+  const rows = FUNNEL.map((f,i) => {
+    const tdT = tg[i] * P.pace, x = tdT ? A.f[i] / tdT : 0, pct = tg[i] ? A.f[i] / tg[i] : 0, st = perfStatus(x);
+    if (x < ws) { ws = x; worst = i; }
+    const last = i === FUNNEL.length - 1, actual = !last && A.f[i] ? Math.round(A.f[i + 1] / A.f[i] * 100) + '%' : '–';
+    return `<tr><td><div class="tl-title">${f.l}</div><div class="small">${f.d}</div></td>
+      <td class="num">${tg[i]}</td><td class="num">${num1(tdT)}</td><td class="num">${A.f[i]}</td>
+      <td><div class="bar"><span style="width:${Math.min(pct,1) * 100}%;background:${barColor(st)}"></span>${P.ended ? '' : `<i style="left:${P.pace * 100}%"></i>`}</div><div class="small">${Math.round(pct * 100)}% dari target periode</div></td>
+      <td><span class="chip ${st[0]}">${st[1]}</span></td>
+      <td>${!last ? `<input class="rate" type="number" min="1" max="100" value="${state.rates[i]}" aria-label="Rasio konversi ${f.l}" onchange="setRate(${i},this.value)">%<div class="small">Aktual: ${actual}</div>` : '<span class="small">Tahap akhir</span>'}</td></tr>`;
+  }).join('');
+  const weak = role() === 'Sales' ? [] : SALES.filter(s => { const t = salesTarget(s,P), a = salesAch(s,P); return Math.min(a.qty / (t.qty * P.pace), a.rev / (t.rev * P.pace)) < .85; });
+  return `<div class="page-head"><div><h1>${role() === 'Sales' ? 'Target dan pencapaian saya' : 'Target dan pencapaian'}, ${P.label}</h1><p class="sub">${P.ended ? 'Periode sudah selesai.' : `Data per 20 Oktober 2026, hari ke-${P.el} dari ${P.totalD}.`} Data demo.</p></div>${periodControls()}</div>
+  <div class="kpis">
+    ${kpi('Franchisee disetujui', T.qty, A.qty, P, v => num1(v), `Gerobak ${A.g}, cafe ${A.c}.`)}
+    ${kpi('Revenue kemitraan', T.rev, A.rev, P, rpS, 'Nilai deal dari franchisee yang disetujui.')}
+    <div class="panel kpi"><h2 style="margin:0">Nilai pipeline</h2><div class="kpi-num">${rpS(pipeVal)}</div>
+      <div class="small">${pipe.length} aplikasi di tahap quotation, negosiasi, dan approval akhir. Potensi revenue jika semuanya disetujui.</div>
+      ${role() === 'Sales' ? '' : `<button class="link" style="margin-top:10px" onclick="setView('sales')">Lihat per sales</button>`}</div>
+  </div>
+  <div class="panel" style="margin-bottom:16px"><h2>Perlu perhatian</h2>${ws >= .85 ? '<p>Semua tahap funnel sesuai jalur untuk periode ini.</p>' : `<p>Tahap <b>${FUNNEL[worst].l}</b> paling tertinggal: ${A.f[worst]} dari seharusnya ${num1(tg[worst] * P.pace)} (${Math.round(ws * 100)}%).</p>`}
+    ${weak.length ? `<p style="margin:0">${weak.length} sales di bawah target: ${weak.map(s => uname(s)).join(' dan ')}. <button class="link" onclick="setView('sales')">Lihat performa sales</button></p>` : ''}</div>
+  <div class="panel"><h2>Funnel per tahap</h2><div class="table-wrap"><table class="funnel">
+    <thead><tr><th>Tahap</th><th>Target periode</th><th>Seharusnya ${P.ended ? '' : 'per 20 Okt'}</th><th>Pencapaian</th><th>Progres</th><th>Status</th><th>Rasio konversi ke tahap berikutnya</th></tr></thead>
+    <tbody>${rows}</tbody></table></div>
+    <p class="small" style="margin:12px 0 0">Target jumlah per tahap dihitung mundur dari target franchisee disetujui dan rasio konversi. ${P.ended ? '' : 'Garis hitam di bar menandai posisi yang seharusnya tercapai hari ini.'}</p></div>`;
+}
+function viewSales() {
+  const P = periodInfo(), dateTxt = P.ended ? '(periode selesai)' : `per 20 Okt (${P.td})`;
+  const data = SALES.map(s => ({s, t:salesTarget(s,P), a:salesAch(s,P)}));
+  const table = (title, key, fmt, note) => {
+    const rows = data.map(d => { const full = d.t[key], should = full * P.pace, ach = d.a[key], pct = should ? ach / should : 0; return {...d, full, should, ach, pct, st:perfStatus(pct)}; }).sort((x,y) => y.pct - x.pct);
+    const sum = rows.reduce((v,r) => ({full:v.full + r.full, should:v.should + r.should, ach:v.ach + r.ach}), {full:0, should:0, ach:0});
+    const sPct = sum.should ? sum.ach / sum.should : 0, sSt = perfStatus(sPct);
+    const gap = g => g >= 0 ? `<span style="color:var(--ok);font-weight:700">+${fmt(g)}</span>` : `<span style="color:var(--bad);font-weight:700">−${fmt(-g)}</span>`;
+    const pc = (pct, st) => `<div class="bar" style="min-width:110px"><span style="width:${Math.min(pct,1) * 100}%;background:${barColor(st)}"></span></div><div class="small">${Math.round(pct * 100)}%</div>`;
+    return `<section class="panel" style="margin-bottom:16px"><h2>${title}</h2><p class="small" style="margin-top:-4px">${note}</p>
+      <div class="table-wrap"><table class="funnel"><thead><tr><th style="width:36px">#</th><th>Sales</th><th>Target ${P.label}</th><th>Seharusnya ${dateTxt}</th><th>Achievement</th><th>Achievement vs seharusnya</th><th>Selisih</th><th>Status</th></tr></thead>
+      <tbody>${rows.map((r,i) => `<tr><td class="num" style="font-size:15px;color:var(--muted)">${i + 1}</td>
+        <td><div class="who-cell"><span class="av sm">${initials(uname(r.s))}</span><div><button class="link" style="color:var(--ink);text-decoration:none" onclick="openProfile('${r.s}')">${uname(r.s)}</button><div class="small">${USERS[r.s].area}</div></div></div></td>
+        <td>${fmt(r.full)}</td><td><b>${fmt(r.should)}</b></td><td class="num" style="font-size:16px">${fmt(r.ach)}</td><td>${pc(r.pct, r.st)}</td><td>${gap(r.ach - r.should)}</td><td><span class="chip ${r.st[0]}">${r.st[1]}</span></td></tr>`).join('')}
+        <tr class="sum"><td></td><td><b>Total</b></td><td><b>${fmt(sum.full)}</b></td><td><b>${fmt(sum.should)}</b></td><td class="num" style="font-size:16px">${fmt(sum.ach)}</td><td>${pc(sPct, sSt)}</td><td>${gap(sum.ach - sum.should)}</td><td><span class="chip ${sSt[0]}">${sSt[1]}</span></td></tr>
+      </tbody></table></div></section>`;
+  };
+  return `<div class="page-head"><div><h1>Performa sales, ${P.label}</h1><p class="sub">${P.ended ? 'Periode sudah selesai.' : `Data per 20 Oktober 2026, hari ke-${P.el} dari ${P.totalD}.`} "Seharusnya" adalah target yang mestinya sudah tercapai pada tanggal ini, sesuai proporsi hari yang sudah berjalan.</p></div>${periodControls()}</div>
+  ${table('Target revenue','rev',rpS,'Revenue dari nilai deal franchisee yang disetujui. Diurutkan dari sales paling perform.')}
+  ${table('Target kuantitas','qty',num1,'Jumlah franchisee yang disetujui. Diurutkan dari sales paling perform.')}
+  <p class="small">Target bulanan per sales: ${SALES.map(s => `${first(s)} ${SALES_T[s].q} franchisee dan ${rpS(SALES_T[s].r)}`).join('; ')}. Target kuartal, semester, dan tahunan adalah penjumlahan target bulanan.</p>`;
+}
+
+/* ===================== keyboard & boot ===================== */
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape') return;
+  if (state.apv) { closeApproval(); return; }
+  if (state.notifOpen || state.menuOpen) { state.notifOpen = false; state.menuOpen = false; renderNotif(); renderTop(); return; }
+  if (state.sel || state.addOpen) closeDetail();
+});
+state = initState();
+render();
+
+
+
+</script>
+</body>
+</html>
