@@ -11,7 +11,12 @@
 ## Asumsi bisnis
 - Klien fiktif: Kopi Koma, brand kopi kekinian lokal, sekitar 80 outlet, target ekspansi 120 outlet per tahun (72 Gerobak + 48 Cafe, stretch target). Tulis "nama fiktif" di PRD (ada brand nyata bernama Titik Koma).
 - Paket: Gerobak (Rp 45 jt, tanpa royalti) dan Cafe (Rp 450 jt, royalti 5%). Kiosk sudah dihapus.
-- Data pendukung sektor: F&B 47,77% dari waralaba Indonesia (Kemendag, Feb 2025); jumlah kedai kopi naik hampir 3x dalam 3 tahun (Kemenperin, Mei 2025). Pertumbuhan nilai pasar kopi moderat (proyeksi 3,61% 2024-2029), jadi argumennya adalah ekspansi gerai via franchise, bukan "pasar booming".
+- Data pendukung sektor (cek ulang ke sumber asli sebelum dikutip):
+  - F&B 47,77% dari pemberi waralaba terdaftar (STPW) per Februari 2025: 157 dalam negeri, 154 luar negeri (Kemendag). Persentase dari jumlah pemberi waralaba, bukan gerai/omzet.
+  - Kedai kopi berjaringan >2.950 gerai per Agustus 2019, hampir 3x dari ±1.000 di 2016 (riset TOFFIN & MIX MarComm, dikutip Kemenperin). Pernyataan Kemenperin 2025 "naik hampir 3x dalam 3 tahun" kemungkinan mengulang data ini; JANGAN tulis sebagai data 2022-2025.
+  - Proyeksi pertumbuhan pasar kopi 3,61%/tahun 2024-2029 hanya ditemukan di berita (pernyataan Kemenperin 2025), belum di situs resmi.
+  - Pembanding pertumbuhan gerai (dari ringkasan pencarian, belum diverifikasi): Esteh Indonesia ±+120%/tahun (2021-2022), Janji Jiwa ±+16%/tahun (2019-2022), pasar kedai kopi ±+21%/tahun (2020-2025, APKCI).
+  - Argumennya ekspansi gerai via franchise, bukan "pasar booming".
 - Revenue = nilai deal paket kemitraan setelah diskon dari franchisee yang disetujui. Royalti tidak dihitung.
 
 ## Alur (POV franchisor), 8 tahap
@@ -27,7 +32,7 @@
 | + | Disetujui, Ditolak | | |
 
 Aturan penting:
-- Lead baru: lead dari sales langsung diteruskan ke presentasi. Lead mandiri (website/Instagram) otomatis ditugaskan ke sales sesuai wilayah. Masuk antrean manajer bila: kota di luar wilayah, terindikasi duplikat (HP/email sama dengan lead aktif), atau sales wilayah sudah memegang 5 lead aktif.
+- Lead baru: lead dari sales langsung diteruskan ke presentasi. Lead mandiri (website/Instagram) otomatis ditugaskan ke sales sesuai wilayah. Masuk antrean manajer bila: kota di luar wilayah, terindikasi duplikat (HP/email sama dengan lead aktif), atau sales wilayah sudah mencapai batas lead aktif (`capOf`: senior 15, junior 10, disesuaikan dengan target).
 - Minta perubahan saat negosiasi: aplikasi kembali ke Quotation (label Revisi). Sales dan manajer berdiskusi DI LUAR sistem; saat kirim quotation versi berikutnya sales wajib isi "Hasil diskusi dengan manajer".
 - Ganti lokasi: jenis perubahan di negosiasi (dari portal atau dicatat sales), wajib isi alamat baru. Aplikasi kembali ke Survei lokasi untuk lokasi baru; setelah layak langsung ke Quotation revisi (tanpa penilaian kelayakan ulang, tetap isi "Hasil diskusi dengan manajer"). Survei tidak layak = ditolak.
 - Keputusan lokasi diselesaikan di tahap survei: bila skor lokasi AI < 60, tab survei menampilkan pengingat SOP untuk diskusi dengan manajer sebelum menyatakan layak. Persetujuan akhir tidak punya opsi revisi lokasi.
@@ -45,6 +50,8 @@ Halaman masuk berisi form email + kata sandi dan daftar akun demo per role (klik
 | Reviewer | bima.prasetyo / dimas.arya @kopikoma.id | Pipeline, Tugas saya | Penilaian kelayakan |
 
 - Indikator lewat batas waktu hanya terlihat oleh Super Admin dan Manajer.
+- Status target: bila target berjalan (MTD/QTD/...) masih < 1 deal (atau < Rp 45 jt untuk revenue), status tampil "Awal periode" (abu-abu), bukan "Kritis"; status sales = metrik terlemah di antara metrik yang sudah dinilai.
+- Kartu kanban tidak punya tombol Status persetujuan (dibuka dari drawer atau tabel tugas). Drawer punya 7 tab: Ringkasan (termasuk penugasan sales saat tahap Lead baru), Presentasi, Survei lokasi, Penilaian, Quotation, Negosiasi, Riwayat.
 - Pipeline punya pengalih Aktif | Selesai (`state.pview`, reset ke Aktif saat login). Kanban hanya 7 tahap aktif (muat di laptop tanpa scroll). Pengajuan disetujui/ditolak/mundur ada di tabel Selesai: hasil, tahap terakhir, alasan, nilai kesepakatan, sales, tanggal selesai; filter hasil, periode, sales, dan pencarian. Di bawah kanban ada ringkasan "Selesai bulan ini" dengan tautan Lihat semua.
 - Kartu pipeline tidak membedakan lead mandiri dan lead dari sales. Lead yang belum punya sales (tahap Lead baru) diberi chip "Belum ada sales" plus alasannya (Luar wilayah / Duplikat? / Sales penuh); setelah ditugaskan, kartu tampil seperti biasa.
 - Wilayah sales: Rendi = Tangerang Raya; Putri = Jakarta, Bogor, Depok, Bekasi, Cikarang; Agus = Bandung Raya (Bandung, Cimahi); Wulan = Jawa Tengah (Semarang, Solo, Magelang, Salatiga, Klaten, Kudus, Pekalongan, Tegal, Purwokerto). Garut dan Yogyakarta di luar wilayah (masuk antrean manajer).
@@ -54,7 +61,7 @@ Halaman masuk berisi form email + kata sandi dan daftar akun demo per role (klik
 - Status persetujuan per aplikasi (modal timeline 7 langkah, PIC + lama menunggu), dari kartu, drawer, dan tabel tugas.
 - Skor kecocokan AI (profil 40%, lokasi 60%) dengan alasan plus/minus. DISIMULASIKAN dengan pembobotan aturan + data peta simulasi; jujur sebutkan di PRD. Alat bantu, bukan penolakan otomatis.
 - Target per sales (BULANAN, angka bulat, `SALES_T`), semua sales punya target Gerobak dan Cafe, dibedakan senioritas (`USERS[k].level`, dari tanggal bergabung): Senior (Rendi, Putri) 2 Gerobak + 1 Cafe; Junior (Wulan, Agus) 1 Gerobak + 1 Cafe. Total tim 6 Gerobak + 4 Cafe per bulan = 72 Gerobak + 48 Cafe = 120 outlet per tahun, revenue ±Rp 2,07 M/bulan (±Rp 24,8 M/tahun). Target agresif (di atas benchmark), tulis sebagai stretch target di PRD. Periode lain = target bulanan x jumlah bulan. Level senior/junior tampil di profil dan Performa Sales.
-- Target vs Achievement: periode Bulanan/Kuartal/Semester/Tahunan. Kartu Gerobak, Cafe, Revenue, dan Nilai pipeline (semua mengikuti periode yang dipilih). Tiap kartu paket menampilkan "x dari target", "Kurang N", Target MTD/QTD/HTD/YTD, dan peluang di pipeline (quotation/negosiasi/persetujuan akhir) per paket. Funnel 6 tahap dihitung mundur dari rasio konversi (bisa diubah).
+- Target vs Achievement: periode Bulanan/Kuartal/Semester/Tahunan. Kartu Gerobak, Cafe, dan Revenue (semua mengikuti periode yang dipilih); potensi nilai pipeline ada di kartu Revenue. Tiap kartu paket menampilkan "x dari target", "Kurang N", Target MTD/QTD/HTD/YTD, dan peluang di pipeline (quotation/negosiasi/persetujuan akhir) per paket. Funnel 6 tahap dihitung mundur dari rasio konversi (bisa diubah).
 - Performa Sales (manajer/super admin): satu tabel per sales dengan kolom Gerobak, Cafe, Revenue (masing-masing achievement / target + "Kurang N" atau % dari Target MTD) dan Status. Status mengikuti metrik terlemah; diurutkan dari paling perform.
 - Pipeline punya filter paket (Semua paket / Gerobak / Cafe, `state.pkg`) yang berlaku untuk kanban dan tabel Selesai. Chip Cafe di kartu berwarna gelap agar menonjol.
 - Profil pengguna (tugas aktif, notifikasi email, aktivitas; target tahunan Gerobak/Cafe/revenue untuk Sales). Tidak ada menu User/Pengguna, kartu deskripsi peran, maupun matriks akses. Profil sales lain dibuka dari Performa Sales.
@@ -65,7 +72,7 @@ Halaman masuk berisi form email + kata sandi dan daftar akun demo per role (klik
 ## Struktur kode
 - Satu file `index.html` tanpa build (plus `vercel.json` untuk route `/mitra`): CSS di `<style>`, JS vanilla di `<script>`, font Plus Jakarta Sans dari Google Fonts.
 - Bagian JS ditandai komentar `/* ===================== nama ===================== */`: base, people & roles, flow, AI score, seed data, sales history, state, helpers, top bar, render (login + tab per peran), pipeline, all tasks, users & roles, profile, partner portal (calon franchisee), approval status modal, detail drawer, actions, add lead, target & sales performance.
-- `MODE` (`staff` / `mitra`) menentukan aplikasi yang dirender. Data aplikasi dan notifikasi (`state.apps`, `state.notifs`, `tick`, `nid`) disimpan di localStorage (`kopikoma-demo-v4`; naikkan versinya bila seed atau teks log berubah agar data lama otomatis diganti) supaya kedua aplikasi terhubung, termasuk antar-tab lewat event `storage`. State UI dan login (`ME`) tetap di memori. Tombol "Reset data demo (khusus prototipe)" di menu akun menghapus data tersimpan dan kembali ke seed.
+- `MODE` (`staff` / `mitra`) menentukan aplikasi yang dirender. Data aplikasi dan notifikasi (`state.apps`, `state.notifs`, `tick`, `nid`) disimpan di localStorage (`kopikoma-demo-v5`; naikkan versinya bila seed atau teks log berubah agar data lama otomatis diganti) supaya kedua aplikasi terhubung, termasuk antar-tab lewat event `storage`. State UI dan login (`ME`) tetap di memori. Tombol "Reset data demo (khusus prototipe)" di menu akun menghapus data tersimpan dan kembali ke seed.
 - UI dalam Bahasa Indonesia. Istilah bisnis yang lazim tetap dipakai: Sales, Lead, Quotation, Pipeline, Franchisee, KYC, Super Admin, Reviewer, User, Role, revenue, funnel, Target vs Achievement, Performa Sales. Selain itu pakai Bahasa Indonesia (Penilaian kelayakan, Persetujuan, dasbor, tindak lanjut, kesepakatan, wawancara, prototipe, Wilayah). Hindari em dash di teks UI.
 
 ## Cara tes

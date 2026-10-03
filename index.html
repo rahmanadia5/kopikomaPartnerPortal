@@ -35,7 +35,6 @@ p{margin:0 0 10px}
 .switch{display:flex;background:rgba(255,255,255,.09);border-radius:999px;padding:3px}
 .switch button{border:0;background:transparent;color:#E8DCCF;padding:7px 14px;border-radius:999px;cursor:pointer;font-weight:600;font-size:14px}
 .switch button[aria-pressed="true"]{background:#F7EFE6;color:var(--roast)}
-.reset{background:none;border:1px solid rgba(255,255,255,.25);color:#E8DCCF;border-radius:999px;padding:6px 12px;cursor:pointer;font-size:13px}
 
 .wrap{max-width:1360px;margin:0 auto;padding:22px 24px 48px}
 .subnav{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:20px}
@@ -92,6 +91,7 @@ p{margin:0 0 10px}
 .d-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
 .close{border:0;background:#F0EEE9;border-radius:999px;width:34px;height:34px;cursor:pointer;font-size:20px;line-height:1;flex:none}
 .tabs{display:flex;gap:2px;margin-top:12px;overflow-x:auto}
+.drawer .tabs button{padding:10px 9px;font-size:14px}
 .d-body{padding:20px 22px 48px;overflow-y:auto;flex:1}
 dl.kv{display:grid;grid-template-columns:180px 1fr;gap:8px 16px;margin:0 0 20px}
 dl.kv dt{color:var(--muted);font-size:14px}
@@ -100,9 +100,8 @@ dl.kv dd{margin:0;font-weight:500}
 .callout{border-left:3px solid var(--aren);background:var(--aren-soft);padding:10px 14px;border-radius:0 var(--r-s) var(--r-s) 0;margin-bottom:16px;font-size:14px}
 .callout.ok{border-color:var(--ok);background:var(--ok-soft)}
 .callout.bad{border-color:var(--bad);background:var(--bad-soft)}
-.checks{list-style:none;padding:0;margin:0 0 16px;display:flex;flex-direction:column;gap:9px}
-.checks label,.consent{display:flex;gap:10px;align-items:flex-start;cursor:pointer}
-.checks input,.consent input{margin-top:4px;width:17px;height:17px;accent-color:var(--roast);flex:none}
+.consent{display:flex;gap:10px;align-items:flex-start;cursor:pointer}
+.consent input{margin-top:4px;width:17px;height:17px;accent-color:var(--roast);flex:none}
 .result-list{list-style:none;padding:0;margin:0 0 14px}
 .result-list li{padding:4px 0;font-size:14px}
 .result-list .y{color:var(--ok);font-weight:800;margin-right:8px}
@@ -131,10 +130,7 @@ table.cost tr.total td{font-weight:800;border-bottom:0;padding-top:10px}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 16px}
 
 /* dashboard */
-.dash-top{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(260px,1fr);gap:16px;margin-bottom:16px}
 .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-m);padding:18px 20px}
-.target-input{display:flex;align-items:center;gap:12px;margin-bottom:10px}
-.target-input input{width:96px;font-size:26px;font-weight:800;border:1px solid #D2CEC5;border-radius:var(--r-s);padding:4px 10px;letter-spacing:-.02em}
 .table-wrap{overflow-x:auto}
 .funnel{width:100%;border-collapse:collapse;min-width:760px}
 .funnel th{text-align:left;font-size:13px;color:var(--muted);font-weight:600;padding:8px 10px;border-bottom:1px solid var(--line)}
@@ -162,10 +158,6 @@ table.cost tr.total td{font-weight:800;border-bottom:0;padding-top:10px}
 .mini{margin:0;font-size:13px}
 .mini dt{color:var(--muted)}
 .mini dd{margin:0 0 8px;font-weight:600}
-.stepper{display:flex;gap:8px;list-style:none;padding:0;margin:18px 0 20px}
-.stepper li{flex:1;font-size:13px;font-weight:600;color:var(--muted);border-top:3px solid var(--line);padding-top:8px}
-.stepper li.done{color:var(--ink);border-color:var(--roast)}
-.stepper li.cur{color:var(--ink);border-color:var(--aren)}
 .formcard{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-m);padding:22px}
 .timeline{list-style:none;margin:0;padding:0}
 .timeline li{position:relative;padding:0 0 18px 30px}
@@ -189,18 +181,13 @@ table.cost tr.total td{font-weight:800;border-bottom:0;padding-top:10px}
 .np-item:hover{background:#FAF8F5}
 .np-item.unread{background:#FCF6EE}
 .np-item.unread::before{content:'';position:absolute;left:12px;top:18px;width:8px;height:8px;border-radius:50%;background:var(--aren)}
-.np-ch{display:flex;gap:6px;flex-wrap:wrap;margin-top:3px}
 .np-empty{padding:18px 16px;color:var(--muted);font-size:14px;margin:0}
-.reach{font-size:13px;color:var(--muted);margin-top:6px}
 .subnav{align-items:center}
-.me{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);padding-bottom:6px}
-.me select{border:1px solid #D2CEC5;border-radius:var(--r-s);padding:6px 8px;background:#fff;font-size:14px;color:var(--ink)}
 .filters{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
 .pill{border:1px solid #D2CEC5;background:var(--surface);border-radius:999px;padding:6px 14px;font-weight:600;font-size:14px;cursor:pointer}
 .pill[aria-pressed="true"]{background:var(--roast);border-color:var(--roast);color:#fff}
 .x{border:0;background:none;cursor:pointer;font-size:15px;line-height:1;margin-left:4px;color:inherit}
 .card-pic{font-size:12px;color:var(--ink)}
-.remind{margin-bottom:16px;border-color:#EBCFA9}
 .r-list{list-style:none;margin:0;padding:0}
 .r-list li{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
 .btn-sm{padding:6px 12px;font-size:13px}
@@ -213,12 +200,10 @@ table.cost tr.total td{font-weight:800;border-bottom:0;padding-top:10px}
 .reasons li{font-size:14px;padding:3px 0}
 .reasons .y,.reasons .n{display:inline-block;width:18px;font-weight:800}
 .reasons .y{color:var(--ok)} .reasons .n{color:var(--bad)}
-@media (max-width:760px){.me{margin-left:0;width:100%}.subnav{flex-wrap:wrap}.r-list li{grid-template-columns:1fr}.ai-split{grid-template-columns:1fr}}
+@media (max-width:760px){.subnav{flex-wrap:wrap}.r-list li{grid-template-columns:1fr}.ai-split{grid-template-columns:1fr}}
 .chip.blue{background:#E3ECF8;color:#2C5C9A}
 .card{padding:0;gap:0;cursor:default}
 .card-main{display:flex;flex-direction:column;gap:5px;text-align:left;background:none;border:0;padding:10px 12px 8px;cursor:pointer;width:100%;border-radius:var(--r-s) var(--r-s) 0 0}
-.card-apv{border:0;border-top:1px solid var(--line);background:none;padding:7px 12px;text-align:left;font-size:12px;font-weight:700;color:var(--aren-ink);cursor:pointer;border-radius:0 0 var(--r-s) var(--r-s)}
-.card-apv:hover{background:#FCF6EE}
 .apv{position:fixed;inset:0;background:rgba(36,23,15,.4);z-index:70;display:grid;place-items:center;padding:16px}
 .apv[hidden]{display:none}
 .apv-box{background:var(--surface);border-radius:14px;width:min(540px,100%);max-height:88vh;overflow:auto;box-shadow:0 20px 50px rgba(36,23,15,.25)}
@@ -244,27 +229,21 @@ table.cost tr.total td{font-weight:800;border-bottom:0;padding-top:10px}
 .seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
 .period select{border:1px solid #D2CEC5;border-radius:var(--r-s);padding:7px 10px;background:#fff}
 .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:16px}
-.kpis.two{grid-template-columns:1fr 1fr}
-.kpis.four{grid-template-columns:repeat(4,1fr)}
-@media (max-width:1200px){.kpis.four{grid-template-columns:1fr 1fr}}
 .kpi-num{font-size:30px;font-weight:800;letter-spacing:-.03em;margin:8px 0 2px}
-.sales-t th.grp{text-align:center;border-bottom:1px solid var(--line)}
-.sales-t{min-width:900px}
-@media (max-width:900px){.kpis,.kpis.two,.kpis.four{grid-template-columns:1fr}}
+@media (max-width:900px){.kpis{grid-template-columns:1fr}}
 tr.sum td{background:#FAF8F4;border-top:2px solid var(--line)}
 .toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:var(--r-s);font-weight:600;font-size:14px;z-index:60;display:none;max-width:90vw;text-align:center}
 .toast.show{display:block}
 .toast.bad{background:var(--bad)}
 
 @media (max-width:760px){
-  .dash-top,.paket-list,.grid2{grid-template-columns:1fr}
+  .paket-list,.grid2{grid-template-columns:1fr}
   dl.kv{grid-template-columns:1fr;gap:0}
   dl.kv dd{margin-bottom:10px}
   .wrap{padding:16px 14px 40px}
   .topbar{padding-left:14px;padding-right:14px}
   .log li{grid-template-columns:1fr;gap:2px}
   .search{min-width:0;width:100%}
-  .stepper li span{font-size:12px}
 }
 
 .userbtn{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.09);border:0;color:#F7EFE6;border-radius:999px;padding:4px 14px 4px 4px;cursor:pointer;text-align:left}
@@ -279,7 +258,6 @@ tr.sum td{background:#FAF8F4;border-top:2px solid var(--line)}
 .um-item:hover{background:#FAF8F5}
 .head-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .who-cell{display:flex;gap:10px;align-items:center}
-.plain{margin:0;padding-left:18px;font-size:14px}.plain li{margin-bottom:4px}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
 .prof-grid{display:grid;grid-template-columns:300px 1fr;gap:16px;align-items:start}
 .prof-card{text-align:center}
@@ -347,7 +325,6 @@ const TODAY = (() => { const d = new Date(); d.setHours(9, 0, 0, 0); return d; }
 const YEAR = TODAY.getFullYear();
 const isoDate = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 const monthLabel = ahead => { const d = new Date(TODAY.getFullYear(), TODAY.getMonth() + ahead, 1); return d.toLocaleDateString('id-ID',{month:'long', year:'numeric'}); };
-const todayShort = TODAY.toLocaleDateString('id-ID',{day:'numeric', month:'short'}).replace('.','');
 const todayLong = TODAY.toLocaleDateString('id-ID',{day:'numeric', month:'long', year:'numeric'});
 let tick = 0;
 const nowIso = () => new Date(TODAY.getTime() + (++tick) * 7 * 60000).toISOString();
@@ -379,7 +356,9 @@ const USERS = {
   wulan:{name:'Wulan Kusuma', role:'Sales', email:'wulan.kusuma@kopikoma.id', phone:'0811-2000-1008', area:'Jawa Tengah', since:'Agustus 2024', level:'Junior'}
 };
 let ME = null; const MANAGER = 'laras';
-const PASSWORD = 'demo123', CAP = 5;
+const PASSWORD = 'demo123';
+/* Batas lead aktif per sales, disesuaikan dengan target: senior 15, junior 10. */
+const capOf = s => USERS[s] && USERS[s].level === 'Senior' ? 15 : 10;
 const role = () => USERS[ME].role;
 const isSA = () => role() === 'Super Admin';
 const seesOverdue = () => ['Super Admin','Manajer'].includes(role());
@@ -525,7 +504,7 @@ function mkApp(n, name, city, paket, stage, days, o = {}) {
 function seed() {
   return [
     mkApp(1,'Budi Santoso','Bekasi','gerobak','presentasi',1,{modal:60e6}),
-    mkApp(2,'Siti Rahmawati','Depok','gerobak','presentasi',5,{self:true, modal:40e6, noDana:true, manual:'Putri Maharani sudah memegang 5 lead aktif (batas 5)'}),
+    mkApp(2,'Siti Rahmawati','Depok','gerobak','presentasi',5,{self:true, modal:40e6, noDana:true, manual:'Putri Maharani sudah memegang 15 lead aktif (batas 15)'}),
     mkApp(3,'Agung Firmansyah','Cimahi','gerobak','presentasi',0,{self:true, source:'Instagram (mandiri)'}),
     mkApp(4,'Yusuf Hidayat','Tangerang Selatan','gerobak','survei',2,{source:'Referensi'}),
     mkApp(5,'Andi Pratama','Bandung','cafe','survei',8),
@@ -589,7 +568,7 @@ let nid = 0;
 /* Dua aplikasi terpisah dari file yang sama: dashboard franchisor (/) dan portal calon franchisee (/mitra).
    Data aplikasi dan notifikasi disimpan di localStorage agar keduanya terhubung, juga antar-tab. */
 const MODE = /^\/mitra/.test(location.pathname) || location.hash === '#mitra' ? 'mitra' : 'staff';
-const STORE = 'kopikoma-demo-v4';
+const STORE = 'kopikoma-demo-v5';
 function loadShared() { try { return JSON.parse(localStorage.getItem(STORE)); } catch { return null; } }
 function saveShared() { try { localStorage.setItem(STORE, JSON.stringify({apps:state.apps, notifs:state.notifs, tick, nid})); } catch {} }
 function clearShared() { try { localStorage.removeItem(STORE); } catch {} }
@@ -641,7 +620,7 @@ function triage(a, apps = state.apps) {
   if (dup) return {code:'duplikat', text:`Terindikasi duplikat dengan ${dup.name} (${dup.id})`, dupId:dup.id, label:'Duplikat?'};
   const s = a.sales || salesFor(a.city);
   if (!s) return {code:'wilayah', text:`Kota ${a.city} di luar wilayah sales yang ada`, label:'Luar wilayah'};
-  if (!a.inputBy && activeLoad(s, apps) >= CAP) return {code:'kapasitas', text:`${uname(s)} sudah memegang ${activeLoad(s, apps)} lead aktif (batas ${CAP})`, sug:s, label:'Sales penuh'};
+  if (!a.inputBy && activeLoad(s, apps) >= capOf(s)) return {code:'kapasitas', text:`${uname(s)} sudah memegang ${activeLoad(s, apps)} lead aktif (batas ${capOf(s)})`, sug:s, label:'Sales penuh'};
   return null;
 }
 const canAct = a => isSA() || picOf(a) === ME;
@@ -848,7 +827,7 @@ function viewPipeline() {
     ${[['','Semua paket'],['gerobak','Gerobak'],['cafe','Cafe']].map(([k,l]) => `<button aria-pressed="${(state.pkg || '') === k}" onclick="state.pkg='${k}';refreshPipeline();this.parentNode.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',b===this))">${l}</button>`).join('')}
   </div>
   ${pv === 'selesai' ? `<div id="done">${doneHTML()}</div>` : `<div class="board" id="board">${boardHTML()}</div>${doneSummary()}
-  <p class="small" style="margin-top:10px">Lead baru ditugaskan otomatis ke sales sesuai wilayah. Lead masuk antrean manajer bila kotanya di luar wilayah, terindikasi duplikat, atau sales di wilayah itu sudah memegang ${CAP} lead aktif.</p>`}`;
+  <p class="small" style="margin-top:10px">Lead baru ditugaskan otomatis ke sales sesuai wilayah. Lead masuk antrean manajer bila kotanya di luar wilayah, terindikasi duplikat, atau sales di wilayah itu sudah mencapai batas lead aktif (senior 15, junior 10).</p>`}`;
 }
 /* Pengajuan yang sudah selesai (disetujui / ditolak / mundur) keluar dari kanban dan masuk tabel "Selesai". */
 function setPView(v) { state.pview = v; render(); }
@@ -921,7 +900,6 @@ function card(a) {
       ${p ? `<span class="card-pic">Menunggu ${esc(uname(p))}</span>` : ''}
       ${dTxt}
     </button>
-    <button class="card-apv" onclick="openApproval('${a.id}',event)">Status persetujuan</button>
   </article>`;
 }
 
@@ -1193,7 +1171,7 @@ function renderApproval() {
 
 /* ===================== detail drawer ===================== */
 function defaultTab(a) {
-  return ({baru:'baru', presentasi:'presentasi', survei:'survei', assessment:'assessment', quotation:'quotation', negosiasi:'nego', approval:'nego'})[a.stage] || 'ringkasan';
+  return ({baru:'ringkasan', presentasi:'presentasi', survei:'survei', assessment:'assessment', quotation:'quotation', negosiasi:'nego', approval:'nego'})[a.stage] || 'ringkasan';
 }
 const pendingChange = a => { const L = latest(a); return L && L.status === 'perubahan diminta' ? lastChange(a) : null; };
 function initQb(a) {
@@ -1219,7 +1197,7 @@ function renderDrawer() {
   const a = state.sel ? find(state.sel) : null;
   if (!a) { el.classList.remove('open'); ov.classList.remove('open'); return; }
   el.classList.add('open'); ov.classList.add('open');
-  const tabs = [['ringkasan','Ringkasan'],['baru','Lead baru'],['presentasi','Presentasi'],['survei','Survei lokasi'],['assessment','Penilaian'],['quotation','Quotation'],['nego','Negosiasi'],['riwayat','Riwayat']];
+  const tabs = [['ringkasan','Ringkasan'],['presentasi','Presentasi'],['survei','Survei'],['assessment','Penilaian'],['quotation','Quotation'],['nego','Negosiasi'],['riwayat','Riwayat']];
   const d = daysIn(a.stageSince), p = picOf(a);
   const body = {ringkasan:tabRingkasan, baru:tabBaru, presentasi:tabPresentasi, survei:tabSurvei, assessment:tabAssessment, quotation:tabQuotation, nego:tabNego, riwayat:tabRiwayat}[state.tab](a);
   el.innerHTML = `<div class="d-head">
@@ -1234,7 +1212,7 @@ function renderDrawer() {
 }
 function tabRingkasan(a) {
   const need = total(a.paket), ok = a.modal >= need;
-  return `${scoreCard(a)}<p class="sec-title">Calon franchisee</p>
+  return `${a.stage === 'baru' ? tabBaru(a) + '<div style="height:20px"></div>' : ''}${scoreCard(a)}<p class="sec-title">Calon franchisee</p>
   <dl class="kv">
     <dt>Kontak</dt><dd>${esc(a.phone)}<br>${esc(a.email)}</dd>
     <dt>Paket diminati</dt><dd>${PAKET[a.paket].nama} (${rp(need)})</dd>
@@ -1259,10 +1237,6 @@ function viewDoc(id, k) {
   log(a, `Membuka dokumen ${label}`); toast('Dokumen dibuka (simulasi). Akses tercatat di riwayat.'); renderDrawer();
 }
 function tabBaru(a) {
-  if (a.stage !== 'baru') {
-    if (!a.sales) return '<p class="muted">Lead ditutup sebelum ditugaskan ke sales.</p>';
-    return `<div class="callout ok">Sales pendamping: <b>${esc(person(a.sales))}</b>. ${a.inputBy ? `Lead diinput ${esc(uname(a.inputBy))}, langsung diteruskan ke presentasi bisnis.` : a.assignedBy ? `Ditugaskan ${esc(uname(a.assignedBy))} karena tidak bisa ditugaskan otomatis.` : 'Ditugaskan otomatis oleh sistem sesuai wilayah.'}</div>`;
-  }
   const t = a.triage || {text:'Belum ditugaskan'}, rec = t.sug || salesFor(a.city), dup = t.dupId ? find(t.dupId) : null;
   const head = `<div class="callout ${t.code === 'duplikat' ? 'bad' : ''}"><b>Tidak bisa ditugaskan otomatis.</b> ${esc(t.text)}.</div>
     ${dup ? `<div class="formbox" style="margin:0 0 16px"><p class="sec-title">Data yang mirip</p><dl class="kv" style="margin:0">
@@ -1271,7 +1245,7 @@ function tabBaru(a) {
   if (!canAct(a)) return head + viewOnly(a);
   return takeover(a) + head + `
     <div class="field"><label for="tb-sales">Tugaskan ke sales</label><select id="tb-sales"><option value="">Pilih sales</option>
-      ${SALES.map(s => { const l = activeLoad(s); return `<option value="${s}">${uname(s)}, ${USERS[s].area}, ${l} lead aktif${s === rec ? ' (sesuai wilayah)' : ''}${l >= CAP ? ' (penuh)' : ''}</option>`; }).join('')}</select>
+      ${SALES.map(s => { const l = activeLoad(s); return `<option value="${s}">${uname(s)}, ${USERS[s].area}, ${l} lead aktif${s === rec ? ' (sesuai wilayah)' : ''}${l >= capOf(s) ? ' (penuh)' : ''}</option>`; }).join('')}</select>
       <span class="help">${t.code === 'wilayah' ? 'Pilih sales terdekat atau yang bisa melayani secara online.' : t.code === 'kapasitas' ? 'Pilih sales lain dengan beban lebih ringan, atau tetap tugaskan ke sales wilayah bila memang perlu.' : 'Bila ternyata bukan duplikat, tugaskan seperti biasa.'}</span></div>
     <div class="field"><label for="tb-note">Catatan</label><textarea id="tb-note" placeholder="Wajib diisi jika lead ditutup"></textarea></div>
     <div class="actions"><button class="btn btn-primary" onclick="assignSales('${a.id}')">Tugaskan dan teruskan ke presentasi</button><button class="btn btn-danger" onclick="closeLead('${a.id}')">${t.code === 'duplikat' ? 'Tutup sebagai duplikat' : 'Tutup lead'}</button></div>`;
@@ -1655,23 +1629,27 @@ function pipeByPkg(pkg, who) {
   return [['approval','persetujuan akhir'],['negosiasi','negosiasi'],['quotation','quotation']].map(([k,l]) => [list.filter(a => a.stage === k).length, l]).filter(([n]) => n);
 }
 function perfStatus(x) { return x >= 1 ? ['ok','Di atas target'] : x >= .85 ? ['ok','Sesuai jalur'] : x >= .65 ? ['warn','Perlu dorongan'] : ['bad','Kritis']; }
-const barColor = st => st[0] === 'ok' ? 'var(--ok)' : st[0] === 'warn' ? '#C98F1E' : 'var(--bad)';
+const barColor = st => st[0] === 'ok' ? 'var(--ok)' : st[0] === 'warn' ? '#C98F1E' : st[0] === 'bad' ? 'var(--bad)' : '#B9AC9D';
+/* Di awal periode, target berjalan (MTD/QTD/...) masih di bawah 1 deal: status netral, bukan "Kritis". */
+const EARLY = ['', 'Awal periode'];
+const isEarly = (target, P, unit) => !P.ended && target * P.pace < unit;
+const statusOf = (x, target, P, unit) => isEarly(target, P, unit) ? EARLY : perfStatus(x);
 function totals(P) {
   const A = scope().map(s => salesAch(s, P)).reduce((acc,x) => ({g:acc.g + x.g, c:acc.c + x.c, qty:acc.qty + x.qty, rev:acc.rev + x.rev, f:acc.f.map((v,i) => v + x.f[i])}), {g:0,c:0,qty:0,rev:0,f:FUNNEL.map(() => 0)});
   const T = scope().reduce((acc,s) => { const t = salesTarget(s,P); return {g:acc.g + t.g, c:acc.c + t.c, qty:acc.qty + t.qty, rev:acc.rev + t.rev}; }, {g:0, c:0, qty:0, rev:0});
   return {A, T};
 }
-function pkgCard(title, target, ach, P, fmt, unit, pipe) {
+function pkgCard(title, target, ach, P, fmt, unit, pipe, extra) {
   if (!target) return `<div class="panel kpi"><h2 style="margin:0">${title}</h2>
     <div class="kpi-num">${fmt(ach)}</div><div style="font-weight:700;margin:2px 0 4px;color:var(--muted)">Tidak ada target ${unit || ''} ${P.label}</div>
     ${pipe ? `<div class="small" style="margin-top:6px;color:var(--ink)">${pipe.length ? 'Di pipeline: ' + pipe.map(([n,l]) => `${n} di ${l}`).join(', ') : 'Belum ada di tahap quotation sampai persetujuan akhir.'}</div>` : ''}</div>`;
-  const tdT = target * P.pace, x = paceOf(target, ach, P), st = perfStatus(x), pct = target ? ach / target : 0, left = unit ? sisa(target, ach) : Math.max(0, target - ach);
+  const tdT = target * P.pace, x = paceOf(target, ach, P), st = statusOf(x, target, P, unit ? 1 : total('gerobak')), pct = target ? ach / target : 0, left = unit ? sisa(target, ach) : Math.max(0, target - ach);
   return `<div class="panel kpi"><div class="d-top"><h2 style="margin:0">${title}</h2><span class="chip ${st[0]}">${st[1]}</span></div>
     <div class="kpi-num">${fmt(ach)}<span class="small" style="font-size:15px;font-weight:600"> dari ${fmt(target)}</span></div>
     <div style="font-weight:700;margin:2px 0 4px;color:${left ? 'var(--bad)' : 'var(--ok)'}">${left ? `Kurang ${unit ? left + ' ' + unit : fmt(left)}` : 'Target periode tercapai'}</div>
     <div class="bar" style="margin:8px 0 4px"><span style="width:${Math.min(pct,1) * 100}%;background:${barColor(st)}"></span>${P.ended ? '' : `<i style="left:${P.pace * 100}%"></i>`}</div>
     <div class="small">${P.label}. Target ${P.ended ? '' : P.td + ' '}${fmt(tdT)}, tercapai ${Math.round(x * 100)}%.</div>
-    ${pipe ? `<div class="small" style="margin-top:6px;color:var(--ink)">${pipe.length ? 'Di pipeline: ' + pipe.map(([n,l]) => `${n} di ${l}`).join(', ') : 'Belum ada di tahap quotation sampai persetujuan akhir.'}</div>` : ''}</div>`;
+    ${pipe ? `<div class="small" style="margin-top:6px;color:var(--ink)">${pipe.length ? 'Di pipeline: ' + pipe.map(([n,l]) => `${n} di ${l}`).join(', ') : 'Belum ada di tahap quotation sampai persetujuan akhir.'}</div>` : ''}${extra || ''}</div>`;
 }
 function viewDashboard() {
   const P = periodInfo(), {A, T} = totals(P);
@@ -1680,8 +1658,8 @@ function viewDashboard() {
   const tg = FUNNEL.map(() => 0); tg[tg.length - 1] = Math.round(T.qty * 10) / 10; for (let i = tg.length - 2; i >= 0; i--) tg[i] = Math.ceil(tg[i + 1] / (state.rates[i] / 100));
   let worst = 0, ws = Infinity;
   const rows = FUNNEL.map((f,i) => {
-    const tdT = tg[i] * P.pace, x = tdT ? A.f[i] / tdT : 0, pct = tg[i] ? A.f[i] / tg[i] : 0, st = perfStatus(x);
-    if (x < ws) { ws = x; worst = i; }
+    const tdT = tg[i] * P.pace, x = tdT ? A.f[i] / tdT : 0, pct = tg[i] ? A.f[i] / tg[i] : 0, st = statusOf(x, tg[i], P, 1);
+    if (st !== EARLY && x < ws) { ws = x; worst = i; }
     const last = i === FUNNEL.length - 1, actual = !last && A.f[i] ? Math.round(A.f[i + 1] / A.f[i] * 100) + '%' : '–';
     return `<tr><td><div class="tl-title">${f.l}</div><div class="small">${f.d}</div></td>
       <td class="num">${num1(tg[i])}</td><td class="num">${num1(tdT)}</td><td class="num">${A.f[i]}</td>
@@ -1689,15 +1667,12 @@ function viewDashboard() {
       <td><span class="chip ${st[0]}">${st[1]}</span></td>
       <td>${!last ? `<input class="rate" type="number" min="1" max="100" value="${state.rates[i]}" aria-label="Rasio konversi ${f.l}" onchange="setRate(${i},this.value)">%<div class="small">Aktual: ${actual}</div>` : '<span class="small">Tahap akhir</span>'}</td></tr>`;
   }).join('');
-  const weak = role() === 'Sales' ? [] : SALES.filter(s => salesScore(s, P).score < .85);
+  const weak = role() === 'Sales' ? [] : SALES.filter(s => { const r = salesScore(s, P); return !r.early && r.score < .85; });
   return `<div class="page-head"><div><h1>${role() === 'Sales' ? 'Target vs Achievement saya' : 'Target vs Achievement'}, ${P.label}</h1><p class="sub">${P.ended ? 'Periode sudah selesai.' : `Data per ${todayLong}, hari ke-${P.el} dari ${P.totalD}.`}</p></div>${periodControls()}</div>
-  <div class="kpis four">
+  <div class="kpis">
     ${pkgCard('Gerobak', T.g, A.g, P, num1, 'Gerobak', pipeByPkg('gerobak', scope()))}
     ${pkgCard('Cafe', T.c, A.c, P, num1, 'Cafe', pipeByPkg('cafe', scope()))}
-    ${pkgCard('Revenue kemitraan', T.rev, A.rev, P, rpS, '', null)}
-    <div class="panel kpi"><h2 style="margin:0">Nilai pipeline</h2><div class="kpi-num">${rpS(pipeVal)}</div>
-      <div class="small">${pipe.length} aplikasi di tahap quotation, negosiasi, dan persetujuan akhir. Potensi revenue jika semuanya disetujui.</div>
-      ${role() === 'Sales' ? '' : `<button class="link" style="margin-top:10px" onclick="setView('sales')">Lihat per sales</button>`}</div>
+    ${pkgCard('Revenue kemitraan', T.rev, A.rev, P, rpS, '', null, `<div class="small" style="margin-top:6px;color:var(--ink)">Potensi dari pipeline: <b>${rpS(pipeVal)}</b> (${pipe.length} aplikasi di quotation, negosiasi, dan persetujuan akhir).</div>${role() === 'Sales' ? '' : `<button class="link" style="margin-top:8px" onclick="setView('sales')">Lihat per sales</button>`}`)}
   </div>
   <div class="panel" style="margin-bottom:16px"><h2>Perlu perhatian</h2>${ws >= .85 ? '<p>Semua tahap funnel sesuai jalur untuk periode ini.</p>' : `<p>Tahap <b>${FUNNEL[worst].l}</b> paling tertinggal: ${A.f[worst]} dari target ${P.td} ${num1(tg[worst] * P.pace)} (${Math.round(ws * 100)}%).</p>`}
     ${weak.length ? `<p style="margin:0">${weak.length} sales di bawah target: ${weak.map(s => uname(s)).join(' dan ')}. <button class="link" onclick="setView('sales')">Lihat performa sales</button></p>` : ''}</div>
@@ -1709,26 +1684,28 @@ function viewDashboard() {
 function salesScore(s, P) {
   const t = salesTarget(s,P), a = salesAch(s,P);
   const xg = paceOf(t.g, a.g, P), xc = paceOf(t.c, a.c, P), xr = paceOf(t.rev, a.rev, P);
-  return {t, a, xg, xc, xr, score:Math.min(xg, xc, xr)};
+  const live = [[xg, t.g, 1], [xc, t.c, 1], [xr, t.rev, total('gerobak')]].filter(([, tg, u]) => !isEarly(tg, P, u)).map(([x]) => x);
+  return {t, a, xg, xc, xr, early:!live.length, score:live.length ? Math.min(...live) : 1};
 }
 function viewSales() {
   const P = periodInfo();
   const rows = SALES.map(s => ({s, ...salesScore(s, P)})).sort((x,y) => (y.score - x.score) || (y.xr - x.xr) || (y.a.rev - x.a.rev));
-  const cell = (ach, target, x, unit) => { const st = perfStatus(x), left = sisa(target, ach);
+  const cell = (ach, target, x, unit) => { const st = statusOf(x, target, P, 1), left = sisa(target, ach);
     if (!target) return `<div><b style="font-size:16px">${num1(ach)}</b></div><div class="small">Tidak ada target</div>`;
     return `<div><b style="font-size:16px">${num1(ach)}</b><span class="small"> / ${num1(target)}</span></div>
       <div class="small" style="font-weight:700;color:${left ? 'var(--bad)' : 'var(--ok)'}">${left ? `Kurang ${left} ${unit}` : 'Tercapai'}</div>
       <div class="bar" style="min-width:90px;margin-top:4px"><span style="width:${Math.min(target ? ach / target : 1,1) * 100}%;background:${barColor(st)}"></span></div>`; };
-  const revCell = (ach, target, x) => { const st = perfStatus(x);
+  const revCell = (ach, target, x) => { const st = statusOf(x, target, P, total('gerobak'));
     return `<div><b style="font-size:16px">${rpS(ach)}</b><span class="small"> / ${rpS(target)}</span></div>
-      <div class="small">${Math.round(x * 100)}% dari Target ${P.ended ? 'akhir' : P.td}</div>
+      <div class="small">${isEarly(target, P, total('gerobak')) ? 'Awal periode' : Math.round(x * 100) + '% dari Target ' + (P.ended ? 'akhir' : P.td)}</div>
       <div class="bar" style="min-width:90px;margin-top:4px"><span style="width:${Math.min(target ? ach / target : 1,1) * 100}%;background:${barColor(st)}"></span></div>`; };
   const sum = rows.reduce((v,r) => ({ag:v.ag + r.a.g, tg:v.tg + r.t.g, ac:v.ac + r.a.c, tc:v.tc + r.t.c, ar:v.ar + r.a.rev, tr:v.tr + r.t.rev}), {ag:0,tg:0,ac:0,tc:0,ar:0,tr:0});
-  const sx = Math.min(paceOf(sum.tg, sum.ag, P), paceOf(sum.tc, sum.ac, P), paceOf(sum.tr, sum.ar, P)), sSt = perfStatus(sx);
+  const sLive = [[paceOf(sum.tg, sum.ag, P), sum.tg, 1], [paceOf(sum.tc, sum.ac, P), sum.tc, 1], [paceOf(sum.tr, sum.ar, P), sum.tr, total('gerobak')]].filter(([, tg, u]) => !isEarly(tg, P, u)).map(([x]) => x);
+  const sSt = sLive.length ? perfStatus(Math.min(...sLive)) : EARLY;
   return `<div class="page-head"><div><h1>Performa Sales, ${P.label}</h1><p class="sub">${P.ended ? 'Periode sudah selesai.' : `Data per ${todayLong}, hari ke-${P.el} dari ${P.totalD}.`} Sisa target ditampilkan per paket supaya terlihat paket mana yang perlu dikejar. Status mengikuti metrik terlemah.</p></div>${periodControls()}</div>
   <section class="panel" style="margin-bottom:16px"><div class="table-wrap"><table class="funnel" style="min-width:860px">
     <thead><tr><th style="width:36px">#</th><th>Sales</th><th>Gerobak, ${P.label}</th><th>Cafe, ${P.label}</th><th>Revenue, ${P.label}</th><th>Status</th></tr></thead>
-    <tbody>${rows.map((r,i) => { const st = perfStatus(r.score); return `<tr><td class="num" style="font-size:15px;color:var(--muted)">${i + 1}</td>
+    <tbody>${rows.map((r,i) => { const st = r.early ? EARLY : perfStatus(r.score); return `<tr><td class="num" style="font-size:15px;color:var(--muted)">${i + 1}</td>
       <td><div class="who-cell"><span class="av sm">${initials(uname(r.s))}</span><div><button class="link" style="color:var(--ink);text-decoration:none" onclick="openProfile('${r.s}')">${uname(r.s)}</button><div class="small">${USERS[r.s].level}, ${USERS[r.s].area}</div></div></div></td>
       <td>${cell(r.a.g, r.t.g, r.xg, 'Gerobak')}</td><td>${cell(r.a.c, r.t.c, r.xc, 'Cafe')}</td><td>${revCell(r.a.rev, r.t.rev, r.xr)}</td>
       <td><span class="chip ${st[0]}">${st[1]}</span></td></tr>`; }).join('')}
