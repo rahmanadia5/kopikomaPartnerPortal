@@ -44,14 +44,15 @@ Aturan penting:
 Halaman masuk berisi form email + kata sandi dan daftar akun demo per role (klik untuk langsung masuk). Daftar akun demo hanya untuk prototipe, dicatat di bagian Batasan prototipe pada PRD.
 | Peran | Akun | Menu | Bisa memproses |
 |---|---|---|---|
-| Super Admin | arif.hakim@kopikoma.id | Pipeline, Semua tugas, Target vs Achievement, Performa Sales | Semua tahap (tercatat atas namanya) |
-| Manajer | laras.anggraini@kopikoma.id | Pipeline, Semua tugas (filter default "Tugas saya"), Target vs Achievement, Performa Sales | Penugasan lead baru (pengecualian), persetujuan akhir |
-| Sales | rendi / putri / agus / wulan @kopikoma.id | Pipeline saya (lead sendiri), Tugas saya, Target vs Achievement saya | Input lead, presentasi, survei, quotation, negosiasi |
-| Reviewer | bima.prasetyo / dimas.arya @kopikoma.id | Pipeline, Tugas saya | Penilaian kelayakan |
+| Super Admin | arif.hakim@kopikoma.id | Pipeline, Tugas (semua), Target vs Achievement, Performa Sales | Semua tahap (tercatat atas namanya) |
+| Manajer | laras.anggraini@kopikoma.id | Pipeline, Tugas (filter default "Tugas saya", bisa ganti Semua/Sales/Reviewer), Target vs Achievement, Performa Sales | Penugasan lead baru (pengecualian), persetujuan akhir |
+| Sales | rendi / putri / agus / wulan @kopikoma.id | Pipeline saya (lead sendiri), Tugas, Target vs Achievement saya | Input lead, presentasi, survei, quotation, negosiasi |
+| Reviewer | bima.prasetyo / dimas.arya @kopikoma.id | Pipeline, Tugas | Penilaian kelayakan |
 
 - Indikator lewat batas waktu hanya terlihat oleh Super Admin dan Manajer.
 - Tidak ada toast "Masuk sebagai" saat login. Banner petunjuk di Pipeline muncul sampai ditutup; setelah ditutup tidak muncul lagi untuk user itu (localStorage `kopikoma-hint-closed`, ikut dihapus oleh Reset data demo).
-- Di HP (<=760px) menu atas jadi satu baris yang bisa digeser.
+- Tab tugas untuk semua peran berlabel "Tugas" tanpa angka (jumlah tugas hanya tampil di dalam halaman).
+- Di HP (<=760px) menu atas jadi satu baris yang bisa digeser. Funnel di HP tampil ringkas (kolom Progres, Rasio konversi, dan deskripsi tahap disembunyikan lewat class `hm`, plus catatan `fn-note`); rasio konversi diatur di layar laptop.
 - Status target: hari ke-1 sampai 9 dalam periode (`EARLY_DAYS`) tampil "Awal periode" (abu-abu), bukan "Kritis". Mulai hari ke-10 semua metrik dinilai normal; status sales = metrik terlemah.
 - Kartu kanban tidak punya tombol Status persetujuan (dibuka dari drawer atau tabel tugas). Drawer punya 7 tab: Ringkasan (termasuk penugasan sales saat tahap Lead baru), Presentasi, Survei lokasi, Penilaian, Quotation, Negosiasi, Riwayat.
 - Pipeline punya pengalih Aktif | Selesai (`state.pview`, reset ke Aktif saat login). Kanban hanya 7 tahap aktif (muat di laptop tanpa scroll). Pengajuan disetujui/ditolak/mundur ada di tabel Selesai: hasil, tahap terakhir, alasan, nilai kesepakatan, sales, tanggal selesai; filter hasil, periode, sales, dan pencarian. Di bawah kanban ada ringkasan "Selesai bulan ini" dengan tautan Lihat semua.

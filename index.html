@@ -133,6 +133,8 @@ table.cost tr.total td{font-weight:800;border-bottom:0;padding-top:10px}
 .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-m);padding:18px 20px}
 .table-wrap{overflow-x:auto}
 .funnel{width:100%;border-collapse:collapse;min-width:760px}
+.fn-note{display:none}
+@media (max-width:760px){.funnel.fn-m{min-width:0}.funnel.fn-m .hm{display:none}.funnel.fn-m td,.funnel.fn-m th{padding:8px 3px;font-size:12px}.funnel.fn-m td:first-child,.funnel.fn-m th:first-child{padding-left:0}.funnel.fn-m .chip{font-size:11px;padding:2px 6px;white-space:normal;text-align:center}.fn-note{display:block}}
 .funnel th{text-align:left;font-size:13px;color:var(--muted);font-weight:600;padding:8px 10px;border-bottom:1px solid var(--line)}
 .funnel td{padding:14px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
 .funnel tr:last-child td{border-bottom:0}
@@ -773,11 +775,11 @@ function resetDemo() { clearShared(); try { localStorage.removeItem('kopikoma-hi
 const pendingAll = () => state.apps.filter(a => picOf(a));
 const myTasks = () => state.apps.filter(a => picOf(a) === ME);
 function tabsFor() {
-  const r = role(), m = myTasks().length;
-  if (r === 'Super Admin') return [['pipeline','Pipeline'],['tasks',`Semua tugas (${pendingAll().length})`],['dashboard','Target vs Achievement'],['sales','Performa Sales']];
-  if (r === 'Manajer') return [['pipeline','Pipeline'],['tasks',`Semua tugas (${m} untukmu)`],['dashboard','Target vs Achievement'],['sales','Performa Sales']];
-  if (r === 'Sales') return [['pipeline','Pipeline saya'],['mytasks',`Tugas saya (${m})`],['dashboard','Target vs Achievement saya']];
-  return [['pipeline','Pipeline'],['mytasks',`Tugas saya (${m})`]];
+  const r = role();
+  if (r === 'Super Admin') return [['pipeline','Pipeline'],['tasks','Tugas'],['dashboard','Target vs Achievement'],['sales','Performa Sales']];
+  if (r === 'Manajer') return [['pipeline','Pipeline'],['tasks','Tugas'],['dashboard','Target vs Achievement'],['sales','Performa Sales']];
+  if (r === 'Sales') return [['pipeline','Pipeline saya'],['mytasks','Tugas'],['dashboard','Target vs Achievement saya']];
+  return [['pipeline','Pipeline'],['mytasks','Tugas']];
 }
 function viewMain() {
   const tabs = tabsFor();
@@ -790,7 +792,7 @@ function viewMain() {
 function viewMyTasks() {
   const list = myTasks().sort((x,y) => (overdueOf(y) - overdueOf(x)) || (daysIn(y.stageSince) - daysIn(x.stageSince))), mgr = seesOverdue();
   const intro = {Manajer:'Lead baru yang tidak bisa ditugaskan otomatis, dan aplikasi yang menunggu persetujuan akhir.', Sales:'Calon franchisee yang kamu dampingi dan sedang menunggu tindakanmu.', Reviewer:'Calon franchisee yang menunggu penilaian kelayakan.'}[role()];
-  return `<div class="page-head"><div><h1>Tugas saya</h1><p class="sub">${intro} Pengingat otomatis dikirim lewat dasbor dan email bila mendekati batas waktu.</p></div></div>
+  return `<div class="page-head"><div><h1>Tugas</h1><p class="sub">${list.length} tugas menunggu tindakanmu. ${intro} Pengingat otomatis dikirim lewat dasbor dan email bila mendekati batas waktu.</p></div></div>
   <div class="panel">${list.length ? `<div class="table-wrap"><table class="funnel">
     <thead><tr><th>Calon franchisee</th><th>Yang perlu dilakukan</th><th>Menunggu</th>${mgr ? '<th>Batas waktu</th>' : ''}<th></th></tr></thead>
     <tbody>${list.map(a => { const d = daysIn(a.stageSince), od = overdueOf(a); return `<tr>
@@ -912,7 +914,7 @@ function viewTasks() {
   const match = a => f === 'all' || (f === 'mine' ? picOf(a) === ME : roleOf(a) === f);
   const list = all.filter(match).sort((x,y) => (overdueOf(y) - overdueOf(x)) || (daysIn(y.stageSince) - daysIn(x.stageSince)));
   const pills = role() === 'Manajer' ? [['mine','Tugas saya'],['all','Semua'],['Sales','Sales'],['Reviewer','Reviewer']] : [['all','Semua'],['Reviewer','Reviewer'],['Sales','Sales'],['Manajer','Manajer']];
-  return `<div class="page-head"><div><h1>Semua tugas</h1><p class="sub">Tugas yang sedang menunggu di setiap anggota tim. Saat batas waktu terlewati, sistem otomatis mengirim pengingat ke penanggung jawab dan manajer lewat dasbor dan email.</p></div></div>
+  return `<div class="page-head"><div><h1>Tugas</h1><p class="sub">Tugas yang sedang menunggu di setiap anggota tim. Saat batas waktu terlewati, sistem otomatis mengirim pengingat ke penanggung jawab dan manajer lewat dasbor dan email.</p></div></div>
   <div class="filters">${pills.map(([k,l]) => { const c = k === 'all' ? all.length : k === 'mine' ? all.filter(a => picOf(a) === ME).length : all.filter(a => roleOf(a) === k).length; return `<button class="pill" aria-pressed="${f === k}" onclick="state.taskFilter='${k}';render()">${l} (${c})</button>`; }).join('')}</div>
   <div class="panel">${list.length ? `<div class="table-wrap"><table class="funnel">
     <thead><tr><th>Calon franchisee</th><th>Yang perlu dilakukan</th><th>Penanggung jawab</th><th>Menunggu</th><th>Batas waktu</th><th>Pengingat otomatis</th><th></th></tr></thead>
@@ -1664,11 +1666,11 @@ function viewDashboard() {
     const tdT = tg[i] * P.pace, x = tdT ? A.f[i] / tdT : 0, pct = tg[i] ? A.f[i] / tg[i] : 0, st = statusOf(x, tg[i], P, 1);
     if (st !== EARLY && x < ws) { ws = x; worst = i; }
     const last = i === FUNNEL.length - 1, actual = !last && A.f[i] ? Math.round(A.f[i + 1] / A.f[i] * 100) + '%' : '–';
-    return `<tr><td><div class="tl-title">${f.l}</div><div class="small">${f.d}</div></td>
+    return `<tr><td><div class="tl-title">${f.l}</div><div class="small hm">${f.d}</div></td>
       <td class="num">${num1(tg[i])}</td><td class="num">${num1(tdT)}</td><td class="num">${A.f[i]}</td>
-      <td><div class="bar"><span style="width:${Math.min(pct,1) * 100}%;background:${barColor(st)}"></span>${P.ended ? '' : `<i style="left:${P.pace * 100}%"></i>`}</div><div class="small">${Math.round(pct * 100)}% dari target periode</div></td>
+      <td class="hm"><div class="bar"><span style="width:${Math.min(pct,1) * 100}%;background:${barColor(st)}"></span>${P.ended ? '' : `<i style="left:${P.pace * 100}%"></i>`}</div><div class="small">${Math.round(pct * 100)}% dari target periode</div></td>
       <td><span class="chip ${st[0]}">${st[1]}</span></td>
-      <td>${!last ? `<input class="rate" type="number" min="1" max="100" value="${state.rates[i]}" aria-label="Rasio konversi ${f.l}" onchange="setRate(${i},this.value)">%<div class="small">Aktual: ${actual}</div>` : '<span class="small">Tahap akhir</span>'}</td></tr>`;
+      <td class="hm">${!last ? `<input class="rate" type="number" min="1" max="100" value="${state.rates[i]}" aria-label="Rasio konversi ${f.l}" onchange="setRate(${i},this.value)">%<div class="small">Aktual: ${actual}</div>` : '<span class="small">Tahap akhir</span>'}</td></tr>`;
   }).join('');
   const weak = role() === 'Sales' ? [] : SALES.filter(s => { const r = salesScore(s, P); return !r.early && r.score < .85; });
   return `<div class="page-head"><div><h1>${role() === 'Sales' ? 'Target vs Achievement saya' : 'Target vs Achievement'}, ${P.label}</h1><p class="sub">${P.ended ? 'Periode sudah selesai.' : `Data per ${todayLong}, hari ke-${P.el} dari ${P.totalD}.`}</p></div>${periodControls()}</div>
@@ -1679,8 +1681,8 @@ function viewDashboard() {
   </div>
   <div class="panel" style="margin-bottom:16px"><h2>Perlu perhatian</h2>${ws >= .85 ? '<p>Semua tahap funnel sesuai jalur untuk periode ini.</p>' : `<p>Tahap <b>${FUNNEL[worst].l}</b> paling tertinggal: ${A.f[worst]} dari target ${P.td} ${num1(tg[worst] * P.pace)} (${Math.round(ws * 100)}%).</p>`}
     ${weak.length ? `<p style="margin:0">${weak.length} sales di bawah target: ${weak.map(s => uname(s)).join(' dan ')}. <button class="link" onclick="setView('sales')">Lihat performa sales</button></p>` : ''}</div>
-  <div class="panel"><h2>Funnel per tahap</h2><div class="table-wrap"><table class="funnel">
-    <thead><tr><th>Tahap</th><th>Target periode</th><th>${P.ended ? 'Target akhir periode' : `Target ${P.td}`}</th><th>Pencapaian</th><th>Progres</th><th>Status</th><th>Rasio konversi ke tahap berikutnya</th></tr></thead>
+  <div class="panel"><h2>Funnel per tahap</h2><p class="small fn-note">Versi ringkas. Progres dan rasio konversi bisa dilihat dan diatur di layar laptop.</p><div class="table-wrap"><table class="funnel fn-m">
+    <thead><tr><th>Tahap</th><th>Target periode</th><th>${P.ended ? 'Target akhir periode' : `Target ${P.td}`}</th><th>Tercapai</th><th class="hm">Progres</th><th>Status</th><th class="hm">Rasio konversi ke tahap berikutnya</th></tr></thead>
     <tbody>${rows}</tbody></table></div>
     <p class="small" style="margin:12px 0 0">Target jumlah per tahap dihitung mundur dari target franchisee disetujui dan rasio konversi. ${P.ended ? '' : `Garis hitam di bar menandai Target ${P.td}, yaitu posisi yang seharusnya tercapai hari ini.`}</p></div>`;
 }
