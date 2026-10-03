@@ -309,6 +309,51 @@ footer{max-width:1360px;margin:0 auto;padding:0 24px 30px;font-size:12px;color:v
 .lg-acc b{display:block;font-size:14px}
 .lg-acc .small{display:block}
 @media (max-width:860px){.login{grid-template-columns:1fr}.lg-brand{padding:32px 24px;position:static;height:auto}.lg-brand h1{margin-top:16px}}
+.lg-flow{align-self:flex-start;margin-top:18px;background:none;border:1px solid rgba(255,255,255,.3);color:#F7EFE6;border-radius:999px;padding:9px 16px;font-weight:700;font-size:14px;cursor:pointer}
+.lg-flow:hover{background:rgba(255,255,255,.08)}
+
+/* business process (swimlane) */
+.flow-bar{position:sticky;top:0;z-index:30;background:var(--roast);color:#F7EFE6;padding:10px 24px;display:flex;align-items:center;gap:16px}
+.flow-bar .btn{background:rgba(255,255,255,.1);color:#F7EFE6;border-color:rgba(255,255,255,.25)}
+.fl-legend{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:13px;color:var(--muted);margin:0 0 12px;align-items:center}
+.fl-legend span{display:inline-flex;align-items:center;gap:6px}
+.fl-legend i{display:inline-block;width:18px;height:12px;border:1.5px solid #B9AC9D;border-radius:3px;background:#fff}
+.fl-legend i.dec{width:13px;height:13px;transform:rotate(45deg);border-radius:1px;background:#F4ECE1}
+.fl-legend i.sys{background:#E3ECF8;border-color:#9DB6D8}
+.fl-legend i.fr{background:var(--aren-soft);border-color:#DDB98A}
+.fl-legend i.ap{background:var(--ok-soft);border-color:var(--ok)}
+.fl-legend i.note{border-style:dashed;background:#FBFAF7}
+.fl-scroll{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r-m);background:var(--surface)}
+.fl{position:relative}
+.fl-phase{position:absolute;top:0;height:34px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;letter-spacing:.02em;color:var(--aren-ink);border-left:1px solid var(--line);background:#FBF6EF;text-transform:uppercase}
+.fl-lane{position:absolute;left:0;right:0;border-top:1px solid var(--line)}
+.fl-lane:nth-child(even){background:#FBFAF7}
+.fl-lname{position:absolute;left:0;top:0;bottom:0;display:flex;align-items:center;padding:0 12px;font-weight:800;font-size:13px;border-right:1px solid var(--line);background:#F4F2EC;line-height:1.25}
+.fl svg{position:absolute;inset:0;overflow:visible;pointer-events:none;z-index:1}
+.fl-n{position:absolute;z-index:2;display:flex;align-items:center;justify-content:center;text-align:center;font-size:11.5px;line-height:1.3;font-weight:600;padding:6px 8px;background:#fff;border:1.5px solid #B9AC9D;border-radius:8px;color:var(--ink)}
+.fl-n small{display:block;font-size:10.5px;font-weight:600;color:var(--muted);margin-top:2px}
+.fl-n.fr{background:var(--aren-soft);border-color:#DDB98A}
+.fl-n.sys{background:#E3ECF8;border-color:#9DB6D8}
+.fl-n.term{border-radius:999px;background:var(--roast);border-color:var(--roast);color:#fff;font-weight:700}
+.fl-n.term.end{background:var(--ok);border-color:var(--ok)}
+.fl-n.note{border-style:dashed;background:#FBFAF7;font-weight:500;color:var(--muted)}
+.fl-n.ap{background:var(--ok-soft);border-color:var(--ok);box-shadow:0 0 0 3px rgba(46,122,78,.14)}
+.fl-n.dec{background:none;border:0;padding:10px 26px;font-size:11px}
+.fl-n.dec::before{content:'';position:absolute;inset:0;background:#B9AC9D;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);z-index:-1}
+.fl-n.dec::after{content:'';position:absolute;inset:2px;background:#F4ECE1;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);z-index:-1}
+.fl-n.dec.ap::before{background:var(--ok)}
+.fl-n.dec.ap::after{background:var(--ok-soft)}
+.fl-n.dec.ap{box-shadow:none}
+.fl-n .tag{position:absolute;top:-11px;left:50%;transform:translateX(-50%);white-space:nowrap;background:var(--ok);color:#fff;border-radius:999px;padding:1px 8px;font-size:10px;font-weight:800}
+.fl-n:not(.dec) .tag{left:auto;right:-6px;transform:none}
+.fl-n .no{position:absolute;top:-8px;left:-8px;width:20px;height:20px;border-radius:50%;background:var(--roast);color:#fff;font-size:10.5px;font-weight:800;display:grid;place-items:center}
+.fl-x{position:absolute;z-index:2;font-size:10.5px;font-weight:700;color:var(--bad);white-space:nowrap;line-height:1.25}
+.fl-lbl{font:700 10.5px 'Plus Jakarta Sans',system-ui,sans-serif;fill:var(--muted);paint-order:stroke;stroke:#fff;stroke-width:4px;stroke-linejoin:round}
+.fl-lbl.loop{fill:var(--aren-ink)}
+.both{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0}
+.steps td{vertical-align:top;font-size:14px}
+.steps td:first-child{font-weight:800;white-space:nowrap}
+@media (max-width:760px){.both{grid-template-columns:1fr}.flow-bar{padding:10px 14px}.flow-bar .logo span{display:none}}
 </style>
 </head>
 <body>
@@ -724,7 +769,9 @@ function render() {
   const top = document.getElementById('topbar'), foot = document.getElementById('foot');
   if (!ME) {
     top.hidden = true; foot.hidden = true;
-    document.getElementById('main').innerHTML = loginHTML();
+    document.getElementById('main').innerHTML = state.flowOpen
+      ? `<div class="flow-bar"><div class="logo"><b>kopi koma<i>,</i></b><span>Partner Portal</span></div><button class="btn btn-sm" onclick="closeFlowPublic()">Kembali ke halaman masuk</button></div><div class="wrap">${viewFlow()}</div>`
+      : loginHTML();
     ['drawer','overlay'].forEach(id => document.getElementById(id).classList.remove('open'));
     document.getElementById('apv').hidden = true; document.getElementById('notifPop').hidden = true; document.getElementById('userMenu').hidden = true;
     return;
@@ -746,6 +793,7 @@ function loginHTML() {
     <section class="lg-brand">
       <div class="logo"><b>kopi koma<i>,</i></b><span>Partner Portal</span></div>
       <h1>Satu tempat untuk seluruh proses kemitraan.</h1>
+      <button class="lg-flow" onclick="openFlowPublic()">Lihat alur bisnis end-to-end</button>
     </section>
     <section class="lg-form">
       <div class="lg-card">
@@ -761,7 +809,7 @@ function loginHTML() {
   </div>`;
 }
 function startSession(k) {
-  ME = k; state.loginErr = ''; state.view = 'pipeline'; state.sel = null; state.addOpen = false; state.apv = null; state.hint = true; state.taskFilter = 'all';
+  ME = k; state.loginErr = ''; state.flowOpen = false; state.view = 'pipeline'; state.sel = null; state.addOpen = false; state.apv = null; state.hint = true; state.taskFilter = 'all';
   state.notifOpen = false; state.menuOpen = false; state.profile = k; render(); window.scrollTo(0,0);
   toast(`Masuk sebagai ${person(k)}`);
 }
@@ -780,15 +828,15 @@ const pendingAll = () => state.apps.filter(a => picOf(a));
 const myTasks = () => state.apps.filter(a => picOf(a) === ME);
 function tabsFor() {
   const r = role(), m = myTasks().length;
-  if (r === 'Super Admin') return [['pipeline','Pipeline'],['tasks',`Semua tugas (${pendingAll().length})`],['dashboard','Target dan pencapaian'],['sales','Performa sales'],['users','Pengguna dan peran']];
-  if (r === 'Manajer') return [['pipeline','Pipeline'],['mytasks',`Tugas saya (${m})`],['tasks','Semua tugas'],['dashboard','Target dan pencapaian'],['sales','Performa sales']];
-  if (r === 'Sales') return [['pipeline','Pipeline saya'],['mytasks',`Tugas saya (${m})`],['dashboard','Target dan pencapaian saya']];
-  return [['pipeline','Pipeline'],['mytasks',`Tugas saya (${m})`]];
+  if (r === 'Super Admin') return [['pipeline','Pipeline'],['tasks',`Semua tugas (${pendingAll().length})`],['dashboard','Target dan pencapaian'],['sales','Performa sales'],['users','Pengguna dan peran'],['flow','Alur bisnis']];
+  if (r === 'Manajer') return [['pipeline','Pipeline'],['mytasks',`Tugas saya (${m})`],['tasks','Semua tugas'],['dashboard','Target dan pencapaian'],['sales','Performa sales'],['flow','Alur bisnis']];
+  if (r === 'Sales') return [['pipeline','Pipeline saya'],['mytasks',`Tugas saya (${m})`],['dashboard','Target dan pencapaian saya'],['flow','Alur bisnis']];
+  return [['pipeline','Pipeline'],['mytasks',`Tugas saya (${m})`],['flow','Alur bisnis']];
 }
 function viewMain() {
   const tabs = tabsFor();
   if (state.view !== 'profile' && !tabs.some(t => t[0] === state.view)) state.view = 'pipeline';
-  const views = {pipeline:viewPipeline, mytasks:viewMyTasks, tasks:viewTasks, dashboard:viewDashboard, sales:viewSales, users:viewUsers, profile:viewProfile};
+  const views = {pipeline:viewPipeline, mytasks:viewMyTasks, tasks:viewTasks, dashboard:viewDashboard, sales:viewSales, users:viewUsers, profile:viewProfile, flow:viewFlow};
   return `<div class="wrap"><nav class="subnav" aria-label="Menu utama">
     ${tabs.map(([k,l]) => `<button ${state.view === k ? 'aria-current="page"' : ''} onclick="setView('${k}')">${l}</button>`).join('')}
   </nav>${views[state.view]()}</div>`;
@@ -936,6 +984,102 @@ function viewProfile() {
     </div>
   </div>`;
 }
+
+/* ===================== business process (end-to-end) ===================== */
+const FL = {LW:124, CW:152, LH:150, HD:34, cols:17};
+const FL_LANES = ['Calon franchisee','Sales','Sistem (Partner Portal)','Reviewer','Manajer'];
+const FL_PHASES = [[0,3,'Pengajuan'],[4,5,'Presentasi'],[6,9,'Survei dan assessment'],[10,13,'Quotation dan negosiasi'],[14,16,'Approval kedua pihak']];
+const FL_SIZE = {task:[136,80], dec:[140,92], term:[132,58], note:[136,72]};
+const FL_NODES = [
+  {id:'start', l:0, c:0, t:'term', txt:'Calon franchisee tertarik'},
+  {id:'f1', l:0, c:1, t:'task', k:'fr', txt:'Mandiri: daftar lewat website / Instagram', s:'Isi data + setuju UU PDP'},
+  {id:'s1', l:1, c:1, t:'task', txt:'Sales input lead dari pameran / referensi', s:'Termasuk setuju UU PDP'},
+  {id:'y2', l:2, c:2, t:'task', k:'sys', no:1, txt:'Lead tercatat, cek wilayah, duplikat, kapasitas sales', s:'Batas 1 hari'},
+  {id:'d3', l:2, c:3, t:'dec', txt:'Bisa ditugaskan otomatis?'},
+  {id:'m3', l:4, c:3, t:'task', txt:'Tugaskan sales secara manual', s:'Batas 1 hari'},
+  {id:'s4', l:1, c:4, t:'task', no:2, txt:'Presentasi bisnis + kirim prospektus', s:'Batas 4 hari'},
+  {id:'d5', l:0, c:5, t:'dec', txt:'Tertarik lanjut?', x:['top','Tidak: aplikasi ditutup']},
+  {id:'s6', l:1, c:6, t:'task', no:3, txt:'Survei lokasi', s:'Batas 5 hari'},
+  {id:'d7', l:1, c:7, t:'dec', txt:'Lokasi layak?', x:['bottom','Tidak: ditolak']},
+  {id:'n7', l:2, c:7, t:'note', txt:'Skor kecocokan AI sebagai alat bantu keputusan'},
+  {id:'r8', l:3, c:8, t:'task', no:4, txt:'Assessment: interview, background, finansial, KYC', s:'Batas 4 hari'},
+  {id:'d9', l:3, c:9, t:'dec', txt:'Lolos assessment?', x:['bottom','Tidak: ditolak']},
+  {id:'s10', l:1, c:10, t:'task', no:5, txt:'Buat quotation, kirim via email', s:'Batas 3 hari'},
+  {id:'d11', l:0, c:12, t:'dec', txt:'Setuju dengan quotation?', x:['top','Mundur: aplikasi ditutup']},
+  {id:'s11', l:1, c:12, t:'task', txt:'Diskusi dengan manajer (di luar sistem)'},
+  {id:'s12', l:1, c:13, t:'task', k:'ap', no:6, tag:'Persetujuan 1 dari 2', txt:'Sales catat persetujuan franchisee', s:'Batas 7 hari'},
+  {id:'d13', l:4, c:14, t:'dec', k:'ap', no:7, tag:'Persetujuan 2 dari 2', txt:'Approval akhir manajer', x:['br','Tolak: ditolak']},
+  {id:'y14', l:2, c:15, t:'task', k:'sys', txt:'Status Disetujui, notifikasi otomatis, nilai deal tercatat'},
+  {id:'end', l:0, c:16, t:'term', k:'end', txt:'Disepakati kedua pihak, lanjut ke perjanjian'}
+];
+const FL_EDGES = [
+  ['start','f1','H'], ['start','s1','VH','Via sales'], ['f1','y2','HV'], ['s1','s4','H','Langsung ke sales'],
+  ['y2','d3','H'], ['d3','s4','HV','Ya'], ['d3','m3','V','Tidak'], ['m3','s4','HV'],
+  ['s4','d5','HV'], ['d5','s6','HV','Ya'], ['s6','d7','H'], ['d7','r8','HV','Layak'], ['n7','r8','VH',null,'note'],
+  ['r8','d9','H'], ['d9','s10','HV','Lolos'], ['s10','d11','VH','Kirim quotation'],
+  ['d11','s11','V','Minta perubahan'], ['s11','s10','H','Quotation versi baru','loop'], ['d11','s12','Z','Setuju'],
+  ['s12','d13','Z'], ['d13','y14','HV','Setujui'], ['d13','s6','LOOP','Minta revisi lokasi, tanpa assessment ulang','loop'], ['y14','end','HV']
+];
+function flowDiagram() {
+  const {LW, CW, LH, HD, cols} = FL, W = LW + cols * CW, H = HD + FL_LANES.length * LH;
+  const N = Object.fromEntries(FL_NODES.map(n => { const [w,h] = FL_SIZE[n.t]; return [n.id, {...n, w, h, cx:LW + n.c * CW + CW / 2, cy:HD + n.l * LH + LH / 2}]; }));
+  const P = (n, side) => ({right:[n.cx + n.w / 2, n.cy], left:[n.cx - n.w / 2, n.cy], top:[n.cx, n.cy - n.h / 2], bottom:[n.cx, n.cy + n.h / 2]})[side];
+  const lbl = (x, y, t, anchor, cls) => t ? `<text class="fl-lbl ${cls || ''}" x="${x}" y="${y}" text-anchor="${anchor}">${esc(t)}</text>` : '';
+  const edges = FL_EDGES.map(([f, t, r, label, kind]) => {
+    const A = N[f], B = N[t], down = B.cy > A.cy; let pts, L = '';
+    if (r === 'H') { const a = P(A, B.cx > A.cx ? 'right' : 'left'), b = P(B, B.cx > A.cx ? 'left' : 'right'); pts = [a, b]; L = lbl((a[0] + b[0]) / 2, a[1] - 7, label, 'middle', kind); }
+    else if (r === 'V') { const a = P(A, down ? 'bottom' : 'top'), b = P(B, down ? 'top' : 'bottom'); pts = [a, b]; L = lbl(a[0] - 7, (a[1] + b[1]) / 2 + 4, label, 'end'); }
+    else if (r === 'HV') { const a = P(A, 'right'), b = P(B, down ? 'top' : 'bottom'); pts = [a, [b[0], a[1]], b]; L = lbl(a[0] + 6, a[1] - 7, label, 'start'); }
+    else if (r === 'VH') { const a = P(A, down ? 'bottom' : 'top'), b = P(B, 'left'); pts = [a, [a[0], b[1]], b]; L = lbl(a[0] + 8, b[1] - 7, label, 'start'); }
+    else if (r === 'Z') { const a = P(A, 'right'), b = P(B, 'left'), mx = LW + B.c * CW; pts = [a, [mx, a[1]], [mx, b[1]], b]; L = lbl(mx + 6, a[1] + 18, label, 'start'); }
+    else { const a = P(A, 'bottom'), b = P(B, 'bottom'), ch = HD + (A.l + 1) * LH - 14; pts = [a, [a[0], ch], [b[0], ch], b]; L = lbl((a[0] + b[0]) / 2, ch - 7, label, 'middle', kind); }
+    const color = kind === 'loop' ? 'var(--aren)' : '#8C8177';
+    return `<path d="M${pts.map(p => p.join(' ')).join(' L')}" fill="none" stroke="${color}" stroke-width="1.6" ${kind === 'note' ? 'stroke-dasharray="4 4"' : `marker-end="url(#${kind === 'loop' ? 'fl-ah2' : 'fl-ah'})"`}/>${L}`;
+  }).join('');
+  const exitPos = n => { const [where, text] = n.x, t = n.cy - n.h / 2, b = n.cy + n.h / 2;
+    const css = {top:`left:${n.cx}px;top:${t - 17}px;transform:translateX(-50%)`, bottom:`left:${n.cx}px;top:${b + 3}px;transform:translateX(-50%)`, br:`left:${n.cx + n.w / 2 - 12}px;top:${n.cy + 8}px`}[where];
+    return `<div class="fl-x" style="${css}">✕ ${esc(text)}</div>`; };
+  const nodes = Object.values(N).map(n => `<div class="fl-n ${n.t === 'task' ? '' : n.t} ${n.k || ''}" style="left:${n.cx - n.w / 2}px;top:${n.cy - n.h / 2}px;width:${n.w}px;height:${n.h}px">
+      ${n.no ? `<span class="no">${n.no}</span>` : ''}${n.tag ? `<span class="tag">${n.tag}</span>` : ''}<span>${esc(n.txt)}${n.s ? `<small>${esc(n.s)}</small>` : ''}</span></div>${n.x ? exitPos(n) : ''}`).join('');
+  const marker = (id, c) => `<marker id="${id}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="${c}"/></marker>`;
+  return `<div class="fl-scroll" tabindex="0" aria-label="Diagram alur bisnis, geser ke samping untuk melihat seluruhnya"><div class="fl" style="width:${W}px;height:${H}px">
+    ${FL_PHASES.map(([a, b, t]) => `<div class="fl-phase" style="left:${LW + a * CW}px;width:${(b - a + 1) * CW}px">${t}</div>`).join('')}
+    ${FL_LANES.map((l, i) => `<div class="fl-lane" style="top:${HD + i * LH}px;height:${LH}px"><div class="fl-lname" style="width:${LW}px">${l}</div></div>`).join('')}
+    <svg width="${W}" height="${H}" aria-hidden="true"><defs>${marker('fl-ah', '#8C8177')}${marker('fl-ah2', '#B5701F')}</defs>${edges}</svg>
+    ${nodes}
+  </div></div>`;
+}
+const FL_STEPS = [
+  ['1','Lead baru','Calon franchisee, Sistem, Manajer','Calon franchisee daftar mandiri (website/Instagram) atau sales menginput lead dari pameran/referensi. Persetujuan data pribadi (UU PDP) wajib. Lead mandiri otomatis ditugaskan ke sales sesuai wilayah.','Masuk antrean manajer bila kota di luar wilayah, terindikasi duplikat, atau sales sudah memegang 5 lead aktif.','1 hari'],
+  ['2','Presentasi bisnis','Sales, Calon franchisee','Sales mempresentasikan model bisnis dan mengirim prospektus penawaran waralaba (wajib secara regulasi).','Calon franchisee lanjut, atau aplikasi ditutup bila tidak tertarik.','4 hari'],
+  ['3','Survei lokasi','Sales','Sales menilai traffic, kompetitor, visibilitas, parkir, akses ojol, dan memberi rating lokasi.','Layak lanjut ke assessment, tidak layak ditolak.','5 hari'],
+  ['4','Assessment','Reviewer','Interview, background check, verifikasi finansial, KYC, dan komitmen SOP. Skor kecocokan AI menjadi alat bantu, bukan penolakan otomatis.','Lolos lanjut ke quotation, tidak lolos ditolak.','4 hari'],
+  ['5','Quotation','Sales','Sales menyusun quotation (paket, lokasi, target buka, diskon, skema bayar) dan mengirimnya ke email calon franchisee.','Quotation versi N terkirim.','3 hari'],
+  ['6','Negosiasi (persetujuan franchisee)','Calon franchisee, Sales, Manajer','Calon franchisee meninjau quotation. Sales mencatat tanggapannya: setuju, minta perubahan, atau mundur. Permintaan perubahan didiskusikan sales dengan manajer di luar sistem, lalu sales mengirim quotation versi berikutnya dengan catatan hasil diskusi.','Setuju menjadi persetujuan pihak franchisee dan otomatis diteruskan ke manajer.','7 hari'],
+  ['7','Approval akhir (persetujuan franchisor)','Manajer','Manajer meninjau seluruh riwayat: hasil survei, assessment, skor AI, dan quotation yang disetujui franchisee.','Setujui: kemitraan disepakati kedua pihak. Tolak: ditolak. Minta revisi lokasi: kembali ke survei tanpa assessment ulang.','2 hari']
+];
+function viewFlow() {
+  return `<div class="page-head"><div><h1>Alur bisnis end-to-end</h1><p class="sub">Dari pengajuan oleh calon franchisee sampai quotation disetujui kedua pihak: calon franchisee dan Kopi Koma sebagai franchisor.</p></div></div>
+  <div class="fl-legend">
+    <span><i></i>Aktivitas</span><span><i class="fr"></i>Aktivitas calon franchisee</span><span><i class="sys"></i>Otomatis oleh sistem</span>
+    <span><i class="dec"></i>Keputusan</span><span><i class="ap"></i>Titik persetujuan</span><span><i class="note"></i>Alat bantu</span>
+    <span style="color:var(--aren-ink);font-weight:700">Garis oranye: alur kembali (revisi)</span>
+  </div>
+  ${flowDiagram()}
+  <p class="small" style="margin-top:8px">Angka 1 sampai 7 sesuai tahap di pipeline. Batas waktu dihitung per tahap, pengingat otomatis dikirim lewat dashboard dan email ke PIC dan manajer bila terlewat.</p>
+  <div class="both">
+    <section class="panel"><span class="chip ok">Persetujuan 1 dari 2</span><h2 style="margin-top:8px">Pihak calon franchisee</h2>
+      <p class="muted">Calon franchisee menyetujui quotation yang dikirim via email. Sales mencatat persetujuan beserta versi quotation yang disetujui, sehingga nilai deal terkunci dan tercatat di audit trail.</p></section>
+    <section class="panel"><span class="chip ok">Persetujuan 2 dari 2</span><h2 style="margin-top:8px">Pihak franchisor (Kopi Koma)</h2>
+      <p class="muted">Manajer memberi approval akhir atas quotation yang sudah disetujui calon franchisee. Setelah disetujui, status menjadi Disetujui, sales menerima notifikasi untuk lanjut ke perjanjian, dan nilai deal masuk ke pencapaian revenue.</p></section>
+  </div>
+  <section class="panel"><h2>Rincian tiap tahap</h2><div class="table-wrap"><table class="funnel steps">
+    <thead><tr><th>#</th><th>Tahap</th><th>Pihak terlibat</th><th>Aktivitas</th><th>Hasil / keputusan</th><th>Batas waktu</th></tr></thead>
+    <tbody>${FL_STEPS.map(r => `<tr>${r.map(c => `<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</tbody>
+  </table></div></section>`;
+}
+function openFlowPublic() { state.flowOpen = true; render(); window.scrollTo(0,0); }
+function closeFlowPublic() { state.flowOpen = false; render(); window.scrollTo(0,0); }
 
 /* ===================== approval status modal ===================== */
 const STEP_DEF = [
