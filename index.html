@@ -213,8 +213,6 @@ table.cost tr.total td{font-weight:800;border-bottom:0;padding-top:10px}
 .reasons li{font-size:14px;padding:3px 0}
 .reasons .y,.reasons .n{display:inline-block;width:18px;font-weight:800}
 .reasons .y{color:var(--ok)} .reasons .n{color:var(--bad)}
-.matrix td,.matrix th{text-align:center}
-.matrix td:first-child,.matrix th:first-child{text-align:left}
 @media (max-width:760px){.me{margin-left:0;width:100%}.subnav{flex-wrap:wrap}.r-list li{grid-template-columns:1fr}.ai-split{grid-template-columns:1fr}}
 .chip.blue{background:#E3ECF8;color:#2C5C9A}
 .card{padding:0;gap:0;cursor:default}
@@ -299,14 +297,8 @@ footer{max-width:1360px;margin:0 auto;padding:0 24px 30px;font-size:12px;color:v
 .lg-brand .logo b{font-size:30px}
 .lg-brand h1{font-size:clamp(30px,3.6vw,46px);line-height:1.06;letter-spacing:-.035em;max-width:13ch;color:#fff;margin:28px 0 4px}
 .lg-brand p{color:#CDB9A6;max-width:42ch;font-size:16px}
-.lg-form{display:flex;align-items:flex-start;justify-content:center;padding:56px 24px}
+.lg-form{display:flex;align-items:center;justify-content:center;padding:56px 24px}
 .lg-card{width:min(440px,100%)}
-.lg-demo{margin-top:28px;padding-top:20px;border-top:1px solid var(--line)}
-.lg-group{margin-bottom:18px}
-.lg-acc{display:flex;gap:10px;align-items:center;width:100%;text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:var(--r-s);padding:8px 10px;cursor:pointer;margin-bottom:6px}
-.lg-acc:hover{border-color:#C4B29E;background:#FCFAF7}
-.lg-acc b{display:block;font-size:14px}
-.lg-acc .small{display:block}
 @media (max-width:860px){.login{grid-template-columns:1fr}.lg-brand{padding:32px 24px;position:static;height:auto}.lg-brand h1{margin-top:16px}}
 
 /* portal mitra header */
@@ -361,12 +353,12 @@ const qValue = q => total(q.paket) - (Number(q.diskon) || 0);
 
 /* ===================== people & roles ===================== */
 const USERS = {
-  arif:{name:'Arif Hakim', role:'Super Admin', email:'arif.hakim@kopikoma.id', phone:'0811-2000-1001', area:'Kantor pusat', since:'Januari 2024'},
-  laras:{name:'Laras Anggraini', role:'Manajer', email:'laras.anggraini@kopikoma.id', phone:'0811-2000-1002', area:'Franchise Development', since:'Maret 2024'},
-  bima:{name:'Bima Prasetyo', role:'Penilai', email:'bima.prasetyo@kopikoma.id', phone:'0811-2000-1003', area:'Franchise Development', since:'Juni 2024'},
-  dimas:{name:'Dimas Arya', role:'Penilai', email:'dimas.arya@kopikoma.id', phone:'0811-2000-1004', area:'Franchise Development', since:'Februari 2025'},
+  arif:{name:'Arif Hakim', role:'Super Admin', email:'arif.hakim@kopikoma.id', phone:'0811-2000-1001', area:'Semua wilayah', since:'Januari 2024'},
+  laras:{name:'Laras Anggraini', role:'Manajer', email:'laras.anggraini@kopikoma.id', phone:'0811-2000-1002', area:'Semua wilayah', since:'Maret 2024'},
+  bima:{name:'Bima Prasetyo', role:'Reviewer', email:'bima.prasetyo@kopikoma.id', phone:'0811-2000-1003', area:'Semua wilayah', since:'Juni 2024'},
+  dimas:{name:'Dimas Arya', role:'Reviewer', email:'dimas.arya@kopikoma.id', phone:'0811-2000-1004', area:'Semua wilayah', since:'Februari 2025'},
   rendi:{name:'Rendi Saputra', role:'Sales', email:'rendi.saputra@kopikoma.id', phone:'0811-2000-1005', area:'Tangerang Raya', since:'April 2024'},
-  putri:{name:'Putri Maharani', role:'Sales', email:'putri.maharani@kopikoma.id', phone:'0811-2000-1006', area:'Jakarta, Bogor, Depok, Bekasi', since:'Mei 2024'},
+  putri:{name:'Putri Maharani', role:'Sales', email:'putri.maharani@kopikoma.id', phone:'0811-2000-1006', area:'Jakarta, Bogor, Depok, Bekasi, Cikarang', since:'Mei 2024'},
   agus:{name:'Agus Setiawan', role:'Sales', email:'agus.setiawan@kopikoma.id', phone:'0811-2000-1007', area:'Bandung Raya', since:'Januari 2025'},
   wulan:{name:'Wulan Kusuma', role:'Sales', email:'wulan.kusuma@kopikoma.id', phone:'0811-2000-1008', area:'Jawa Tengah', since:'Agustus 2024'}
 };
@@ -376,25 +368,7 @@ const role = () => USERS[ME].role;
 const isSA = () => role() === 'Super Admin';
 const seesOverdue = () => ['Super Admin','Manajer'].includes(role());
 const SALES = ['rendi','putri','agus','wulan'], REVIEWERS = ['bima','dimas'];
-const ROLE_ORDER = ['Super Admin','Manajer','Sales','Penilai'];
-const MENU_ACCESS = [
-  ['Pipeline', ['Semua lead','Semua lead','Lead sendiri','Semua lead']],
-  ['Tugas saya', ['–','✓','✓','✓']],
-  ['Semua tugas', ['✓','✓','–','–']],
-  ['Target dan pencapaian', ['Semua sales','Semua sales','Milik sendiri','–']],
-  ['Kinerja sales', ['✓','✓','–','–']],
-  ['Pengguna dan peran', ['✓','–','–','–']]
-];
-const TASK_ACCESS = [
-  ['1. Lead baru: input data', ['✓','–','✓','–']],
-  ['1. Lead baru: tugaskan sales', ['✓','Bila tidak otomatis','–','–']],
-  ['2. Presentasi bisnis', ['✓','–','✓','–']],
-  ['3. Survei lokasi', ['✓','–','✓','–']],
-  ['4. Penilaian kelayakan', ['✓','–','–','✓']],
-  ['5. Quotation', ['✓','–','✓','–']],
-  ['6. Negosiasi', ['✓','Di luar sistem','✓','–']],
-  ['7. Persetujuan akhir', ['✓','✓','–','–']]
-];
+const ROLE_ORDER = ['Super Admin','Manajer','Sales','Reviewer'];
 const uname = k => USERS[k].name;
 const FR = 'franchisee';
 const byLabel = (k, full) => !k ? (full ? 'Sistem' : 'Sistem (otomatis)') : k === FR ? 'Calon franchisee (portal mitra)' : full ? person(k) : uname(k);
@@ -703,7 +677,7 @@ function renderTop() {
   m.hidden = !state.menuOpen;
   if (state.menuOpen) m.innerHTML = `<div class="um-head"><span class="av">${initials(u.name)}</span><div><b>${esc(u.name)}</b><div class="small">${esc(u.email)}</div><span class="chip dark" style="margin-top:4px">${u.role}</span></div></div>
     <button class="um-item" onclick="openProfile('${ME}')">Profil saya</button>
-    ${isSA() ? `<button class="um-item" onclick="state.menuOpen=false;setView('users')">Pengguna dan peran</button>` : ''}
+    ${isSA() ? `<button class="um-item" onclick="state.menuOpen=false;setView('users')">User</button>` : ''}
     <button class="um-item" onclick="resetDemo()">Reset data demo (khusus prototipe)</button>
     <button class="um-item" style="color:var(--bad)" onclick="logout()">Keluar</button>`;
 }
@@ -752,19 +726,11 @@ function render() {
   document.getElementById('main').innerHTML = viewMain();
   renderTop(); renderDrawer(); renderNotif(); renderApproval();
 }
-const DEMO_NOTE = {
-  'Super Admin':'Akses penuh, bisa memproses semua tahap dan mengelola pengguna.',
-  'Manajer':'Menugaskan sales untuk lead yang tidak otomatis, dan persetujuan akhir.',
-  'Sales':'Hanya melihat lead sendiri. Input lead, presentasi, survei, quotation, negosiasi.',
-  'Penilai':'Melakukan penilaian kelayakan calon franchisee.'
-};
 function loginHTML() {
-  const groups = ROLE_ORDER.map(r => `<div class="lg-group"><p class="sec-title">${r}</p><p class="small" style="margin:-4px 0 8px">${DEMO_NOTE[r]}</p>
-    ${Object.entries(USERS).filter(([,u]) => u.role === r).map(([k,u]) => `<button class="lg-acc" onclick="quickLogin('${k}')"><span class="av sm">${initials(u.name)}</span><span><b>${esc(u.name)}</b><span class="small">${esc(u.email)}</span></span></button>`).join('')}</div>`).join('');
   return `<div class="login">
     <section class="lg-brand">
       <div class="logo"><b>kopi koma<i>,</i></b><span>Partner Portal</span></div>
-      <h1>Satu tempat untuk seluruh proses kemitraan.</h1>
+      <h1>Satu platform untuk seluruh proses kemitraan.</h1>
     </section>
     <section class="lg-form">
       <div class="lg-card">
@@ -774,7 +740,6 @@ function loginHTML() {
         <div class="field"><label for="lg-pw">Kata sandi</label><input id="lg-pw" type="password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
         ${state.loginErr ? `<p class="err" role="alert">${state.loginErr}</p>` : ''}
         <button class="btn btn-primary" style="width:100%;margin-top:6px" onclick="doLogin()">Masuk</button>
-        <div class="lg-demo"><p class="tl-title" style="margin:0 0 2px">Akun demo</p><p class="small" style="margin:0 0 14px">Pilih akun untuk langsung masuk. Kata sandi semua akun: <b>${PASSWORD}</b></p>${groups}</div>
       </div>
     </section>
   </div>`;
@@ -799,9 +764,9 @@ const pendingAll = () => state.apps.filter(a => picOf(a));
 const myTasks = () => state.apps.filter(a => picOf(a) === ME);
 function tabsFor() {
   const r = role(), m = myTasks().length;
-  if (r === 'Super Admin') return [['pipeline','Pipeline'],['tasks',`Semua tugas (${pendingAll().length})`],['dashboard','Target dan pencapaian'],['sales','Kinerja sales'],['users','Pengguna dan peran']];
-  if (r === 'Manajer') return [['pipeline','Pipeline'],['mytasks',`Tugas saya (${m})`],['tasks','Semua tugas'],['dashboard','Target dan pencapaian'],['sales','Kinerja sales']];
-  if (r === 'Sales') return [['pipeline','Pipeline saya'],['mytasks',`Tugas saya (${m})`],['dashboard','Target dan pencapaian saya']];
+  if (r === 'Super Admin') return [['pipeline','Pipeline'],['tasks',`Semua tugas (${pendingAll().length})`],['dashboard','Target vs Achievement'],['sales','Performa Sales'],['users','User']];
+  if (r === 'Manajer') return [['pipeline','Pipeline'],['mytasks',`Tugas saya (${m})`],['tasks','Semua tugas'],['dashboard','Target vs Achievement'],['sales','Performa Sales']];
+  if (r === 'Sales') return [['pipeline','Pipeline saya'],['mytasks',`Tugas saya (${m})`],['dashboard','Target vs Achievement saya']];
   return [['pipeline','Pipeline'],['mytasks',`Tugas saya (${m})`]];
 }
 function viewMain() {
@@ -814,7 +779,7 @@ function viewMain() {
 }
 function viewMyTasks() {
   const list = myTasks().sort((x,y) => (overdueOf(y) - overdueOf(x)) || (daysIn(y.stageSince) - daysIn(x.stageSince))), mgr = seesOverdue();
-  const intro = {Manajer:'Lead baru yang tidak bisa ditugaskan otomatis, dan aplikasi yang menunggu persetujuan akhir.', Sales:'Calon franchisee yang kamu dampingi dan sedang menunggu tindakanmu.', Penilai:'Calon franchisee yang menunggu penilaian kelayakan.'}[role()];
+  const intro = {Manajer:'Lead baru yang tidak bisa ditugaskan otomatis, dan aplikasi yang menunggu persetujuan akhir.', Sales:'Calon franchisee yang kamu dampingi dan sedang menunggu tindakanmu.', Reviewer:'Calon franchisee yang menunggu penilaian kelayakan.'}[role()];
   return `<div class="page-head"><div><h1>Tugas saya</h1><p class="sub">${intro} Pengingat otomatis dikirim lewat dasbor dan email bila mendekati batas waktu.</p></div></div>
   <div class="panel">${list.length ? `<div class="table-wrap"><table class="funnel">
     <thead><tr><th>Calon franchisee</th><th>Yang perlu dilakukan</th><th>Menunggu</th>${mgr ? '<th>Batas waktu</th>' : ''}<th></th></tr></thead>
@@ -829,21 +794,20 @@ function viewMyTasks() {
 
 /* ===================== pipeline ===================== */
 const HINTS = {
-  'Super Admin':'Coba alur lengkap: klik <b>Tambah lead</b> atau <b>Simulasikan lead dari website</b>, lalu proses kartunya sampai Persetujuan akhir. Sebagai Super Admin kamu bisa memproses semua tahap.',
-  'Manajer':'Tugasmu: menugaskan sales untuk lead di kolom <b>Lead baru</b> yang tidak bisa ditugaskan otomatis, dan <b>Persetujuan akhir</b>. Coba <b>Simulasikan lead dari website</b> untuk melihat penugasan otomatis bekerja.',
+  'Super Admin':'Coba alur lengkap: klik <b>Tambah lead</b>, lalu proses kartunya sampai Persetujuan akhir. Sebagai Super Admin kamu bisa memproses semua tahap.',
+  'Manajer':'Tugasmu: menugaskan sales untuk lead di kolom <b>Lead baru</b> yang tidak bisa ditugaskan otomatis, dan <b>Persetujuan akhir</b>.',
   'Sales':'Kamu hanya melihat calon franchisee yang kamu dampingi. Input lead baru lewat <b>Tambah lead</b> setelah calon franchisee menunjukkan minat.',
-  'Penilai':'Tugasmu: penilaian kelayakan calon franchisee di kolom <b>Penilaian kelayakan</b>. Tahap lain bisa kamu lihat, tapi tidak bisa kamu proses.'
+  'Reviewer':'Tugasmu: penilaian kelayakan calon franchisee di kolom <b>Penilaian kelayakan</b>. Tahap lain bisa kamu lihat, tapi tidak bisa kamu proses.'
 };
 function viewPipeline() {
   const apps = visibleApps(), active = apps.filter(a => !isDone(a)).length, od = apps.filter(overdueOf).length;
-  const canAdd = isSA() || role() === 'Sales', canSim = isSA() || role() === 'Manajer';
+  const canAdd = isSA() || role() === 'Sales';
   const autoN = state.apps.filter(a => !a.inputBy && a.assignedBy === null && a.stage !== 'baru' && a.sales).length;
   return `${state.hint ? `<div class="hint"><span>${HINTS[role()]}</span><button class="link" onclick="state.hint=false;render()">Tutup</button></div>` : ''}
   <div class="page-head">
     <div><h1>${role() === 'Sales' ? 'Pipeline saya' : 'Pipeline calon franchisee'}</h1><p class="sub">${active} aplikasi aktif${od && seesOverdue() ? `, <button class="link" onclick="setView('${isSA() ? 'tasks' : 'tasks'}')">${od} lewat batas waktu</button>, pengingat otomatis sudah terkirim` : ''}</p></div>
     <div class="head-actions">
       <input class="search" type="search" placeholder="Cari nama atau kota" aria-label="Cari aplikasi" value="${esc(state.q)}" oninput="state.q=this.value;document.getElementById('board').innerHTML=boardHTML()">
-      ${canSim ? '<button class="btn btn-ghost" onclick="simulateSelf()">Simulasikan lead dari website</button>' : ''}
       ${canAdd ? '<button class="btn btn-primary" onclick="openAdd()">Tambah lead</button>' : ''}
     </div>
   </div>
@@ -882,7 +846,7 @@ function viewTasks() {
   const all = pendingAll(), roleOf = a => USERS[picOf(a)].role;
   const f = state.taskFilter;
   const list = all.filter(a => f === 'all' || roleOf(a) === f).sort((x,y) => (overdueOf(y) - overdueOf(x)) || (daysIn(y.stageSince) - daysIn(x.stageSince)));
-  const pills = [['all','Semua'],['Penilai','Penilai'],['Sales','Sales'],['Manajer','Manajer']];
+  const pills = [['all','Semua'],['Reviewer','Reviewer'],['Sales','Sales'],['Manajer','Manajer']];
   return `<div class="page-head"><div><h1>Semua tugas</h1><p class="sub">Tugas yang sedang menunggu di setiap anggota tim. Saat batas waktu terlewati, sistem otomatis mengirim pengingat ke penanggung jawab dan manajer lewat dasbor dan email.</p></div></div>
   <div class="filters">${pills.map(([k,l]) => { const c = k === 'all' ? all.length : all.filter(a => roleOf(a) === k).length; return `<button class="pill" aria-pressed="${f === k}" onclick="state.taskFilter='${k}';render()">${l} (${c})</button>`; }).join('')}</div>
   <div class="panel">${list.length ? `<div class="table-wrap"><table class="funnel">
@@ -909,13 +873,9 @@ function viewUsers() {
       <td>${u.role === 'Super Admin' ? '' : od ? `<span class="chip bad">${od} lewat batas</span>` : '<span class="chip ok">Aman</span>'}</td>
       <td><button class="link" onclick="openProfile('${k}')">Lihat profil</button></td></tr>`;
   }).join('');
-  const matrix = (title, data) => `<div class="panel"><h2>${title}</h2><div class="table-wrap"><table class="funnel matrix" style="min-width:520px">
-    <thead><tr><th></th>${ROLE_ORDER.map(r => `<th>${r}</th>`).join('')}</tr></thead>
-    <tbody>${data.map(([l,v]) => `<tr><td>${l}</td>${v.map(x => `<td>${x === '✓' ? '<span style="color:var(--ok);font-weight:800">✓</span>' : x === '–' ? '<span class="small">–</span>' : `<span class="small" style="color:var(--ink)">${x}</span>`}</td>`).join('')}</tr>`).join('')}</tbody></table></div></div>`;
-  return `<div class="page-head"><div><h1>Pengguna dan peran</h1></div></div>
+  return `<div class="page-head"><div><h1>User</h1></div></div>
   <div class="panel" style="margin-bottom:16px"><div class="table-wrap"><table class="funnel">
-    <thead><tr><th>Pengguna</th><th>Peran</th><th>Wilayah atau tim</th><th>Tugas aktif</th><th>Batas waktu</th><th></th></tr></thead><tbody>${rows}</tbody></table></div></div>
-  <div class="dash-top" style="grid-template-columns:1fr 1fr">${matrix('Akses menu', MENU_ACCESS)}${matrix('Tugas per tahap', TASK_ACCESS)}</div>`;
+    <thead><tr><th>User</th><th>Role</th><th>Wilayah</th><th>Tugas aktif</th><th>Batas waktu</th><th></th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
 }
 
 /* ===================== profile ===================== */
@@ -923,7 +883,7 @@ function viewProfile() {
   const k = state.profile, u = USERS[k], mine = k === ME;
   const tasks = u.role === 'Super Admin' ? pendingAll() : state.apps.filter(a => picOf(a) === k);
   const acts = state.apps.flatMap(a => a.log.filter(l => l.by === k).map(l => ({...l, a}))).sort((x,y) => new Date(y.t) - new Date(x.t)).slice(0, 6);
-  return `${mine ? '' : '<button class="link" style="margin-bottom:14px" onclick="setView(\'users\')">Kembali ke Pengguna dan peran</button>'}
+  return `${mine ? '' : '<button class="link" style="margin-bottom:14px" onclick="setView(\'users\')">Kembali ke User</button>'}
   <div class="page-head"><div><h1>${mine ? 'Profil saya' : 'Profil pengguna'}</h1></div></div>
   <div class="prof-grid">
     <div class="panel prof-card">
@@ -932,7 +892,7 @@ function viewProfile() {
       <span class="chip ${u.role === 'Super Admin' ? 'dark' : 'aren'}">${u.role}</span>
       <dl class="kv" style="grid-template-columns:110px 1fr;margin:18px 0 0;text-align:left">
         <dt>Email</dt><dd>${esc(u.email)}</dd><dt>Telepon</dt><dd>${esc(u.phone)}</dd>
-        <dt>${u.role === 'Sales' ? 'Wilayah' : 'Tim'}</dt><dd>${esc(u.area)}</dd><dt>Bergabung</dt><dd>${u.since}</dd>
+        <dt>Wilayah</dt><dd>${esc(u.area)}</dd><dt>Bergabung</dt><dd>${u.since}</dd>
       </dl>
     </div>
     <div class="stack" style="margin:0">
@@ -1220,7 +1180,7 @@ function tabRingkasan(a) {
     <dt>Sumber lead</dt><dd>${esc(a.source)}</dd>
     <dt>Diinput oleh</dt><dd>${a.inputBy ? esc(person(a.inputBy)) : 'Pendaftar mandiri lewat ' + esc(a.source.replace(' (mandiri)',''))}</dd>
     <dt>Sales pendamping</dt><dd>${a.sales ? esc(person(a.sales)) + (a.inputBy ? '' : `<div class="small">${a.assignedBy ? 'Ditugaskan ' + esc(uname(a.assignedBy)) : 'Ditugaskan otomatis sesuai wilayah'}</div>`) : '<span class="chip warn">Belum ditugaskan</span>'}</dd>
-    <dt>Penilai</dt><dd>${esc(person(a.reviewer))}</dd>
+    <dt>Reviewer</dt><dd>${esc(person(a.reviewer))}</dd>
   </dl>
   <p class="sec-title">Rencana lokasi</p>
   <dl class="kv"><dt>Alamat</dt><dd>${esc(a.alamat)}</dd><dt>Jenis lokasi</dt><dd>${esc(a.jenisLokasi)}</dd><dt>Status lokasi</dt><dd>${esc(a.statusLokasi)}</dd></dl>
@@ -1285,7 +1245,7 @@ function tabAssessment(a) {
     <div class="actions"><button class="btn btn-primary" onclick="submitAssessment('${a.id}',true)">Lolos, lanjut ke quotation</button><button class="btn btn-danger" onclick="submitAssessment('${a.id}',false)">Tidak lolos</button><button class="link" onclick="fillAssess()">Isi contoh hasil penilaian kelayakan</button></div>`;
   if (a.assess) return `<div class="callout ${a.assess.result === 'lolos' ? 'ok' : 'bad'}">Hasil assessment: ${a.assess.result}</div>
     <ul class="result-list">${ASSESS.map(([k,l]) => `<li><span class="${a.assess.res[k] === 'Lulus' ? 'y' : 'n'}">${a.assess.res[k] === 'Lulus' ? '✓' : '✗'}</span>${l}</li>`).join('')}</ul>${a.assess.note ? `<p><b>Catatan:</b> ${esc(a.assess.note)}</p>` : ''}`;
-  return `${scoreCard(a)}<p class="muted">Penilaian kelayakan dilakukan penilai setelah lokasi dinilai layak.</p>`;
+  return `${scoreCard(a)}<p class="muted">Penilaian kelayakan dilakukan reviewer setelah lokasi dinilai layak.</p>`;
 }
 function quoteHTML(q) {
   const pk = PAKET[q.paket], disc = Number(q.diskon) || 0;
@@ -1566,19 +1526,6 @@ function submitLead() {
   toast(t ? `Lead ${a.id} masuk antrean manajer: ${t.text}.` : `Lead ${a.id} tersimpan dan diteruskan ke presentasi bisnis${a.sales !== ME ? ` dengan sales ${uname(a.sales)}` : ''}.`);
   render();
 }
-const SELF_POOL = [['Nadya Pertiwi','Bandung','gerobak'],['Fikri Maulana','Bekasi','cafe'],['Yohanes Tan','Medan','cafe'],['Reza Pahlevi','Tangerang','gerobak']];
-let selfIdx = 0;
-function simulateSelf() {
-  const [name, city, paket] = SELF_POOL[selfIdx++ % SELF_POOL.length];
-  const a = newApp({name, city, paket, phone:'0857-' + (4100 + selfIdx * 77) + '-' + (2200 + selfIdx * 13), email:name.toLowerCase().split(' ')[0] + '@mail.com',
-    modal:Math.round(total(paket) * 1.1 / 1e6) * 1e6, sumber:'Dana pribadi', pengalaman:'Pernah usaha non-F&B', pengelolaan:'Dikelola sendiri',
-    alamat:'Jl. Melati No. ' + (5 + selfIdx * 4) + ', ' + city, jenisLokasi: paket === 'gerobak' ? 'Dekat sekolah/kampus' : 'Ruko 2 lantai', statusLokasi:'Sewa 3 tahun',
-    docs:{ktp:'ktp.jpg', npwp:'npwp.pdf', dana:'rekening_koran.pdf', foto:'foto_lokasi.jpg'}, source:'Website (mandiri)', inputBy:null, sales:null, assignedBy:null});
-  log(a, 'Lead masuk dari Website (pendaftaran mandiri)', null);
-  const t = routeNew(a);
-  toast(t ? `Lead mandiri masuk: ${a.name}. Tidak bisa ditugaskan otomatis (${t.text}), masuk antrean manajer.` : `Lead mandiri masuk: ${a.name}. Ditugaskan otomatis ke ${uname(a.sales)} sesuai wilayah.`); render();
-}
-
 /* ===================== target & sales performance ===================== */
 function setRate(i, v) { state.rates[i] = Math.min(100, Math.max(1, parseInt(v, 10) || 1)); render(); }
 function setPType(t) { state.ptype = t; state.pkey = t === 'bulan' ? CUR_M : t === 'kuartal' ? 4 : t === 'semester' ? 2 : 1; render(); }
@@ -1647,7 +1594,7 @@ function viewDashboard() {
       <td>${!last ? `<input class="rate" type="number" min="1" max="100" value="${state.rates[i]}" aria-label="Rasio konversi ${f.l}" onchange="setRate(${i},this.value)">%<div class="small">Aktual: ${actual}</div>` : '<span class="small">Tahap akhir</span>'}</td></tr>`;
   }).join('');
   const weak = role() === 'Sales' ? [] : SALES.filter(s => { const t = salesTarget(s,P), a = salesAch(s,P); return Math.min(a.qty / (t.qty * P.pace), a.rev / (t.rev * P.pace)) < .85; });
-  return `<div class="page-head"><div><h1>${role() === 'Sales' ? 'Target dan pencapaian saya' : 'Target dan pencapaian'}, ${P.label}</h1><p class="sub">${P.ended ? 'Periode sudah selesai.' : `Data per 20 Oktober 2026, hari ke-${P.el} dari ${P.totalD}.`} Data demo.</p></div>${periodControls()}</div>
+  return `<div class="page-head"><div><h1>${role() === 'Sales' ? 'Target vs Achievement saya' : 'Target vs Achievement'}, ${P.label}</h1><p class="sub">${P.ended ? 'Periode sudah selesai.' : `Data per 20 Oktober 2026, hari ke-${P.el} dari ${P.totalD}.`} Data demo.</p></div>${periodControls()}</div>
   <div class="kpis">
     ${kpi('Franchisee disetujui', T.qty, A.qty, P, v => num1(v), `Gerobak ${A.g}, cafe ${A.c}.`)}
     ${kpi('Revenue kemitraan', T.rev, A.rev, P, rpS, 'Nilai kesepakatan dari franchisee yang disetujui.')}
@@ -1672,14 +1619,14 @@ function viewSales() {
     const gap = g => g >= 0 ? `<span style="color:var(--ok);font-weight:700">+${fmt(g)}</span>` : `<span style="color:var(--bad);font-weight:700">−${fmt(-g)}</span>`;
     const pc = (pct, st) => `<div class="bar" style="min-width:110px"><span style="width:${Math.min(pct,1) * 100}%;background:${barColor(st)}"></span></div><div class="small">${Math.round(pct * 100)}%</div>`;
     return `<section class="panel" style="margin-bottom:16px"><h2>${title}</h2><p class="small" style="margin-top:-4px">${note}</p>
-      <div class="table-wrap"><table class="funnel"><thead><tr><th style="width:36px">#</th><th>Sales</th><th>Target ${P.label}</th><th>Seharusnya ${dateTxt}</th><th>Capaian</th><th>Capaian vs seharusnya</th><th>Selisih</th><th>Status</th></tr></thead>
+      <div class="table-wrap"><table class="funnel"><thead><tr><th style="width:36px">#</th><th>Sales</th><th>Target ${P.label}</th><th>Seharusnya ${dateTxt}</th><th>Achievement</th><th>Achievement vs seharusnya</th><th>Selisih</th><th>Status</th></tr></thead>
       <tbody>${rows.map((r,i) => `<tr><td class="num" style="font-size:15px;color:var(--muted)">${i + 1}</td>
         <td><div class="who-cell"><span class="av sm">${initials(uname(r.s))}</span><div><button class="link" style="color:var(--ink);text-decoration:none" onclick="openProfile('${r.s}')">${uname(r.s)}</button><div class="small">${USERS[r.s].area}</div></div></div></td>
         <td>${fmt(r.full)}</td><td><b>${fmt(r.should)}</b></td><td class="num" style="font-size:16px">${fmt(r.ach)}</td><td>${pc(r.pct, r.st)}</td><td>${gap(r.ach - r.should)}</td><td><span class="chip ${r.st[0]}">${r.st[1]}</span></td></tr>`).join('')}
         <tr class="sum"><td></td><td><b>Total</b></td><td><b>${fmt(sum.full)}</b></td><td><b>${fmt(sum.should)}</b></td><td class="num" style="font-size:16px">${fmt(sum.ach)}</td><td>${pc(sPct, sSt)}</td><td>${gap(sum.ach - sum.should)}</td><td><span class="chip ${sSt[0]}">${sSt[1]}</span></td></tr>
       </tbody></table></div></section>`;
   };
-  return `<div class="page-head"><div><h1>Kinerja sales, ${P.label}</h1><p class="sub">${P.ended ? 'Periode sudah selesai.' : `Data per 20 Oktober 2026, hari ke-${P.el} dari ${P.totalD}.`} "Seharusnya" adalah target yang mestinya sudah tercapai pada tanggal ini, sesuai proporsi hari yang sudah berjalan.</p></div>${periodControls()}</div>
+  return `<div class="page-head"><div><h1>Performa Sales, ${P.label}</h1><p class="sub">${P.ended ? 'Periode sudah selesai.' : `Data per 20 Oktober 2026, hari ke-${P.el} dari ${P.totalD}.`} "Seharusnya" adalah target yang mestinya sudah tercapai pada tanggal ini, sesuai proporsi hari yang sudah berjalan.</p></div>${periodControls()}</div>
   ${table('Target revenue','rev',rpS,'Revenue dari nilai kesepakatan franchisee yang disetujui. Diurutkan dari sales paling perform.')}
   ${table('Target kuantitas','qty',num1,'Jumlah franchisee yang disetujui. Diurutkan dari sales paling perform.')}
   <p class="small">Target bulanan per sales: ${SALES.map(s => `${first(s)} ${SALES_T[s].q} franchisee dan ${rpS(SALES_T[s].r)}`).join('; ')}. Target kuartal, semester, dan tahunan adalah penjumlahan target bulanan.</p>`;
