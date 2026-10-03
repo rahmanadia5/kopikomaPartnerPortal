@@ -253,7 +253,6 @@ tr.sum td{background:#FAF8F4;border-top:2px solid var(--line)}
 .toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:var(--r-s);font-weight:600;font-size:14px;z-index:60;display:none;max-width:90vw;text-align:center}
 .toast.show{display:block}
 .toast.bad{background:var(--bad)}
-footer{max-width:1360px;margin:0 auto;padding:0 24px 30px;font-size:12px;color:var(--muted)}
 
 @media (max-width:760px){
   .dash-top,.paket-list,.grid2{grid-template-columns:1fr}
@@ -331,7 +330,6 @@ footer{max-width:1360px;margin:0 auto;padding:0 24px 30px;font-size:12px;color:v
   <button class="userbtn" id="userBtn" onclick="toggleMenu(event)" aria-haspopup="true" aria-expanded="false" aria-label="Menu akun"></button>
 </header>
 <main id="main"></main>
-<footer id="foot">Prototipe untuk studi kasus. Nama brand, pengguna, data pendaftar, dan angka investasi bersifat fiktif.</footer>
 <div class="overlay" id="overlay" onclick="closeDetail()"></div>
 <aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="dTitle"></aside>
 <div class="apv" id="apv" hidden onclick="if(event.target===this)closeApproval()"></div>
@@ -725,21 +723,21 @@ document.addEventListener('click', e => {
 
 /* ===================== render ===================== */
 function render() {
-  const top = document.getElementById('topbar'), foot = document.getElementById('foot');
+  const top = document.getElementById('topbar');
   saveShared();
   if (MODE === 'mitra') {
-    top.hidden = true; foot.hidden = false;
+    top.hidden = true;
     document.getElementById('main').innerHTML = portalHTML();
     return;
   }
   if (!ME) {
-    top.hidden = true; foot.hidden = true;
+    top.hidden = true;
     document.getElementById('main').innerHTML = loginHTML();
     ['drawer','overlay'].forEach(id => document.getElementById(id).classList.remove('open'));
     document.getElementById('apv').hidden = true; document.getElementById('notifPop').hidden = true; document.getElementById('userMenu').hidden = true;
     return;
   }
-  top.hidden = false; foot.hidden = false;
+  top.hidden = false;
   document.getElementById('main').innerHTML = viewMain();
   renderTop(); renderDrawer(); renderNotif(); renderApproval();
 }
