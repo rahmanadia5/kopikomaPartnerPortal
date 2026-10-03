@@ -51,12 +51,12 @@ Halaman masuk berisi form email + kata sandi dan daftar akun demo per role (klik
 - Persetujuan dua pihak: 1 dari 2 = franchisee menyetujui quotation (di portal atau dicatat sales), 2 dari 2 = persetujuan akhir manajer.
 - Status persetujuan per aplikasi (modal timeline 7 langkah, PIC + lama menunggu), dari kartu, drawer, dan tabel tugas.
 - Skor kecocokan AI (profil 40%, lokasi 60%) dengan alasan plus/minus. DISIMULASIKAN dengan pembobotan aturan + data peta simulasi; jujur sebutkan di PRD. Alat bantu, bukan penolakan otomatis.
-- Target vs Achievement: periode Bulanan/Kuartal/Semester/Tahunan, target vs "seharusnya per hari ini" (MTD/QTD/HTD/YTD), revenue + kuantitas, funnel 6 tahap dihitung mundur dari rasio konversi (bisa diubah).
-- Performa Sales (manajer/super admin): dua tabel terpisah (revenue dan kuantitas), diurutkan dari paling perform, kolom Target, Seharusnya per hari ini, Achievement, %, Selisih, Status. Status mengikuti metrik terlemah.
+- Target vs Achievement: periode Bulanan/Kuartal/Semester/Tahunan, target vs "Target MTD/QTD/HTD/YTD" (target proporsional per hari ini), revenue + kuantitas, funnel 6 tahap dihitung mundur dari rasio konversi (bisa diubah).
+- Performa Sales (manajer/super admin): dua tabel terpisah (revenue dan kuantitas), diurutkan dari paling perform, kolom Target, Target MTD/QTD/HTD/YTD, Achievement, Achievement vs Target MTD, Selisih, Status. Status mengikuti metrik terlemah.
 - Profil pengguna (tugas aktif, notifikasi email, aktivitas; target bulanan untuk Sales). Tidak ada menu User/Pengguna, kartu deskripsi peran, maupun matriks akses. Profil sales lain dibuka dari Performa Sales.
 - Lead masuk lewat dua jalur: input sales (Tambah lead) dan pendaftaran mandiri di Portal Mitra. Tidak ada tombol simulasi lead di dashboard. Wilayah user non-sales = "Semua wilayah".
 - Audit trail per aplikasi, termasuk akses dokumen. Persetujuan data pribadi (UU PDP) wajib saat input lead.
-- "Hari ini" = tanggal asli (jam 09.00), jadi MTD/QTD/HTD/YTD dan label "Seharusnya per ..." berganti setiap hari. Data contoh (umur lead, riwayat sales per bulan, target pembukaan di quotation) dihitung relatif terhadap tanggal ini. Contoh kemitraan yang sudah disetujui (Maya Putri) selalu jatuh di bulan berjalan (`DEAL_DAYS`). Tidak ada teks "Data demo" di halaman target.
+- "Hari ini" = tanggal asli (jam 09.00), jadi MTD/QTD/HTD/YTD dan label Target MTD berganti setiap hari. Data contoh (umur lead, riwayat sales per bulan, target pembukaan di quotation) dihitung relatif terhadap tanggal ini. Contoh kemitraan yang sudah disetujui (Maya Putri) selalu jatuh di bulan berjalan (`DEAL_DAYS`). Tidak ada teks "Data demo" di halaman target.
 
 ## Struktur kode
 - Satu file `index.html` tanpa build (plus `vercel.json` untuk route `/mitra`): CSS di `<style>`, JS vanilla di `<script>`, font Plus Jakarta Sans dari Google Fonts.

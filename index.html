@@ -1580,7 +1580,7 @@ function kpi(title, target, ach, P, fmt, foot) {
   const tdT = target * P.pace, pctTD = tdT ? ach / tdT : 0, pct = target ? ach / target : 0, st = perfStatus(pctTD);
   return `<div class="panel kpi"><div class="d-top"><h2 style="margin:0">${title}</h2><span class="chip ${st[0]}">${st[1]}</span></div>
     <div class="kpi-num">${fmt(ach)}</div>
-    <div class="small">Seharusnya ${P.ended ? '' : `per ${todayShort} (${P.td}) `}<b style="color:var(--ink)">${fmt(tdT)}</b>, tercapai ${Math.round(pctTD * 100)}%</div>
+    <div class="small">Target ${P.ended ? '' : `${P.td} `}<b style="color:var(--ink)">${fmt(tdT)}</b>, tercapai ${Math.round(pctTD * 100)}%</div>
     <div class="bar" style="margin:10px 0 4px"><span style="width:${Math.min(pct,1) * 100}%;background:${barColor(st)}"></span>${P.ended ? '' : `<i style="left:${P.pace * 100}%"></i>`}</div>
     <div class="small">Target ${P.label} ${fmt(target)}, tercapai ${Math.round(pct * 100)}%. ${foot}</div></div>`;
 }
@@ -1609,15 +1609,15 @@ function viewDashboard() {
       <div class="small">${pipe.length} aplikasi di tahap quotation, negosiasi, dan persetujuan akhir. Potensi revenue jika semuanya disetujui.</div>
       ${role() === 'Sales' ? '' : `<button class="link" style="margin-top:10px" onclick="setView('sales')">Lihat per sales</button>`}</div>
   </div>
-  <div class="panel" style="margin-bottom:16px"><h2>Perlu perhatian</h2>${ws >= .85 ? '<p>Semua tahap funnel sesuai jalur untuk periode ini.</p>' : `<p>Tahap <b>${FUNNEL[worst].l}</b> paling tertinggal: ${A.f[worst]} dari seharusnya ${num1(tg[worst] * P.pace)} (${Math.round(ws * 100)}%).</p>`}
+  <div class="panel" style="margin-bottom:16px"><h2>Perlu perhatian</h2>${ws >= .85 ? '<p>Semua tahap funnel sesuai jalur untuk periode ini.</p>' : `<p>Tahap <b>${FUNNEL[worst].l}</b> paling tertinggal: ${A.f[worst]} dari target ${P.td} ${num1(tg[worst] * P.pace)} (${Math.round(ws * 100)}%).</p>`}
     ${weak.length ? `<p style="margin:0">${weak.length} sales di bawah target: ${weak.map(s => uname(s)).join(' dan ')}. <button class="link" onclick="setView('sales')">Lihat performa sales</button></p>` : ''}</div>
   <div class="panel"><h2>Funnel per tahap</h2><div class="table-wrap"><table class="funnel">
-    <thead><tr><th>Tahap</th><th>Target periode</th><th>Seharusnya ${P.ended ? '' : `per ${todayShort}`}</th><th>Pencapaian</th><th>Progres</th><th>Status</th><th>Rasio konversi ke tahap berikutnya</th></tr></thead>
+    <thead><tr><th>Tahap</th><th>Target periode</th><th>${P.ended ? 'Target akhir periode' : `Target ${P.td}`}</th><th>Pencapaian</th><th>Progres</th><th>Status</th><th>Rasio konversi ke tahap berikutnya</th></tr></thead>
     <tbody>${rows}</tbody></table></div>
-    <p class="small" style="margin:12px 0 0">Target jumlah per tahap dihitung mundur dari target franchisee disetujui dan rasio konversi. ${P.ended ? '' : 'Garis hitam di bar menandai posisi yang seharusnya tercapai hari ini.'}</p></div>`;
+    <p class="small" style="margin:12px 0 0">Target jumlah per tahap dihitung mundur dari target franchisee disetujui dan rasio konversi. ${P.ended ? '' : `Garis hitam di bar menandai Target ${P.td}, yaitu posisi yang seharusnya tercapai hari ini.`}</p></div>`;
 }
 function viewSales() {
-  const P = periodInfo(), dateTxt = P.ended ? '(periode selesai)' : `per ${todayShort} (${P.td})`;
+  const P = periodInfo();
   const data = SALES.map(s => ({s, t:salesTarget(s,P), a:salesAch(s,P)}));
   const table = (title, key, fmt, note) => {
     const rows = data.map(d => { const full = d.t[key], should = full * P.pace, ach = d.a[key], pct = should ? ach / should : 0; return {...d, full, should, ach, pct, st:perfStatus(pct)}; }).sort((x,y) => y.pct - x.pct);
@@ -1626,14 +1626,14 @@ function viewSales() {
     const gap = g => g >= 0 ? `<span style="color:var(--ok);font-weight:700">+${fmt(g)}</span>` : `<span style="color:var(--bad);font-weight:700">−${fmt(-g)}</span>`;
     const pc = (pct, st) => `<div class="bar" style="min-width:110px"><span style="width:${Math.min(pct,1) * 100}%;background:${barColor(st)}"></span></div><div class="small">${Math.round(pct * 100)}%</div>`;
     return `<section class="panel" style="margin-bottom:16px"><h2>${title}</h2><p class="small" style="margin-top:-4px">${note}</p>
-      <div class="table-wrap"><table class="funnel"><thead><tr><th style="width:36px">#</th><th>Sales</th><th>Target ${P.label}</th><th>Seharusnya ${dateTxt}</th><th>Achievement</th><th>Achievement vs seharusnya</th><th>Selisih</th><th>Status</th></tr></thead>
+      <div class="table-wrap"><table class="funnel"><thead><tr><th style="width:36px">#</th><th>Sales</th><th>Target ${P.label}</th><th>${P.ended ? 'Target akhir periode' : `Target ${P.td}`}</th><th>Achievement</th><th>Achievement vs ${P.ended ? 'target' : `Target ${P.td}`}</th><th>Selisih</th><th>Status</th></tr></thead>
       <tbody>${rows.map((r,i) => `<tr><td class="num" style="font-size:15px;color:var(--muted)">${i + 1}</td>
         <td><div class="who-cell"><span class="av sm">${initials(uname(r.s))}</span><div><button class="link" style="color:var(--ink);text-decoration:none" onclick="openProfile('${r.s}')">${uname(r.s)}</button><div class="small">${USERS[r.s].area}</div></div></div></td>
         <td>${fmt(r.full)}</td><td><b>${fmt(r.should)}</b></td><td class="num" style="font-size:16px">${fmt(r.ach)}</td><td>${pc(r.pct, r.st)}</td><td>${gap(r.ach - r.should)}</td><td><span class="chip ${r.st[0]}">${r.st[1]}</span></td></tr>`).join('')}
         <tr class="sum"><td></td><td><b>Total</b></td><td><b>${fmt(sum.full)}</b></td><td><b>${fmt(sum.should)}</b></td><td class="num" style="font-size:16px">${fmt(sum.ach)}</td><td>${pc(sPct, sSt)}</td><td>${gap(sum.ach - sum.should)}</td><td><span class="chip ${sSt[0]}">${sSt[1]}</span></td></tr>
       </tbody></table></div></section>`;
   };
-  return `<div class="page-head"><div><h1>Performa Sales, ${P.label}</h1><p class="sub">${P.ended ? 'Periode sudah selesai.' : `Data per ${todayLong}, hari ke-${P.el} dari ${P.totalD}.`} "Seharusnya" adalah target yang mestinya sudah tercapai pada tanggal ini, sesuai proporsi hari yang sudah berjalan.</p></div>${periodControls()}</div>
+  return `<div class="page-head"><div><h1>Performa Sales, ${P.label}</h1><p class="sub">${P.ended ? 'Periode sudah selesai.' : `Data per ${todayLong}, hari ke-${P.el} dari ${P.totalD}.`} ${P.ended ? '' : `"Target ${P.td}" adalah target yang mestinya sudah tercapai per ${todayShort}, sesuai proporsi hari yang sudah berjalan.`}</p></div>${periodControls()}</div>
   ${table('Target revenue','rev',rpS,'Revenue dari nilai kesepakatan franchisee yang disetujui. Diurutkan dari sales paling perform.')}
   ${table('Target kuantitas','qty',num1,'Jumlah franchisee yang disetujui. Diurutkan dari sales paling perform.')}
   <p class="small">Target bulanan per sales: ${SALES.map(s => `${first(s)} ${SALES_T[s].q} franchisee dan ${rpS(SALES_T[s].r)}`).join('; ')}. Target kuartal, semester, dan tahunan adalah penjumlahan target bulanan.</p>`;
