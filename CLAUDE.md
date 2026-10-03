@@ -51,13 +51,12 @@ Aturan penting:
 - Target dan pencapaian: periode Bulanan/Kuartal/Semester/Tahunan, target vs "seharusnya per hari ini" (MTD/QTD/HTD/YTD), revenue + kuantitas, funnel 6 tahap dihitung mundur dari rasio konversi (bisa diubah).
 - Performa sales (manajer/super admin): dua tabel terpisah (revenue dan kuantitas), diurutkan dari paling perform, kolom Target, Seharusnya per 20 Okt, Achievement, %, Selisih, Status. Status mengikuti metrik terlemah.
 - Profil pengguna (peran, menu, tugas, notifikasi email, aktivitas), Pengguna dan peran (matriks akses).
-- Alur bisnis end-to-end (tab "Alur bisnis" untuk semua peran setelah login): diagram swimlane (Calon franchisee, Sales, Sistem, Reviewer, Manajer) dari pengajuan sampai quotation disetujui kedua pihak, plus tabel rincian tahap. Persetujuan 1 dari 2 = franchisee setuju quotation (dicatat sales), 2 dari 2 = approval akhir manajer. Data diagram di `FL_NODES` / `FL_EDGES` (posisi grid kolom x lane).
 - Audit trail per aplikasi, termasuk akses dokumen. Persetujuan data pribadi (UU PDP) wajib saat input lead.
 - Data demo "hari ini" = 20 Oktober 2026 supaya angka MTD bermakna.
 
 ## Struktur kode
 - Satu file `index.html` tanpa build (plus `vercel.json` untuk route `/mitra`): CSS di `<style>`, JS vanilla di `<script>`, font Plus Jakarta Sans dari Google Fonts.
-- Bagian JS ditandai komentar `/* ===================== nama ===================== */`: base, people & roles, flow, AI score, seed data, sales history, state, helpers, top bar, render (login + tab per peran), pipeline, all tasks, users & roles, profile, partner portal (calon franchisee), business process, approval status modal, detail drawer, actions, add lead, target & sales performance.
+- Bagian JS ditandai komentar `/* ===================== nama ===================== */`: base, people & roles, flow, AI score, seed data, sales history, state, helpers, top bar, render (login + tab per peran), pipeline, all tasks, users & roles, profile, partner portal (calon franchisee), approval status modal, detail drawer, actions, add lead, target & sales performance.
 - `MODE` (`staff` / `mitra`) menentukan aplikasi yang dirender. Data aplikasi dan notifikasi (`state.apps`, `state.notifs`, `tick`, `nid`) disimpan di localStorage (`kopikoma-demo-v1`) supaya kedua aplikasi terhubung, termasuk antar-tab lewat event `storage`. State UI dan login (`ME`) tetap di memori. Tombol "Reset data demo" di menu akun menghapus data tersimpan dan kembali ke seed.
 - UI dalam Bahasa Indonesia. Hindari em dash di teks UI.
 
