@@ -976,7 +976,7 @@ function viewUsers() {
 
 /* ===================== profile ===================== */
 function viewProfile() {
-  const k = state.profile, u = USERS[k], R = ROLES[u.role], mine = k === ME;
+  const k = state.profile, u = USERS[k], mine = k === ME;
   const tasks = u.role === 'Super Admin' ? pendingAll() : state.apps.filter(a => picOf(a) === k);
   const acts = state.apps.flatMap(a => a.log.filter(l => l.by === k).map(l => ({...l, a}))).sort((x,y) => new Date(y.t) - new Date(x.t)).slice(0, 6);
   return `${mine ? '' : '<button class="link" style="margin-bottom:14px" onclick="setView(\'users\')">Kembali ke Pengguna dan peran</button>'}
@@ -992,11 +992,7 @@ function viewProfile() {
       </dl>
     </div>
     <div class="stack" style="margin:0">
-      <section class="panel"><h2>Peran: ${u.role}</h2><p class="small" style="margin-top:-4px">${R.desc}</p>
-        <p class="sec-title">Menu yang bisa diakses</p><div class="chips">${R.menus.map(m => `<span class="chip">${m}</span>`).join('')}</div>
-        <p class="sec-title" style="margin-top:16px">Tugas dalam alur</p><ul class="plain">${R.tasks.map(t => `<li>${t}</li>`).join('')}</ul>
-        ${u.role === 'Sales' ? `<p class="sec-title" style="margin-top:16px">Target bulanan</p><p style="margin:0">${SALES_T[k].q} franchisee disetujui dan ${rpS(SALES_T[k].r)} revenue kemitraan.</p>` : ''}
-      </section>
+      ${u.role === 'Sales' ? `<section class="panel"><h2>Target bulanan</h2><p style="margin:0">${SALES_T[k].q} franchisee disetujui dan ${rpS(SALES_T[k].r)} revenue kemitraan.</p></section>` : ''}
       <section class="panel"><div class="d-top"><h2>${u.role === 'Super Admin' ? 'Tugas di seluruh tim' : 'Tugas aktif'}</h2><span class="num">${tasks.length}</span></div>
         ${tasks.length ? `<ul class="r-list">${tasks.slice(0,5).map(a => `<li style="grid-template-columns:1fr auto"><div><button class="link" onclick="openDetail('${a.id}')">${esc(a.name)}</button><div class="small">${actionOf(a)}${u.role === 'Super Admin' ? `, ${esc(uname(picOf(a)))}` : ''}</div></div>${overdueOf(a) ? '<span class="chip bad">Lewat batas</span>' : `<span class="small">${daysIn(a.stageSince)} hari</span>`}</li>`).join('')}</ul>${tasks.length > 5 ? `<button class="link" style="margin-top:8px" onclick="setView('tasks')">Lihat semua</button>` : ''}` : '<p class="small">Tidak ada tugas aktif.</p>'}
       </section>
