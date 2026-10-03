@@ -31,7 +31,7 @@ def set_font(style_or_run, size=11, bold=None):
 
 set_font(doc.styles['Normal'])
 doc.styles['Normal'].paragraph_format.space_after = Pt(6)
-for name, size in (('Title', 16), ('Heading 1', 13), ('Heading 2', 11.5), ('List Bullet', 11), ('List Number', 11)):
+for name, size in (('Title', 16), ('Heading 1', 14), ('Heading 2', 12), ('Heading 3', 11), ('List Bullet', 11), ('List Bullet 2', 11), ('List Bullet 3', 11), ('List Number', 11)):
     set_font(doc.styles[name], size, bold=name.startswith(('Title', 'Heading')))
 
 hp = doc.sections[0].header.paragraphs[0]
@@ -69,13 +69,27 @@ def table(rows):
             p.paragraph_format.space_after = Pt(0)
             add_inline(p, f'**{c}**' if i == 0 and c else c)
             if i == 0: shade(cell, 'E7E2DA')
-    if rows[0][0] == 'Capability':
+    widths = {'Capability': (4.2, 2.9, 1.7, 7.8), 'ID': (2.3, 4.4, 5.0, 4.9), '#': None}.get(rows[0][0])
+    if rows[0][0] == '#' and len(rows[0]) == 5: widths = (1.0, 2.2, 3.6, 2.6, 7.2)
+    if widths:
+        t.autofit = False
         for row in t.rows:
-            for j, w in enumerate((4.2, 2.9, 1.7, 7.8)): row.cells[j].width = Cm(w)
+            for j, w in enumerate(widths): row.cells[j].width = Cm(w)
     doc.add_paragraph().paragraph_format.space_after = Pt(0)
 
 lines = (HERE / 'PRD.md').read_text(encoding='utf-8').splitlines()
-toc = [l for l in lines if l.startswith(('## ', '### ')) and 'Table of Contents' not in l]
+toc = [l for l in lines if l.startswith(('## ', '### ', '#### ')) and 'Table of Contents' not in l]
+
+def grid(spec):
+    items = [x.strip().split('|') for x in spec.split(';;')]
+    t = doc.add_table(rows=2, cols=len(items))
+    width = 16.4 / len(items) - 0.4
+    for j, (path, cap) in enumerate(items):
+        c = t.cell(0, j); c.paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
+        c.paragraphs[0].add_run().add_picture(str(HERE / path.strip()), width=Cm(width))
+        q = t.cell(1, j).paragraphs[0]; q.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        r = q.add_run(cap.strip()); set_font(r, 10); r.italic = True
+    doc.add_paragraph().paragraph_format.space_after = Pt(0)
 i = 0
 while i < len(lines):
     ln = lines[i]
@@ -90,17 +104,20 @@ while i < len(lines):
         i += 1; continue
     if ln.strip() == '[[TOC]]':
         for h in toc:
-            sub = h.startswith('### ')
-            p = doc.add_paragraph(); p.alignment = WD_ALIGN_PARAGRAPH.LEFT
-            p.paragraph_format.space_after = Pt(2)
-            if sub: p.paragraph_format.left_indent = Cm(0.8)
-            add_inline(p, h.lstrip('# ') if sub else f'**{h[3:]}**')
+            level = len(h) - len(h.lstrip('#')) - 1
+            p = doc.add_paragraph(style=['List Bullet', 'List Bullet 2', 'List Bullet 3'][level - 1])
+            p.alignment = WD_ALIGN_PARAGRAPH.LEFT
+            p.paragraph_format.space_after = Pt(0)
+            add_inline(p, h.lstrip('# '))
         i += 1; continue
+    if ln.startswith('[[GRID '):
+        grid(ln[7:-2]); i += 1; continue
     if ln.strip() == '[[PAGEBREAK]]':
         doc.add_page_break(); i += 1; continue
     if ln.startswith('# '): p = doc.add_paragraph(style='Title'); add_inline(p, ln[2:], 16)
     elif ln.startswith('## '): doc.add_heading(ln[3:], level=1)
     elif ln.startswith('### '): doc.add_heading(ln[4:], level=2)
+    elif ln.startswith('#### '): doc.add_heading(ln[5:], level=3)
     elif ln.startswith('- '): para(ln[2:], 'List Bullet')
     elif re.match(r'\d+\. ', ln): para(re.sub(r'^\d+\. ', '', ln), 'List Number', WD_ALIGN_PARAGRAPH.LEFT)
     elif ln.strip(): para(ln, align=WD_ALIGN_PARAGRAPH.LEFT if ln.startswith(('Prototype', 'Demo password')) else WD_ALIGN_PARAGRAPH.JUSTIFY)

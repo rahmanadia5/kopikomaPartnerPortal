@@ -6,7 +6,7 @@
 
 [[PAGEBREAK]]
 
-## 1. Executive Summary
+## Executive Summary
 
 **Kopi Koma Partner Portal** is a web application that digitalizes and centralizes the partnership process between Kopi Koma (fictitious name), a local coffee franchisor, and its candidate franchisees, from the first application until the partnership is approved by both parties. The product consists of two connected applications:
 
@@ -23,117 +23,76 @@ Activities after both parties approve, such as signing the franchise agreement, 
 
 **Demo password:** demo123 (all staff accounts are listed on the login page)
 
-## 2. Background and Assumptions
+## Assumptions
 
-### 2.1 Client assumptions
+### Client
 
-The client in this case is fictional. I named it Kopi Koma (fictitious name) and made the following assumptions:
+| Item | Assumption |
+|---|---|
+| Brand | Kopi Koma (fictitious name), a local "kopi kekinian" (grab-and-go coffee) brand with around 80 outlets in Greater Jakarta, Bandung, and Central Java |
+| Packages | **Gerobak** (coffee cart): Rp 45,000,000, no royalty, payback 6 to 9 months. **Cafe**: Rp 450,000,000, royalty 5% of monthly revenue, payback 18 to 24 months |
+| Why Gerobak has no royalty | Gerobak partners must buy raw materials (coffee, milk, syrup, cups) from Kopi Koma, so the franchisor earns from the supply margin. This keeps the entry package affordable and avoids auditing revenue reports from many small carts. Cafe pays royalty because its revenue is larger and it uses the brand more intensively. |
+| Team | 1 Manager, 4 Sales (2 senior, 2 junior, one region each), 2 Reviewers, 1 Super Admin |
+| Sales regions | Rendi: Greater Tangerang. Putri: Jakarta, Bogor, Depok, Bekasi, Cikarang. Agus: Greater Bandung. Wulan: Central Java |
+| Expansion target | 120 new outlets per year (72 Gerobak, 48 Cafe). This is a stretch target, more aggressive than what comparable brands have publicly shown. |
+| Revenue definition | Deal value of approved partnership packages after discount. Royalty is not counted because it happens after the outlet opens. |
 
-- Kopi Koma is a local "kopi kekinian" (grab-and-go coffee) brand with around 80 outlets, mostly in Greater Jakarta, Bandung, and Central Java.
-- It offers two franchise packages:
+### Industry context
 
-| Package | Investment | Royalty | Estimated payback |
-|---|---|---|---|
-| Gerobak (coffee cart) | Rp 45,000,000 | None | 6 to 9 months |
-| Cafe | Rp 450,000,000 | 5% of monthly revenue | 18 to 24 months |
+Franchising is the main expansion channel for Indonesian F&B brands. As of February 2025, the Ministry of Trade recorded 311 franchisors with a Franchise Registration Certificate (STPW), 157 domestic and 154 foreign, and the culinary sector accounted for 47.77% of them [1][2]. This is a share of registered franchisors, not of outlets or revenue. In the coffee category, TOFFIN and MIX MarComm (SWA Media Group) found that chain coffee shops in major cities grew from around 1,000 outlets in 2016 to more than 2,950 in August 2019 [3][4]. The point is not that the market is booming, but that brands in this category grow by opening outlets through franchise partners, which makes the partnership process a core business process.
 
-- Why the Gerobak package has no royalty: Gerobak partners are required to buy raw materials (coffee, milk, syrup, cups) from Kopi Koma, so the franchisor earns from the supply margin instead of a percentage of sales. This keeps the entry package simple and affordable for first-time business owners, and avoids the cost of auditing revenue reports from many small carts. The Cafe package has a 5% royalty because its revenue is larger and it uses the brand more intensively (full store, menu, and interior standards).
-- The partnership team consists of 1 Manager, 4 Sales (2 senior, 2 junior, each covering a region), and 2 Reviewers who run the eligibility assessment. A Super Admin manages the system.
-- The expansion target is 120 new outlets per year (72 Gerobak and 48 Cafe). This is a stretch target: it is more aggressive than what comparable brands have publicly shown, and it is used to drive team targets and pipeline planning.
-- Revenue in this document means the deal value of approved partnership packages after discount. Royalty is not counted because it occurs after the outlet opens, which is outside the scope of this product.
-
-### 2.2 Industry context
-
-Franchising is the main expansion channel for Indonesian F&B brands. According to the Ministry of Trade, as of February 2025 there were 311 franchisors with a Franchise Registration Certificate (STPW), 157 domestic and 154 foreign, and the culinary (F&B) sector accounted for 47.77% of them [1][2]. Note that this is a share of registered franchisors, not of outlets or revenue. In the coffee category, research by TOFFIN and MIX MarComm (SWA Media Group) found that chain coffee shops in major Indonesian cities grew from around 1,000 outlets in 2016 to more than 2,950 outlets in August 2019 [3][4]. The argument here is not that the coffee market is booming, but that brands in this category grow mainly by opening outlets through franchise partners. This makes the partnership process a core business process, not an administrative side task.
-
-### 2.3 Pain points (assumed)
+### Pain points
 
 | # | Pain point | Who feels it | Impact |
 |---|---|---|---|
-| 1 | Leads are scattered and not centralized. They come from many channels (exhibitions, referrals, Instagram, website, walk-ins) and end up in each sales' WhatsApp chats, personal notes, and separate spreadsheets. There is no single list of all candidates, their owner, and their status. | Sales, Manager | Leads are followed up late or forgotten, two sales may contact the same candidate, and lead data is lost when a sales leaves the company. |
-| 2 | Candidates do not know where their application stands and must keep asking their sales contact. | Candidate franchisee, Sales | Poor candidate experience and time spent answering status questions. Serious candidates may move to a competitor brand. |
-| 3 | Quotations, discounts, and change requests are negotiated by chat. There is no single version that both parties agree on. | Sales, Manager, Candidate | Disputes about what was agreed, and approvals that cannot be traced. |
-| 4 | There is no deadline per stage and no visibility of bottlenecks. | Manager | Applications stay stuck for weeks without anyone noticing. |
-| 5 | Candidate screening and location decisions rely on individual judgment. | Reviewer, Manager | Inconsistent decisions and outlets opened in weak locations. |
+| 1 | Leads are scattered and not centralized: they come from exhibitions, referrals, Instagram, the website, and walk-ins, and end up in each sales' WhatsApp chats, personal notes, and separate spreadsheets. | Sales, Manager | Leads are followed up late or forgotten, two sales contact the same candidate, and data is lost when a sales leaves. |
+| 2 | Candidates do not know where their application stands and must keep asking their sales. | Candidate, Sales | Poor candidate experience. Serious candidates may move to a competitor. |
+| 3 | Quotations, discounts, and change requests are negotiated by chat. | Sales, Manager, Candidate | No single agreed version, and approvals cannot be traced. |
+| 4 | No deadline per stage and no visibility of bottlenecks. | Manager | Applications stay stuck for weeks unnoticed. |
+| 5 | Candidate screening and location decisions rely on individual judgment. | Reviewer, Manager | Inconsistent decisions and outlets in weak locations. |
 | 6 | Targets are only checked at the end of the month in a spreadsheet. | Manager, Sales | The team learns too late that the target will be missed. |
-| 7 | Compliance steps (delivering the franchise prospectus, personal data consent) are not recorded. | Franchisor | Legal risk under the franchise regulation (PP No. 35/2024) [5] and the Personal Data Protection Law (UU PDP No. 27/2022) [6]. |
+| 7 | Prospectus delivery and personal data consent are not recorded. | Franchisor | Legal risk under PP No. 35/2024 on Franchising [5] and UU PDP No. 27/2022 [6]. |
 
-### 2.4 Current process vs proposed system
+## Human vs System
 
-The table below compares what the franchisor team and candidates can do today with the manual process against what they can do with the proposed system.
+The table compares what the franchisor team and candidates can do today with the manual process against the proposed system.
 
 | Capability | Manual (current) | System | Notes |
 |---|---|---|---|
-| Capture leads from all channels in one place | ⚠️ Limited | ✅ | Leads are currently scattered in each sales' WhatsApp and spreadsheets. The system stores every lead, from sales input or portal registration, in one pipeline. |
-| Assign leads to sales by region and detect duplicates | ❌ Not available | ✅ | The Manager currently forwards leads by chat, and two sales can contact the same person. The system assigns portal leads by region and flags duplicates and full sales capacity. |
-| See the stage and owner of every application | ⚠️ Limited | ✅ | The Manager has to ask each sales. The system shows every application on a pipeline board with its current PIC and days waiting. |
-| Track deadlines and send reminders | ❌ Not available | ✅ | Nothing tells the team when an application has been stuck too long. The system sends automatic reminders to the PIC and Manager when a stage passes its deadline. |
-| Record prospectus delivery (PP No. 35/2024) | ⚠️ Limited | ✅ | Delivery is not recorded consistently. The system requires the sales to confirm it and records the date. |
-| Assess candidates and locations consistently | ⚠️ Limited | ✅ | Decisions rely on individual judgment. The system uses structured forms per stage and an AI fit score with reasons as a decision aid. |
-| Manage quotation versions and discounts | ⚠️ Limited | ✅ | Quotations are revised by chat, so the agreed version is unclear. The system keeps every version and requires the Manager's input for revisions. |
-| Candidate checks application status | ❌ Not available | ✅ | Candidates must ask their sales. The Partner Portal shows a 7-step tracker with the assigned sales' contact. |
-| Candidate responds to a quotation with a written record | ⚠️ Limited | ✅ | Responses come by chat or phone. In the portal, the candidate agrees with an explicit confirmation, requests changes, or withdraws, and each action is recorded. |
-| Trace two-party approval | ⚠️ Limited | ✅ | Approval is scattered across chats. The system records approval 1 of 2 (candidate) and 2 of 2 (Manager) in the audit trail. |
-| Monitor target vs achievement during the period | ⚠️ Limited | ✅ | Targets are checked in a spreadsheet at the end of the month. The system shows achievement against the target to date, per sales and per package. |
-| Keep an audit trail and document access log (UU PDP) | ❌ Not available | ✅ | There is no record of who saw candidate data. The system logs every action and document access. |
+| Capture leads from all channels in one place | ⚠️ Limited | ✅ | Leads are scattered in each sales' WhatsApp and spreadsheets. The system stores every lead, from sales input or portal registration, in one pipeline. |
+| Assign leads by region and detect duplicates | ❌ Not available | ✅ | The Manager forwards leads by chat, and two sales can contact the same person. The system assigns portal leads by region and flags duplicates and full sales capacity. |
+| See the stage and owner of every application | ⚠️ Limited | ✅ | The Manager has to ask each sales. The pipeline board shows every application with its current PIC and days waiting. |
+| Track deadlines and send reminders | ❌ Not available | ✅ | Nothing signals that an application is stuck. The system reminds the PIC and Manager automatically when a stage passes its deadline. |
+| Record prospectus delivery | ⚠️ Limited | ✅ | Delivery is not recorded consistently. The system requires the sales to confirm it and records the date. |
+| Assess candidates and locations consistently | ⚠️ Limited | ✅ | Decisions rely on individual judgment. The system uses structured forms and an AI fit score with reasons. |
+| Manage quotation versions and discounts | ⚠️ Limited | ✅ | Quotations are revised by chat. The system keeps every version and requires the Manager's input for revisions. |
+| Candidate checks application status | ❌ Not available | ✅ | Candidates must ask their sales. The Partner Portal shows a 7-step tracker with the sales' contact. |
+| Candidate responds to a quotation in writing | ⚠️ Limited | ✅ | Responses come by chat or phone. In the portal, the candidate agrees with an explicit confirmation, requests changes, or withdraws. |
+| Trace two-party approval | ⚠️ Limited | ✅ | Approval is scattered across chats. The system records approval 1 of 2 (candidate) and 2 of 2 (Manager). |
+| Monitor target vs achievement during the period | ⚠️ Limited | ✅ | Targets are checked at month end. The system shows achievement against the target to date, per sales and per package. |
+| Keep an audit trail and document access log | ❌ Not available | ✅ | No record of who saw candidate data. The system logs every action and document access. |
 
-## 3. Goals and Success Metrics
+## Goals and Success Metrics
 
-The metrics below are proposed targets for the first year. Some are derived from the process design and the business target, and the rest are initial assumptions that should be validated with the client during the pilot and adjusted once real baseline data exists.
+Proposed first-year targets. Derived metrics come from the process design and business target; assumptions should be validated during the pilot.
 
-| Goal | Metric | Proposed target | Basis |
-|---|---|---|---|
-| No lead is forgotten | Leads assigned to a sales within 1 day | 100% | Derived from the 1-day deadline of the New lead stage |
-| Faster process | Average time from new lead to final decision | 26 days or less | Derived: sum of all stage deadlines (1 + 4 + 5 + 4 + 3 + 7 + 2) |
-| Process discipline | Stages completed within their deadline | 85% or more | Assumption: a starting target that leaves room for exceptions such as candidates who are hard to reach |
-| Better conversion | Lead to approved partnership | 12% or more | Derived from the default funnel conversion rates in Section 6.3 |
-| Expansion target | New approved outlets per year | 120 (72 Gerobak, 48 Cafe) | Business target (stretch), from the per-sales targets in Section 6.3 |
-| Revenue | Approved deal value per year | around Rp 24.8 billion | Derived: 6 Gerobak x Rp 45 million + 4 Cafe x Rp 450 million = Rp 2.07 billion per month |
-| Candidate self-service | Quotation responses submitted through the Partner Portal | 70% or more | Assumption: the target for portal adoption, measured during the pilot |
+| Metric | Target | Basis |
+|---|---|---|
+| Leads assigned to a sales within 1 day | 100% | Derived from the 1-day deadline of the New lead stage |
+| Average time from new lead to final decision | 26 days or less | Derived: sum of stage deadlines (1 + 4 + 5 + 4 + 3 + 7 + 2) |
+| Stages completed within their deadline | 85% or more | Assumption: leaves room for exceptions such as candidates who are hard to reach |
+| Lead to approved partnership | 12% or more | Derived from the default funnel conversion rates (see Feature H) |
+| New approved outlets per year | 120 (72 Gerobak, 48 Cafe) | Business target (stretch) |
+| Approved deal value per year | around Rp 24.8 billion | Derived: 6 x Rp 45 million + 4 x Rp 450 million = Rp 2.07 billion per month |
+| Quotation responses submitted through the portal | 70% or more | Assumption: portal adoption target, measured during the pilot |
 
-## 4. Users and Roles
+## Diagram
 
-| Role | Main needs | Menu in the dashboard | Can process |
-|---|---|---|---|
-| Candidate franchisee | Register easily, know the status of the application, respond to the quotation without many calls | Partner Portal (separate application) | Registration, quotation response |
-| Sales | One list of their own candidates and what to do next, and progress toward their target | Pipeline (own leads only), Tasks, Target | Add lead, business presentation, location survey, quotation, negotiation |
-| Reviewer | A clear queue of candidates to assess, with the data needed to decide | Pipeline, Tasks | Eligibility assessment |
-| Manager | Visibility of the whole pipeline, overdue items, and team performance. Decides final approval. | Pipeline, Tasks, Target, Sales Performance | Lead assignment (exceptions), final approval |
-| Super Admin | Full access to support the team | Pipeline, Tasks, Target, Sales Performance | All stages (recorded under their name) |
-
-### 4.1 Role-Based Access Control (RBAC)
-
-Access is granted by role, not per person. Each user has exactly one role, and the system checks the role on every action. Data access follows the principle of least privilege: each role only sees and changes what it needs for its job.
-
-| Permission | Super Admin | Manager | Sales | Reviewer | Candidate |
-|---|---|---|---|---|---|
-| View pipeline | All | All | Own leads only | All | Own application only (application number + email or phone) |
-| Add lead | Yes | No | Yes | No | Self-registration in portal |
-| Assign sales to an unassigned lead | Yes | Yes | No | No | No |
-| Presentation, location survey, quotation, negotiation | Yes | No | Own leads only | No | Respond to quotation |
-| Eligibility assessment | Yes | No | No | Yes | No |
-| Final approval (approve or reject) | Yes | Yes | No | No | No |
-| View candidate documents (ID, tax number, bank statement) | Yes | Yes | Own leads only | Yes | Own documents |
-| View overdue indicators | Yes | Yes | No | No | No |
-| Target vs Achievement | Team | Team | Own | No | No |
-| Sales Performance | Yes | Yes | No | No | No |
-| View audit trail of an application | Yes | Yes | Own leads only | Yes | No |
-
-Every action taken by a Super Admin on behalf of another role is recorded under the Super Admin's name in the audit trail.
-
-### 4.2 Sales regions
-
-Sales regions in the prototype: Rendi covers Greater Tangerang; Putri covers Jakarta, Bogor, Depok, Bekasi, and Cikarang; Agus covers Greater Bandung; Wulan covers Central Java.
-
-## 5. End-to-End Process
-
-The process is designed from the franchisor's point of view and has 8 stages. Each stage has one person in charge (PIC) and a deadline.
-
-### 5.1 Flowchart
+### Flowchart
 
 ![Flowchart](flowchart.png)
 
-### 5.2 Stages and deadlines
+### Stages and deadlines
 
 | # | Stage | PIC | Deadline |
 |---|---|---|---|
@@ -142,138 +101,194 @@ The process is designed from the franchisor's point of view and has 8 stages. Ea
 | 3 | Location survey | Sales | 5 days |
 | 4 | Eligibility assessment: interview, background check, financial verification, KYC, commitment | Reviewer | 4 days |
 | 5 | Quotation | Sales | 3 days |
-| 6 | Negotiation: the candidate responds (agree, request changes, or withdraw) | Sales | 7 days |
+| 6 | Negotiation: candidate agrees, requests changes, or withdraws | Sales | 7 days |
 | 7 | Final approval: approve or reject | Manager | 2 days |
 | End | Approved, Rejected, or Withdrawn | | |
 
-### 5.3 Input, Process, Output (IPO) per stage
+## Solution
+
+### Solution Overview
+
+The system covers **12 features** across two applications:
+
+| # | App | Feature | Problem it solves | Key question the user can answer |
+|---|---|---|---|---|
+| A | Dashboard | Lead Capture and Auto-Assignment | Pain point 1 | "Is every new lead recorded and owned by the right sales?" |
+| B | Dashboard | Pipeline and Approval Status | Pain points 1, 4 | "Where is each application now, and who is it waiting for?" |
+| C | Dashboard | Stage Processing (presentation, survey, assessment) | Pain points 5, 7 | "Has this candidate passed each check, with evidence?" |
+| D | Dashboard | AI Fit Score | Pain point 5 | "How well does this candidate and location fit, and why?" |
+| E | Dashboard | Quotation and Negotiation | Pain point 3 | "Which quotation version is the latest, and how did the candidate respond?" |
+| F | Dashboard | Final Approval | Pain point 3 | "Has this partnership been approved by both parties?" |
+| G | Dashboard | Tasks and Automatic Reminders | Pain point 4 | "What do I need to do today, and what is overdue?" |
+| H | Dashboard | Target vs Achievement and Sales Performance | Pain point 6 | "Are we on pace to hit this period's target, and who needs help?" |
+| I | Dashboard | Access Control and Audit Trail | Pain point 7 | "Who did what, and who accessed this candidate's data?" |
+| P1 | Partner Portal | Registration | Pain point 1 | "How do I apply without waiting for a sales to contact me?" |
+| P2 | Partner Portal | Status Tracker | Pain point 2 | "Where is my application, and who is my sales?" |
+| P3 | Partner Portal | Quotation Response | Pain point 3 | "How do I agree to, change, or decline the offer?" |
+
+### Functional Requirements
+
+#### Feature A: Lead Capture and Auto-Assignment
+
+| ID | User Story | Requirement | Acceptance Criteria |
+|---|---|---|---|
+| FR-A-001 | As a Sales, I want to add a lead from offline channels so that every candidate is recorded in one place. | Form fields: name, phone, email, city, package, available capital, source of funds, management plan, lead source, planned location, documents. Personal data consent (UU PDP) is required. | Cannot be saved without consent and mandatory fields. The lead appears in the sales' pipeline at Business presentation. |
+| FR-A-002 | As a Manager, I want portal leads assigned automatically so that no lead waits for me. | Match the candidate's city to a sales region. Send the lead to the Manager queue if the city is outside all regions, the phone or email matches an active lead (possible duplicate), or the sales has reached the active lead cap (senior 15, junior 10). | A lead in region with capacity is assigned immediately. An exception shows "No sales yet" with the reason. The Manager can assign a sales, and who assigned it and when is recorded. |
+
+#### Feature B: Pipeline and Approval Status
+
+| ID | User Story | Requirement | Acceptance Criteria |
+|---|---|---|---|
+| FR-B-001 | As a Manager, I want to see all active applications by stage so that I can spot bottlenecks. | Kanban with 7 active stages. Filter by package and search by name or city. Sales see only their own leads. | Each card shows name, city, package, AI score, current PIC, and days in stage. Overdue indicators are visible to Manager and Super Admin only. |
+| FR-B-002 | As a Manager, I want to review finished applications so that I can learn why deals were won or lost. | Completed table (approved, rejected, withdrawn) with result, last stage, reason, deal value, sales, and date. | Filters by result, period, sales, and search work together. A "Completed this month" summary is shown below the board. |
+| FR-B-003 | As an internal user, I want to see the approval status of one application so that I can answer "where is it now?" quickly. | 7-step timeline with PIC, completion date, and waiting time. | Opens from the application detail and the Tasks table. The current step shows the PIC and days waiting. |
+
+#### Feature C: Stage Processing
+
+| ID | User Story | Requirement | Acceptance Criteria |
+|---|---|---|---|
+| FR-C-001 | As a Sales, I want to record the business presentation so that prospectus delivery is provable. | Presentation date, mode, notes, and a required prospectus delivery confirmation. | Cannot be completed without the confirmation. The date is recorded, supporting the 14-day rule in PP No. 35/2024 [5]. |
+| FR-C-002 | As a Sales, I want to record the location survey so that the location decision is made early. | Survey rating, foot traffic, notes, and a feasible or not feasible decision. If the AI location score is below 60, show an SOP reminder to discuss with the Manager first. | Not feasible: rejected with reason. Feasible: moves to Eligibility assessment, or directly to a revised quotation after a location change. |
+| FR-C-003 | As a Reviewer, I want a structured checklist so that every candidate is assessed the same way. | Checklist: interview, background check, financial verification, KYC, commitment, plus pass or fail with reason. | Only Reviewer (or Super Admin) can submit. Fail: rejected with reason. Pass: moves to Quotation. |
+
+#### Feature D: AI Fit Score
+
+| ID | User Story | Requirement | Acceptance Criteria |
+|---|---|---|---|
+| FR-D-001 | As a Reviewer or Manager, I want a fit score with reasons so that screening is more consistent. | Score 0 to 100: candidate profile 40% (capital vs package, source of funds, experience, management plan, documents) and location 60% (crowd points, competitors, distance to nearest outlet, location type, survey result). | Score and plus or minus reasons are shown on the card and the Summary tab. The score never changes a stage or rejects a candidate automatically. |
+
+#### Feature E: Quotation and Negotiation
+
+| ID | User Story | Requirement | Acceptance Criteria |
+|---|---|---|---|
+| FR-E-001 | As a Sales, I want to send a versioned quotation so that there is always one agreed offer. | Package, discount, payment terms, target opening date, and notes. Each send creates version N and emails it with a portal link. A revision requires "Result of discussion with Manager". | All versions are kept in the quotation history. A revision cannot be sent without the discussion result. |
+| FR-E-002 | As a Sales, I want to record a response given by phone or in person so that offline answers are not lost. | Record agree, request changes (type and details), or withdraw on behalf of the candidate. | Request changes: back to Quotation (Revision). Change location: new address required, back to Location survey. Withdraw: closed as Withdrawn. |
+
+#### Feature F: Final Approval
+
+| ID | User Story | Requirement | Acceptance Criteria |
+|---|---|---|---|
+| FR-F-001 | As a Manager, I want to approve or reject an agreed quotation so that the partnership is confirmed by both parties. | Yes or no decision with reason for rejection. No location revision at this step. | Approve: approval 2 of 2, deal value after discount counted as revenue, next step (franchise agreement through Privy) shown. Reject: reason required. The candidate sees the result in the tracker. |
+
+#### Feature G: Tasks and Automatic Reminders
+
+| ID | User Story | Requirement | Acceptance Criteria |
+|---|---|---|---|
+| FR-G-001 | As any internal user, I want one list of actions waiting for me so that I know what to do today. | Tasks table per user. The Manager can filter: My tasks, All, Sales, Reviewer. | Each row shows candidate, action needed, PIC, waiting time, and deadline status, with shortcuts to the detail and approval status. |
+| FR-G-002 | As a Manager, I want overdue stages to trigger reminders so that follow-up does not depend on memory. | When days in stage exceed the deadline, notify the PIC and the Manager by dashboard notification and email. No manual reminder button. | The overdue item shows "Overdue N days" and "Reminder sent to PIC and Manager". |
+
+#### Feature H: Target vs Achievement and Sales Performance
+
+| ID | User Story | Requirement | Acceptance Criteria |
+|---|---|---|---|
+| FR-H-001 | As a Sales or Manager, I want to see achievement against target during the period so that we can act before it ends. | Period: month, quarter, semester, or year. Cards for Gerobak, Cafe, and revenue with target, gap ("N short"), target to date (MTD, QTD, HTD, YTD), and pipeline opportunities. Funnel calculated backwards from adjustable conversion rates. | Monthly targets per sales: senior 2 Gerobak + 1 Cafe, junior 1 Gerobak + 1 Cafe (team: 6 + 4 per month, 120 outlets per year). Days 1 to 9 of a period show "Early period" instead of "Critical". With default rates, the funnel shows about 92 leads per month needed. |
+| FR-H-002 | As a Manager, I want to compare sales performance so that I know who needs help. | One table per sales with Gerobak, Cafe, and revenue against target, and a status based on the weakest metric. | Sorted from best to weakest. Senior or junior level is shown. Clicking a sales opens their profile. |
+
+#### Feature I: Access Control and Audit Trail
+
+| ID | User Story | Requirement | Acceptance Criteria |
+|---|---|---|---|
+| FR-I-001 | As a Super Admin, I want access to follow roles so that each user only sees what they need. | Role-based access control (RBAC) as in the matrix below. | A Sales cannot open another sales' lead. Actions by the Super Admin are recorded under their own name. |
+| FR-I-002 | As a Manager, I want every action logged so that decisions and data access are accountable. | Log status changes, quotation versions, approvals, document access, and portal actions with actor and time. | The History tab shows the full log. Portal actions appear as "Candidate (partner portal)". Entries cannot be edited. |
+
+**RBAC matrix**
+
+| Permission | Super Admin | Manager | Sales | Reviewer | Candidate |
+|---|---|---|---|---|---|
+| View pipeline | All | All | Own leads | All | Own application (number + email or phone) |
+| Add lead | Yes | No | Yes | No | Self-registration |
+| Assign sales to an unassigned lead | Yes | Yes | No | No | No |
+| Presentation, survey, quotation, negotiation | Yes | No | Own leads | No | Respond to quotation |
+| Eligibility assessment | Yes | No | No | Yes | No |
+| Final approval | Yes | Yes | No | No | No |
+| View candidate documents | Yes | Yes | Own leads | Yes | Own documents |
+| View overdue indicators | Yes | Yes | No | No | No |
+| Target vs Achievement | Team | Team | Own | No | No |
+| Sales Performance | Yes | Yes | No | No | No |
+
+#### Feature P1 to P3: Partner Portal
+
+| ID | User Story | Requirement | Acceptance Criteria |
+|---|---|---|---|
+| FR-P1-001 | As a candidate, I want to register online so that I can apply without waiting for a sales. | Registration form with package, capital, planned location, and required personal data consent. | An application number is shown. The lead enters the pipeline and follows FR-A-002. |
+| FR-P2-001 | As a candidate, I want to check my status so that I do not need to keep asking. | Lookup with application number plus email or phone. 7-step tracker with dates and the assigned sales' contact. | A wrong combination shows an error without revealing any data. |
+| FR-P3-001 | As a candidate, I want to respond to the quotation directly so that my answer is recorded. | Agree (requires ticking "I have read and agree to quotation version N"), request changes (type, details, new address for a location change), or withdraw. | Agree records approval 1 of 2 in the audit trail. After final approval, the portal shows that the agreement will be sent through Privy. |
+
+### Input, Process, Output
 
 | Stage | Input | Process | Output |
 |---|---|---|---|
-| 1. New lead | Candidate data: name, phone, email, city, package, available capital, source of funds, planned location, personal data consent | Duplicate check, region matching, sales capacity check, AI fit score | Application number, assigned sales (or Manager queue), notification to sales, confirmation and tracker access for the candidate |
-| 2. Business presentation | Presentation date and mode, prospectus delivery confirmation, notes | Sales presents the business model and sends the prospectus | Prospectus delivery date recorded, application moves to Location survey |
-| 3. Location survey | Location address and type, survey rating, foot traffic, photos, AI location score | Sales assesses the location (discusses with Manager first if the score is below 60) | Feasible: moves to Eligibility assessment. Not feasible: rejected with reason |
-| 4. Eligibility assessment | Interview result, background check, bank statement, ID and tax number (KYC), commitment | Reviewer evaluates each item on a checklist | Eligible: moves to Quotation. Not eligible: rejected with reason |
-| 5. Quotation | Package, discount, payment terms, target opening date, result of discussion with Manager (for revisions) | System creates quotation version N and emails it with a portal link | Quotation version N sent and recorded |
-| 6. Negotiation | Candidate response: agree (with confirmation), request changes (type and details, or new address), or withdraw | System routes the application based on the response | Agree: approval 1 of 2, moves to Final approval. Changes: back to Quotation or Location survey. Withdraw: closed |
-| 7. Final approval | Complete application history and the agreed quotation | Manager approves or rejects | Approved: approval 2 of 2, revenue counted, next step is the franchise agreement. Rejected: closed with reason. The candidate is notified in both cases |
+| 1. New lead | Candidate data, planned location, personal data consent | Duplicate check, region matching, capacity check, AI fit score | Application number, assigned sales or Manager queue, tracker access |
+| 2. Business presentation | Date, mode, prospectus confirmation, notes | Sales presents the business model and sends the prospectus | Prospectus date recorded, moves to Location survey |
+| 3. Location survey | Address, rating, foot traffic, AI location score | Sales assesses the location (with Manager if score is below 60) | Feasible: Eligibility assessment. Not feasible: Rejected |
+| 4. Eligibility assessment | Interview, background check, bank statement, ID and tax number, commitment | Reviewer evaluates the checklist | Eligible: Quotation. Not eligible: Rejected |
+| 5. Quotation | Package, discount, payment terms, opening date, Manager discussion result | System creates version N and emails it with a portal link | Quotation version N sent and recorded |
+| 6. Negotiation | Candidate response from portal or recorded by sales | System routes by response | Agree: Final approval (1 of 2). Changes: Quotation or Location survey. Withdraw: closed |
+| 7. Final approval | Application history and agreed quotation | Manager approves or rejects | Approved (2 of 2) and revenue counted, or Rejected with reason |
 
-### 5.4 Key business rules
+### Mock Ups
 
-- **Lead assignment.** A lead added by a sales goes directly to the business presentation stage under that sales. A lead from the Partner Portal is assigned automatically to the sales who covers the candidate's city. It goes to the Manager's queue instead if the city is outside all regions, if the phone number or email matches an active lead (possible duplicate), or if the regional sales has reached the active lead limit (15 for senior, 10 for junior).
-- **Prospectus.** The presentation stage requires the sales to confirm that the franchise prospectus has been sent. PP No. 35/2024 on Franchising, which replaced PP No. 42/2007, requires the franchisor to deliver the prospectus to the candidate at least 14 calendar days before the franchise agreement is signed [5]. Recording the delivery date in the system makes this easy to prove.
-- **Location decision stays at the survey stage.** If the AI location score is below 60, the survey tab shows an SOP reminder to discuss with the Manager before declaring the location feasible. Final approval is a yes or no gate without a location revision option, so location issues are not discovered at the last step.
-- **Change requests.** If the candidate requests changes during negotiation, the application returns to the Quotation stage (marked as Revision). The sales discusses the change with the Manager outside the system and must fill in "Result of discussion with Manager" when sending the next quotation version.
-- **Location change.** If the candidate asks to change location, the new address is required. The application returns to the Location survey stage. If the new location is feasible, it goes directly to a revised quotation without repeating the eligibility assessment. If not feasible, the application is rejected.
-- **Two-party approval.** Approval 1 of 2 is the candidate agreeing to the quotation (in the portal, or recorded by sales if the answer came by phone or in person). Approval 2 of 2 is the Manager's final approval. In the portal, the candidate must tick a confirmation that they have read and agree to quotation version N, and this is recorded in the audit trail.
-- **Automatic reminders.** When a stage passes its deadline, the system notifies the PIC and the Manager through the dashboard and email. There is no manual reminder button, so follow-up does not depend on someone remembering to chase.
+Screenshots from the clickable prototype. The interface uses Bahasa Indonesia.
 
-## 6. Features and Rationale
+[[GRID mockups/02_pipeline.png|Pipeline (Manager view) ;; mockups/03_detail.png|Application detail: quotation tab]]
 
-### 6.1 Franchisor dashboard
+[[GRID mockups/04_status.png|Approval status timeline ;; mockups/05_target.png|Target vs Achievement]]
 
-| Feature | What it does | Why it was chosen |
-|---|---|---|
-| Pipeline (kanban) | One board with 7 active stages. Each card shows package, AI score, current PIC, and days in stage. Overdue indicators are visible to Manager and Super Admin only. Completed applications are in a separate Completed table with filters. | Solves pain points 1 and 4. The whole process is visible in one place, and the board fits on a laptop screen without scrolling. |
-| Automatic lead assignment | Assigns portal leads by region and flags exceptions (outside region, possible duplicate, sales at capacity) for the Manager. | Leads are followed up within 1 day, and two sales do not contact the same candidate. |
-| Application detail | 7 tabs: Summary, Presentation, Location survey, Assessment, Quotation, Negotiation, History. Each stage has a structured form. | Every stage produces consistent data that the next stage can use. |
-| Approval status | A 7-step timeline per application showing who is responsible and how long it has been waiting. | Anyone can answer "where is this application now?" in one click. |
-| Tasks | A list of actions waiting for the logged-in user. Managers can also filter by team. | Each person knows what to do today without searching the board. |
-| Quotation with versions | Quotations are versioned. Revisions must include the result of the discussion with the Manager. | Solves pain point 3. There is always one agreed version, and discounts are traceable. |
-| AI fit score | A score from 0 to 100 (candidate profile 40%, location 60%) with plus and minus reasons. | Solves pain point 5. It makes screening more consistent. It is a decision aid, not an automatic rejection. |
-| Target vs Achievement | Monthly, quarterly, semester, or yearly view of Gerobak, Cafe, and revenue against target, including the target to date (MTD, QTD, HTD, YTD), the remaining gap, and pipeline opportunities. A funnel is calculated backwards from conversion rates that can be adjusted. | Solves pain point 6. The team can see during the period whether it is on pace. |
-| Sales Performance | One table per sales with Gerobak, Cafe, and revenue against target, and a status based on the weakest metric. | The Manager can see who needs help early. |
-| Audit trail | Every action, including document access and actions by the candidate in the portal, is recorded with time and actor. | Accountability and compliance with UU PDP. |
+[[GRID mockups/07_portal_form.png|Portal: registration ;; mockups/08_portal_tracker.png|Portal: status tracker ;; mockups/09_portal_quote.png|Portal: quotation response]]
 
-### 6.2 Partner Portal (candidate franchisee)
+## Nonfunctional Requirements
 
-| Feature | What it does | Why it was chosen |
-|---|---|---|
-| Registration form | Data, package choice, available capital, planned location, and required personal data consent. The lead enters the same pipeline as a self-registered lead. | A second lead channel beside sales input, connected to Instagram and the website. |
-| Status tracker | The candidate checks a 7-step status with the application number and email or phone. The assigned sales and their contact are shown. | Solves pain point 2 and reduces "how is my application?" messages. |
-| Quotation response | The candidate can agree (with confirmation), request changes (including a location change), or withdraw. | Shortens negotiation and gives a written record of approval 1 of 2. |
-
-Feature selection principle: I focused on the path from application to two-party approval, which is the scope of the case. Features after approval (agreement signing, outlet opening, royalty) are placed in the roadmap.
-
-### 6.3 Target design
-
-Targets are set per sales per month as whole numbers and differ by seniority:
-
-| Level | Sales | Gerobak per month | Cafe per month |
-|---|---|---|---|
-| Senior | Rendi, Putri | 2 | 1 |
-| Junior | Agus, Wulan | 1 | 1 |
-| Team total | | 6 | 4 |
-
-This totals 10 outlets per month, or 120 outlets per year (72 Gerobak and 48 Cafe). Revenue is around Rp 2.07 billion per month. Targets for other periods are the monthly target multiplied by the number of months. During days 1 to 9 of a period, status is shown as "Early period" instead of "Critical" to avoid false alarms. From day 10, all metrics are evaluated normally.
-
-With the default conversion assumptions (lead to presentation 60%, presentation to feasible location 55%, location to passed assessment 75%, assessment to quotation 90%, quotation to approved 55%), the team needs around 92 new leads per month to reach 10 approved outlets.
-
-## 7. Prioritization (MoSCoW)
-
-| Priority | Features |
+| Area | Requirement |
 |---|---|
-| Must have (MVP) | Lead input by sales and portal registration; automatic lead assignment; 8-stage pipeline with deadlines and automatic reminders; stage forms; quotation with versions; two-party approval; Partner Portal tracker and quotation response; role-based access; audit trail; personal data consent |
-| Should have (MVP if time allows) | AI fit score; Target vs Achievement; Sales Performance; Completed table with filters; mobile-friendly layout |
-| Could have (next phase) | Electronic signature for the franchise agreement through Privy; WhatsApp notifications; real map data for the location score; document upload with automatic KYC verification; report export |
-| Won't have (this phase) | Royalty tracking and outlet operations after opening; payment gateway for the partnership fee; training and onboarding modules; multi-brand support |
+| Privacy and security (UU PDP No. 27/2022) [6] | Consent before a lead is saved. Access by role. Document access is logged. Data of rejected candidates is deleted or anonymized after a defined retention period. |
+| Auditability | Every status change, quotation version, approval, and document access is logged with actor and time and cannot be edited. |
+| Responsible AI | The fit score shows its reasons, never rejects automatically, and is reviewed against actual outlet performance to detect bias. |
+| Mobile friendly | The Partner Portal is mobile first because candidates come from Instagram or email links. The dashboard is optimized for laptops and usable on phones. |
+| Reliability and performance | 99.5% availability during working hours. Pages load in under 3 seconds on 4G. |
+| Language | Bahasa Indonesia interface, keeping common business terms such as Sales, Lead, Quotation, and Pipeline. |
 
-## 8. Non-Functional Requirements
+## Scope and Roadmap
 
-- **Privacy and security (UU PDP No. 27/2022) [6].** Personal data consent is required before a lead is saved. Access follows roles (for example, a sales only sees their own leads). Access to documents such as ID cards and bank statements is recorded. Personal data has a defined retention period and is deleted or anonymized for rejected candidates.
-- **Auditability.** Every status change, quotation version, approval, and document access is recorded with actor and time and cannot be edited.
-- **Responsible AI.** The AI score is explainable (it shows reasons), is never used to reject a candidate automatically, and is reviewed periodically against actual outlet performance to detect bias, for example against certain regions.
-- **Mobile friendly.** The Partner Portal is designed for mobile first because candidates usually come from Instagram or email links. The dashboard is optimized for laptops but still usable on a phone.
-- **Reliability and performance.** Target availability is 99.5% during working hours. Pages load in under 3 seconds on a 4G connection.
-- **Language.** The interface uses Bahasa Indonesia, keeping common business terms such as Sales, Lead, Quotation, and Pipeline.
+| Priority | Features | Phase |
+|---|---|---|
+| Must have | A, B, C, E, F, G, I, P1, P2, P3 | MVP (months 0 to 3): backend, company login, email notifications, pilot in one region |
+| Should have | D (AI fit score), H (targets and performance), mobile layout | MVP if time allows |
+| Could have | Privy e-signature, WhatsApp notifications, real map data for the location score, document upload with KYC verification, report export | Phase 2 (months 3 to 6), all regions |
+| Won't have (for now) | Royalty tracking, outlet operations after opening, payment gateway, training modules, multi-brand | Phase 3 (months 6 to 12) or later, with the fit score calibrated on real outlet performance |
 
-## 9. Prototype Limitations
+## Prototype Limitations
 
-The prototype is a single HTML file deployed on Vercel. To make it testable without a backend, it has the following limitations:
-
-- Data is stored in the browser (localStorage). The dashboard and Partner Portal are connected only within the same browser. A "Reset demo data" button in the account menu restores the sample data.
-- The login page lists demo accounts for each role so reviewers can switch roles quickly. In production, login would use company accounts (SSO) and this list would not exist.
-- Sample data (lead age, sales history, approved deals) is calculated relative to today's date, so the target pages always show a realistic current period.
-- The AI fit score is simulated with rule-based weighting and simulated map data (crowd points, competitors, distance to the nearest outlet). In production it would use real location data and be calibrated with historical outlet performance.
-- Email notifications are simulated as dashboard notifications.
-- After both parties agree, the prototype only shows the next step: the franchise agreement is sent through Privy for a certified electronic signature. The integration itself is not built.
+- Data is stored in the browser (localStorage), so the dashboard and portal are connected only within the same browser. "Reset demo data" in the account menu restores the sample data.
+- The login page lists demo accounts per role for quick testing. Production would use company accounts (SSO).
+- Sample data is calculated relative to today's date, so target pages always show a realistic current period.
+- The AI fit score is simulated with rule-based weighting and simulated map data. Production would use real location data calibrated with outlet performance.
+- Email notifications are simulated as dashboard notifications. The Privy integration is not built; only the next step is shown.
 - The registration form has a "Fill sample data" button for faster testing.
 
-## 10. Roadmap
-
-| Phase | Timeline | Scope |
-|---|---|---|
-| 1. MVP | Months 0 to 3 | Backend and database, company login, the Must have features, email notifications, pilot with one region |
-| 2. Integration | Months 3 to 6 | All regions, Privy e-signature for the franchise agreement, WhatsApp Business notifications, document upload with KYC verification, real map data for the location score |
-| 3. Intelligence and after-approval | Months 6 to 12 | Fit score calibrated with actual outlet performance, outlet opening checklist and training schedule, royalty reporting, management reports |
-
-## 11. Risks and Open Questions
+## Risks and Open Questions
 
 | Risk or question | Mitigation |
 |---|---|
-| Sales keep using WhatsApp and do not update the system | Reminders and targets depend on system data, so updating the system is the easiest way for sales to look good. Training during the pilot. |
-| The stretch target is not realistic | Track monthly against the target to date and review targets after the first quarter. |
-| The AI score creates bias or overconfidence | Show reasons, keep humans deciding, and review score against outcomes regularly. |
-| Candidates prefer to respond by phone | Sales can record the candidate's response in the Negotiation tab, so both paths are supported. |
-| Open question: should the Manager also approve quotations with large discounts before they are sent? | To be confirmed with the client. Currently handled as a discussion outside the system. |
+| Sales keep using WhatsApp and do not update the system | Reminders and targets depend on system data, so updating it is the easiest way for sales to look good. Training during the pilot. |
+| The stretch target is not realistic | Track against the target to date and review after the first quarter. |
+| The AI score creates bias or overconfidence | Show reasons, keep humans deciding, and review against outcomes. |
+| Open question: should large discounts need Manager approval before a quotation is sent? | To be confirmed with the client. Currently a discussion outside the system. |
 
-## 12. Use of AI During This Project
+## Use of AI
 
-I used Claude (Anthropic) as an assistant throughout the project. The AI helped me move faster, but the product decisions were mine, and I checked its output before using it.
+I used Claude (Anthropic) throughout the project. It helped me move faster, but the product decisions were mine, and I checked its output before using it.
 
 | Activity | How AI was used | My role |
 |---|---|---|
-| Understanding the case | Discussed the case, explored possible client profiles and pain points | Chose the client profile (local coffee brand, two packages) and decided the scope: application until two-party approval |
-| Process design | Proposed stage options and rules (assignment, revisions, location change) | Simplified the flow, moved the location decision to the survey stage, removed manual reminders, and decided who approves what |
-| Prototyping | Built the clickable HTML prototype through Claude Code, iterating on many rounds of my feedback | Reviewed each version, asked for changes in layout, wording, and terminology, and rejected options that made the interface cluttered |
-| Testing | Ran automated browser tests (Playwright) on every role, the full end-to-end flow, and mobile screen sizes | Defined what "correct" looks like and checked the results |
-| Research | Searched for industry data on franchising and coffee shop growth | Asked the AI to verify sources. One statistic turned out to be older data (2016 to 2019) that had been cited as recent, and the franchise regulation I first used (PP No. 42/2007) had been replaced by PP No. 35/2024, so I corrected both |
-| Targets | Proposed target schemes and benchmarks | Chose whole-number monthly targets per sales by seniority and labeled the yearly number as a stretch target |
-| Writing | Drafted this document based on the prototype | Reviewed and edited the content |
+| Understanding the case | Explored client profiles and pain points | Chose the client profile and the scope: application until two-party approval |
+| Process design | Proposed stages and rules | Simplified the flow, moved the location decision to the survey stage, removed manual reminders, decided who approves what |
+| Prototyping | Built the clickable HTML prototype through Claude Code across many feedback rounds | Reviewed each version, changed layout, wording, and terminology, rejected cluttered options |
+| Testing | Ran automated browser tests on every role, the end-to-end flow, and mobile sizes | Defined what "correct" looks like and checked results |
+| Research | Searched for industry and regulation data | Asked for sources and verified them. Corrected a 2016 to 2019 statistic that had been cited as recent, and replaced PP No. 42/2007 with PP No. 35/2024 |
+| Targets | Proposed target schemes | Chose whole-number monthly targets by seniority and labeled the yearly number as a stretch target |
+| Writing | Drafted this document from the prototype | Reviewed, restructured, and edited the content |
 
-What I learned: AI is very fast at producing options and working code, but it can sound confident about data that is not accurate. Asking for sources and checking them was necessary.
-
-Screenshots of the AI conversation are attached in the Appendix.
+What I learned: AI is fast at producing options and working code, but it can sound confident about inaccurate data. Asking for sources and checking them was necessary.
 
 ## References
 
