@@ -280,7 +280,6 @@ footer{max-width:1360px;margin:0 auto;padding:0 24px 30px;font-size:12px;color:v
 .um-item:hover{background:#FAF8F5}
 .head-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .who-cell{display:flex;gap:10px;align-items:center}
-.role-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:16px}
 .plain{margin:0;padding-left:18px;font-size:14px}.plain li{margin-bottom:4px}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
 .prof-grid{display:grid;grid-template-columns:300px 1fr;gap:16px;align-items:start}
@@ -291,8 +290,8 @@ footer{max-width:1360px;margin:0 auto;padding:0 24px 30px;font-size:12px;color:v
 .assess select{border:1px solid #D2CEC5;border-radius:var(--r-s);padding:6px 8px;background:#fff}
 .formbox{border:1px solid var(--line);border-radius:var(--r-m);padding:14px;margin-top:12px;background:#FCFBF8}
 .np-head{align-items:flex-start}
-@media (max-width:1000px){.role-grid{grid-template-columns:1fr 1fr}.prof-grid{grid-template-columns:1fr}}
-@media (max-width:760px){.role-grid{grid-template-columns:1fr}.ub-text{display:none}.userbtn{padding:4px}.head-actions{width:100%}}
+@media (max-width:1000px){.prof-grid{grid-template-columns:1fr}}
+@media (max-width:760px){.ub-text{display:none}.userbtn{padding:4px}.head-actions{width:100%}}
 
 [hidden]{display:none !important}
 .login{min-height:100vh;display:grid;grid-template-columns:1.1fr 1fr}
@@ -378,20 +377,6 @@ const isSA = () => role() === 'Super Admin';
 const seesOverdue = () => ['Super Admin','Manajer'].includes(role());
 const SALES = ['rendi','putri','agus','wulan'], REVIEWERS = ['bima','dimas'];
 const ROLE_ORDER = ['Super Admin','Manajer','Sales','Reviewer'];
-const ROLES = {
-  'Super Admin':{desc:'Akses penuh ke semua menu, data, dan pengaturan pengguna. Dapat memproses tahap mana pun bila diperlukan.',
-    menus:['Pipeline','Semua tugas','Target dan pencapaian','Performa sales','Pengguna dan peran'],
-    tasks:['Memantau seluruh tugas dan batas waktu','Mengambil alih tahap mana pun bila diperlukan','Mengelola pengguna dan peran']},
-  'Manajer':{desc:'Akses penuh ke data dan laporan. Menangani lead yang tidak bisa ditugaskan otomatis, mendampingi negosiasi, dan memberi keputusan akhir.',
-    menus:['Pipeline','Tugas saya','Semua tugas','Target dan pencapaian','Performa sales'],
-    tasks:['Menugaskan sales untuk lead yang tidak bisa ditugaskan otomatis','Diskusi negosiasi dengan sales (di luar sistem)','Approval akhir: setujui, tolak, atau minta revisi lokasi']},
-  'Sales':{desc:'Mendampingi calon franchisee di wilayahnya, dari input data awal sampai negosiasi.',
-    menus:['Pipeline (lead sendiri)','Tugas saya','Target dan pencapaian (milik sendiri)'],
-    tasks:['Input data lead ke sistem','Presentasi bisnis dan kirim prospektus','Survei lokasi','Membuat dan merevisi quotation','Negosiasi dengan calon franchisee']},
-  'Reviewer':{desc:'Menilai kelayakan calon franchisee sebelum quotation dibuat.',
-    menus:['Pipeline','Tugas saya'],
-    tasks:['Assessment: interview, background check, verifikasi finansial, dan KYC','Menentukan calon franchisee lolos atau tidak']}
-};
 const MENU_ACCESS = [
   ['Pipeline', ['Semua lead','Semua lead','Lead sendiri','Semua lead']],
   ['Tugas saya', ['–','✓','✓','✓']],
@@ -927,12 +912,9 @@ function viewUsers() {
   const matrix = (title, data) => `<div class="panel"><h2>${title}</h2><div class="table-wrap"><table class="funnel matrix" style="min-width:520px">
     <thead><tr><th></th>${ROLE_ORDER.map(r => `<th>${r}</th>`).join('')}</tr></thead>
     <tbody>${data.map(([l,v]) => `<tr><td>${l}</td>${v.map(x => `<td>${x === '✓' ? '<span style="color:var(--ok);font-weight:800">✓</span>' : x === '–' ? '<span class="small">–</span>' : `<span class="small" style="color:var(--ink)">${x}</span>`}</td>`).join('')}</tr>`).join('')}</tbody></table></div></div>`;
-  return `<div class="page-head"><div><h1>Pengguna dan peran</h1><p class="sub">${Object.keys(USERS).length} pengguna dalam 4 peran. Hanya Super Admin yang dapat melihat halaman ini.</p></div></div>
+  return `<div class="page-head"><div><h1>Pengguna dan peran</h1></div></div>
   <div class="panel" style="margin-bottom:16px"><div class="table-wrap"><table class="funnel">
     <thead><tr><th>Pengguna</th><th>Peran</th><th>Wilayah atau tim</th><th>Tugas aktif</th><th>Batas waktu</th><th></th></tr></thead><tbody>${rows}</tbody></table></div></div>
-  <div class="role-grid">${ROLE_ORDER.map(r => `<div class="panel"><div class="d-top"><h2 style="margin:0">${r}</h2><span class="small">${Object.values(USERS).filter(u => u.role === r).length} pengguna</span></div>
-    <p class="small" style="margin:6px 0 12px">${ROLES[r].desc}</p>
-    <p class="sec-title">Tugas dalam alur</p><ul class="plain">${ROLES[r].tasks.map(t => `<li>${t}</li>`).join('')}</ul></div>`).join('')}</div>
   <div class="dash-top" style="grid-template-columns:1fr 1fr">${matrix('Akses menu', MENU_ACCESS)}${matrix('Tugas per tahap', TASK_ACCESS)}</div>`;
 }
 
