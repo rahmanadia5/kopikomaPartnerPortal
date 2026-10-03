@@ -46,7 +46,7 @@ Halaman masuk berisi form email + kata sandi dan daftar akun demo per role (klik
 |---|---|---|---|
 | Super Admin | arif.hakim@kopikoma.id | Pipeline, Tugas (semua), Target, Performa Sales | Semua tahap (tercatat atas namanya) |
 | Manajer | laras.anggraini@kopikoma.id | Pipeline, Tugas (filter default "Tugas saya", bisa ganti Semua/Sales/Reviewer), Target, Performa Sales | Penugasan lead baru (pengecualian), persetujuan akhir |
-| Sales | rendi / putri / agus / wulan @kopikoma.id | Pipeline saya (lead sendiri), Tugas, Target | Input lead, presentasi, survei, quotation, negosiasi |
+| Sales | rendi / putri / agus / wulan @kopikoma.id | Pipeline (lead sendiri), Tugas, Target | Input lead, presentasi, survei, quotation, negosiasi |
 | Reviewer | bima.prasetyo / dimas.arya @kopikoma.id | Pipeline, Tugas | Penilaian kelayakan |
 
 - Indikator lewat batas waktu hanya terlihat oleh Super Admin dan Manajer.

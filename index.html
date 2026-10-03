@@ -778,7 +778,7 @@ function tabsFor() {
   const r = role();
   if (r === 'Super Admin') return [['pipeline','Pipeline'],['tasks','Tugas'],['dashboard','Target'],['sales','Performa Sales']];
   if (r === 'Manajer') return [['pipeline','Pipeline'],['tasks','Tugas'],['dashboard','Target'],['sales','Performa Sales']];
-  if (r === 'Sales') return [['pipeline','Pipeline saya'],['mytasks','Tugas'],['dashboard','Target']];
+  if (r === 'Sales') return [['pipeline','Pipeline'],['mytasks','Tugas'],['dashboard','Target']];
   return [['pipeline','Pipeline'],['mytasks','Tugas']];
 }
 function viewMain() {
@@ -818,7 +818,7 @@ function viewPipeline() {
   const autoN = state.apps.filter(a => !a.inputBy && a.assignedBy === null && a.stage !== 'baru' && a.sales).length;
   return `${state.hint ? `<div class="hint"><span>${HINTS[role()]}</span><button class="link" onclick="closeHint()">Tutup</button></div>` : ''}
   <div class="page-head">
-    <div><h1>${role() === 'Sales' ? 'Pipeline saya' : 'Pipeline calon franchisee'}</h1><p class="sub">${active} aplikasi aktif${od && seesOverdue() ? `, <button class="link" onclick="setView('${isSA() ? 'tasks' : 'tasks'}')">${od} lewat batas waktu</button>, pengingat otomatis sudah terkirim` : ''}</p></div>
+    <div><h1>Pipeline calon franchisee</h1><p class="sub">${active} aplikasi aktif${od && seesOverdue() ? `, <button class="link" onclick="setView('${isSA() ? 'tasks' : 'tasks'}')">${od} lewat batas waktu</button>, pengingat otomatis sudah terkirim` : ''}</p></div>
     <div class="head-actions">
       <input class="search" type="search" placeholder="Cari nama atau kota" aria-label="Cari aplikasi" value="${esc(state.q)}" oninput="state.q=this.value;refreshPipeline()">
       ${canAdd ? '<button class="btn btn-primary" onclick="openAdd()">Tambah lead</button>' : ''}
