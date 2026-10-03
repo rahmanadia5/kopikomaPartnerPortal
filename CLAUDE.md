@@ -45,6 +45,7 @@ Halaman masuk berisi form email + kata sandi dan daftar akun demo per role (klik
 | Reviewer | bima.prasetyo / dimas.arya @kopikoma.id | Pipeline, Tugas saya | Penilaian kelayakan |
 
 - Indikator lewat batas waktu hanya terlihat oleh Super Admin dan Manajer.
+- Pipeline punya pengalih Aktif | Selesai (`state.pview`, reset ke Aktif saat login). Kanban hanya 7 tahap aktif (muat di laptop tanpa scroll). Pengajuan disetujui/ditolak/mundur ada di tabel Selesai: hasil, tahap terakhir, alasan, nilai kesepakatan, sales, tanggal selesai; filter hasil, periode, sales, dan pencarian. Di bawah kanban ada ringkasan "Selesai bulan ini" dengan tautan Lihat semua.
 - Kartu pipeline tidak membedakan lead mandiri dan lead dari sales. Lead yang belum punya sales (tahap Lead baru) diberi chip "Belum ada sales" plus alasannya (Luar wilayah / Duplikat? / Sales penuh); setelah ditugaskan, kartu tampil seperti biasa.
 - Wilayah sales: Rendi = Tangerang Raya; Putri = Jakarta, Bogor, Depok, Bekasi, Cikarang; Agus = Bandung Raya; Wulan = Jawa Tengah.
 
@@ -69,6 +70,5 @@ Halaman masuk berisi form email + kata sandi dan daftar akun demo per role (klik
 Jalankan tes headless dengan Playwright (Python) terhadap `file://.../index.html`, panggil fungsi global seperti `quickLogin('rendi')`, `openAdd(); demoFill(); submitLead()`, `submitPresentasi`, `submitSurvey`, `submitAssessment`, `sendQuote`, `negoAgree`, `finalDecision(id,'ok')`, dan pastikan tidak ada `pageerror`. Bersihkan localStorage di awal tes. Sisi franchisee (buka `index.html#mitra`): `openPortal('form'); portalDemoFill(); submitPortal()`, lalu `openPortal('track'); portalLookup(id, email)`, `portalAgree(id)` / `portalChange(id)` / `portalWithdraw(id)`.
 
 ## Pekerjaan berikutnya
-1. Pertimbangkan menggabungkan kolom Disetujui dan Ditolak jadi "Selesai" (kanban sekarang 9 kolom dan perlu scroll horizontal di laptop).
-2. Perbarui PRD/spec doc agar sesuai prototype terbaru: alur 8 tahap, peran, aturan penugasan otomatis, batas waktu, definisi revenue, skor AI simulasi, MoSCoW (MVP vs fase berikutnya), kebutuhan non-fungsional (UU PDP, mobile, audit trail, AI sebagai alat bantu), roadmap, dan bagian penggunaan AI.
-3. Upload ulang `index.html` ke vercel.com/drop setiap kali ada revisi, lalu kirim link terbaru.
+1. Perbarui PRD/spec doc agar sesuai prototype terbaru: alur 8 tahap, peran, aturan penugasan otomatis, batas waktu, definisi revenue, skor AI simulasi, MoSCoW (MVP vs fase berikutnya), kebutuhan non-fungsional (UU PDP, mobile, audit trail, AI sebagai alat bantu), roadmap, dan bagian penggunaan AI.
+2. Upload ulang `index.html` ke vercel.com/drop setiap kali ada revisi, lalu kirim link terbaru.

@@ -292,6 +292,10 @@ footer{max-width:1360px;margin:0 auto;padding:0 24px 30px;font-size:12px;color:v
 @media (max-width:760px){.ub-text{display:none}.userbtn{padding:4px}.head-actions{width:100%}}
 
 [hidden]{display:none !important}
+.done-sum{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:14px;color:var(--muted);margin:12px 0 0}
+.done-t tbody tr{cursor:pointer}
+.done-t tbody tr:hover td{background:#FAF8F5}
+.done-t td{vertical-align:top}
 .login{min-height:100vh;display:grid;grid-template-columns:1.1fr 1fr}
 .lg-brand{background:var(--roast);color:#F7EFE6;padding:48px 56px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;justify-content:center;gap:12px}
 .lg-brand .logo b{font-size:30px}
@@ -767,7 +771,7 @@ function loginHTML() {
   </div>`;
 }
 function startSession(k) {
-  ME = k; state.loginErr = ''; state.view = 'pipeline'; state.sel = null; state.addOpen = false; state.apv = null; state.hint = true; state.taskFilter = 'all';
+  ME = k; state.loginErr = ''; state.view = 'pipeline'; state.sel = null; state.addOpen = false; state.apv = null; state.hint = true; state.taskFilter = 'all'; state.pview = 'aktif';
   state.notifOpen = false; state.menuOpen = false; state.profile = k; render(); window.scrollTo(0,0);
   toast(`Masuk sebagai ${person(k)}`);
 }
@@ -822,24 +826,76 @@ const HINTS = {
   'Reviewer':'Tugasmu: penilaian kelayakan calon franchisee di kolom <b>Penilaian kelayakan</b>. Tahap lain bisa kamu lihat, tapi tidak bisa kamu proses.'
 };
 function viewPipeline() {
-  const apps = visibleApps(), active = apps.filter(a => !isDone(a)).length, od = apps.filter(overdueOf).length;
+  const apps = visibleApps(), active = apps.filter(a => !isDone(a)).length, od = apps.filter(overdueOf).length, doneN = apps.filter(isDone).length;
+  const pv = state.pview || 'aktif';
   const canAdd = isSA() || role() === 'Sales';
   const autoN = state.apps.filter(a => !a.inputBy && a.assignedBy === null && a.stage !== 'baru' && a.sales).length;
   return `${state.hint ? `<div class="hint"><span>${HINTS[role()]}</span><button class="link" onclick="state.hint=false;render()">Tutup</button></div>` : ''}
   <div class="page-head">
     <div><h1>${role() === 'Sales' ? 'Pipeline saya' : 'Pipeline calon franchisee'}</h1><p class="sub">${active} aplikasi aktif${od && seesOverdue() ? `, <button class="link" onclick="setView('${isSA() ? 'tasks' : 'tasks'}')">${od} lewat batas waktu</button>, pengingat otomatis sudah terkirim` : ''}</p></div>
     <div class="head-actions">
-      <input class="search" type="search" placeholder="Cari nama atau kota" aria-label="Cari aplikasi" value="${esc(state.q)}" oninput="state.q=this.value;document.getElementById('board').innerHTML=boardHTML()">
+      <input class="search" type="search" placeholder="Cari nama atau kota" aria-label="Cari aplikasi" value="${esc(state.q)}" oninput="state.q=this.value;refreshPipeline()">
       ${canAdd ? '<button class="btn btn-primary" onclick="openAdd()">Tambah lead</button>' : ''}
     </div>
   </div>
-  <div class="board" id="board">${boardHTML()}</div>
-  <p class="small" style="margin-top:10px">Lead baru ditugaskan otomatis ke sales sesuai wilayah. Lead masuk antrean manajer bila kotanya di luar wilayah, terindikasi duplikat, atau sales di wilayah itu sudah memegang ${CAP} lead aktif.</p>`;
+  <div class="seg" role="group" aria-label="Tampilan pipeline" style="display:inline-flex;margin-bottom:14px">
+    <button aria-pressed="${pv === 'aktif'}" onclick="setPView('aktif')">Aktif (${active})</button><button aria-pressed="${pv === 'selesai'}" onclick="setPView('selesai')">Selesai (${doneN})</button>
+  </div>
+  ${pv === 'selesai' ? `<div id="done">${doneHTML()}</div>` : `<div class="board" id="board">${boardHTML()}</div>${doneSummary()}
+  <p class="small" style="margin-top:10px">Lead baru ditugaskan otomatis ke sales sesuai wilayah. Lead masuk antrean manajer bila kotanya di luar wilayah, terindikasi duplikat, atau sales di wilayah itu sudah memegang ${CAP} lead aktif.</p>`}`;
+}
+/* Pengajuan yang sudah selesai (disetujui / ditolak / mundur) keluar dari kanban dan masuk tabel "Selesai". */
+function setPView(v) { state.pview = v; render(); }
+function refreshPipeline() {
+  const el = document.getElementById(state.pview === 'selesai' ? 'done' : 'board');
+  if (el) el.innerHTML = state.pview === 'selesai' ? doneHTML() : boardHTML();
+}
+const REJ_STEP = ['Lead baru','Presentasi bisnis','Survei lokasi','Penilaian kelayakan','Quotation','Negosiasi','Persetujuan akhir'];
+const outcomeOf = a => a.stage === 'disetujui' ? ['ok','Disetujui'] : a.rejectStep === 0 ? ['bad','Ditutup'] : a.rejectStep === 1 || a.rejectStep === 5 ? ['warn','Mundur'] : ['bad','Ditolak'];
+function inPeriod(iso, per) {
+  const d = new Date(iso);
+  if (per === 'bulan') return d.getFullYear() === YEAR && d.getMonth() === TODAY.getMonth();
+  if (per === 'kuartal') return d.getFullYear() === YEAR && Math.floor(d.getMonth() / 3) === Math.floor(TODAY.getMonth() / 3);
+  if (per === 'tahun') return d.getFullYear() === YEAR;
+  return true;
+}
+function doneSummary() {
+  const list = visibleApps().filter(a => isDone(a) && inPeriod(a.stageSince, 'bulan'));
+  const ok = list.filter(a => a.stage === 'disetujui').length;
+  return `<p class="done-sum">Selesai bulan ini: <span class="chip ok">${ok} disetujui</span><span class="chip bad">${list.length - ok} ditolak atau mundur</span><button class="link" onclick="setPView('selesai')">Lihat semua</button></p>`;
+}
+function doneHTML() {
+  const f = state.doneF || (state.doneF = {res:'all', per:'semua', s:'all'}), q = state.q.trim().toLowerCase();
+  const list = visibleApps().filter(isDone)
+    .filter(a => f.res === 'all' || (f.res === 'ok' ? a.stage === 'disetujui' : a.stage === 'ditolak'))
+    .filter(a => inPeriod(a.stageSince, f.per) && (f.s === 'all' || a.sales === f.s))
+    .filter(a => !q || a.name.toLowerCase().includes(q) || a.city.toLowerCase().includes(q))
+    .sort((x,y) => new Date(y.stageSince) - new Date(x.stageSince));
+  const ok = list.filter(a => a.stage === 'disetujui'), value = ok.reduce((t,a) => t + dealValue(a), 0);
+  const setF = (k, v) => `state.doneF.${k}=${typeof v === 'string' ? `'${v}'` : v};refreshPipeline()`;
+  return `<div class="filters">
+      ${[['all','Semua'],['ok','Disetujui'],['no','Ditolak atau mundur']].map(([k,l]) => `<button class="pill" aria-pressed="${f.res === k}" onclick="${setF('res', k)}">${l}</button>`).join('')}
+      <select class="search" style="min-width:0;width:auto" aria-label="Periode" onchange="state.doneF.per=this.value;refreshPipeline()">${[['semua','Semua waktu'],['bulan','Bulan ini'],['kuartal','Kuartal ini'],['tahun','Tahun ini']].map(([k,l]) => `<option value="${k}" ${f.per === k ? 'selected' : ''}>${l}</option>`).join('')}</select>
+      ${role() === 'Sales' ? '' : `<select class="search" style="min-width:0;width:auto" aria-label="Sales" onchange="state.doneF.s=this.value;refreshPipeline()"><option value="all">Semua sales</option>${SALES.map(k => `<option value="${k}" ${f.s === k ? 'selected' : ''}>${uname(k)}</option>`).join('')}</select>`}
+      <span class="small">${list.length} pengajuan, ${ok.length} disetujui senilai ${rpS(value)}</span>
+    </div>
+    <div class="panel">${list.length ? `<div class="table-wrap"><table class="funnel done-t">
+      <thead><tr><th>Calon franchisee</th><th>Hasil</th><th>Tahap terakhir</th><th>Alasan</th><th>Nilai kesepakatan</th><th>Sales</th><th>Tanggal selesai</th></tr></thead>
+      <tbody>${list.map(a => { const o = outcomeOf(a); return `<tr onclick="openDetail('${a.id}')">
+        <td><div class="tl-title">${esc(a.name)}</div><div class="small">${a.id}, ${esc(a.city)}, ${PAKET[a.paket].nama}</div></td>
+        <td><span class="chip ${o[0]}">${o[1]}</span></td>
+        <td class="small" style="color:var(--ink)">${a.stage === 'disetujui' ? 'Persetujuan akhir' : REJ_STEP[a.rejectStep ?? 0]}</td>
+        <td class="small" style="max-width:280px">${a.stage === 'disetujui' ? '–' : esc(a.rejectReason || '–')}</td>
+        <td>${a.stage === 'disetujui' ? `<b>${rp(dealValue(a))}</b>` : '<span class="small">–</span>'}</td>
+        <td class="small" style="color:var(--ink)">${a.sales ? esc(uname(a.sales)) : '–'}</td>
+        <td class="small" style="color:var(--ink);white-space:nowrap">${new Date(a.stageSince).toLocaleDateString('id-ID',{day:'numeric', month:'short', year:'numeric'})}</td>
+      </tr>`; }).join('')}</tbody></table></div>` : '<p class="np-empty" style="padding:4px 0">Tidak ada pengajuan selesai untuk filter ini.</p>'}</div>
+    <p class="small" style="margin-top:10px">Klik baris untuk membuka detail dan riwayat lengkap pengajuan.</p>`;
 }
 function boardHTML() {
   const q = state.q.trim().toLowerCase();
   const apps = visibleApps().filter(a => !q || a.name.toLowerCase().includes(q) || a.city.toLowerCase().includes(q));
-  return STAGES.filter(s => !(s.k === 'baru' && role() === 'Sales')).map(s => {
+  return STAGES.filter(s => !(s.k === 'baru' && role() === 'Sales') && s.k !== 'disetujui' && s.k !== 'ditolak').map(s => {
     const list = apps.filter(a => a.stage === s.k).sort((x,y) => new Date(x.stageSince) - new Date(y.stageSince));
     return `<section class="col ${s.k === 'ditolak' ? 'muted-col' : ''}" aria-label="${s.l}">
       <header class="col-head"><span>${s.l}</span><span class="count">${list.length}</span></header>
