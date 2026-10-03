@@ -64,13 +64,18 @@ def table(rows):
     for i, r in enumerate(rows):
         for j, c in enumerate(r):
             cell = t.cell(i, j); cell.text = ''
-            p = cell.paragraphs[0]; p.alignment = WD_ALIGN_PARAGRAPH.LEFT
+            p = cell.paragraphs[0]
+            p.alignment = WD_ALIGN_PARAGRAPH.CENTER if c[:1] in ('✅', '⚠', '❌') or (i == 0 and rows[0][0] == 'Capability' and j in (1, 2)) else WD_ALIGN_PARAGRAPH.LEFT
             p.paragraph_format.space_after = Pt(0)
             add_inline(p, f'**{c}**' if i == 0 and c else c)
             if i == 0: shade(cell, 'E7E2DA')
+    if rows[0][0] == 'Capability':
+        for row in t.rows:
+            for j, w in enumerate((4.2, 2.9, 1.7, 7.8)): row.cells[j].width = Cm(w)
     doc.add_paragraph().paragraph_format.space_after = Pt(0)
 
 lines = (HERE / 'PRD.md').read_text(encoding='utf-8').splitlines()
+toc = [l for l in lines if l.startswith(('## ', '### ')) and 'Table of Contents' not in l]
 i = 0
 while i < len(lines):
     ln = lines[i]
@@ -83,6 +88,16 @@ while i < len(lines):
         doc.add_picture(str(HERE / m.group(1)), width=Cm(14.5))
         doc.paragraphs[-1].alignment = WD_ALIGN_PARAGRAPH.CENTER
         i += 1; continue
+    if ln.strip() == '[[TOC]]':
+        for h in toc:
+            sub = h.startswith('### ')
+            p = doc.add_paragraph(); p.alignment = WD_ALIGN_PARAGRAPH.LEFT
+            p.paragraph_format.space_after = Pt(2)
+            if sub: p.paragraph_format.left_indent = Cm(0.8)
+            add_inline(p, h.lstrip('# ') if sub else f'**{h[3:]}**')
+        i += 1; continue
+    if ln.strip() == '[[PAGEBREAK]]':
+        doc.add_page_break(); i += 1; continue
     if ln.startswith('# '): p = doc.add_paragraph(style='Title'); add_inline(p, ln[2:], 16)
     elif ln.startswith('## '): doc.add_heading(ln[3:], level=1)
     elif ln.startswith('### '): doc.add_heading(ln[4:], level=2)

@@ -1,14 +1,27 @@
 # Kopi Koma Partner Portal: Product Requirements Document
 
-Prototype (franchisor dashboard): https://kopikomapartnerportal.vercel.app
-Prototype (candidate franchisee portal): https://kopikomapartnerportal.vercel.app/mitra
-Demo password for all staff accounts: demo123 (accounts are listed on the login page)
+## Table of Contents
 
-## 1. Summary
+[[TOC]]
 
-Kopi Koma Partner Portal is a web platform that digitalizes the partnership process between a coffee franchisor and its candidate franchisees, from the first application until the partnership is approved by both parties. It consists of two connected applications: an internal dashboard for the franchisor team (Sales, Reviewer, Manager, Super Admin) and a Partner Portal for candidate franchisees. Every application moves through one shared 8-stage pipeline with a clear owner and deadline per stage. Reminders are sent automatically when a deadline is missed, and every action is recorded in an audit trail.
+[[PAGEBREAK]]
 
-The goal is simple: no lead is forgotten, every candidate knows the status of their application, and management can see at any time whether the expansion target is on track.
+## 1. Executive Summary
+
+**Kopi Koma Partner Portal** is a web application that digitalizes and centralizes the partnership process between Kopi Koma (fictitious name), a local coffee franchisor, and its candidate franchisees, from the first application until the partnership is approved by both parties. The product consists of two connected applications:
+
+- **Franchisor Dashboard**: used by the internal team (Sales, Reviewer, Manager, Super Admin) to capture and assign leads, process each stage of the 8-stage pipeline, give final approval, and monitor sales targets.
+- **Partner Portal**: used by candidate franchisees to register, track the status of their application, and respond to quotations.
+
+This product addresses three core pain points: leads scattered across WhatsApp chats and personal spreadsheets with no central record; applications that get stuck because no stage has a clear owner or deadline; and quotations and approvals negotiated by chat with no traceable agreement.
+
+Activities after both parties approve, such as signing the franchise agreement, opening the outlet, and collecting royalty, are out of scope. Signing the agreement through Privy (electronic signature) is referenced only as the next step after approval.
+
+**Prototype (Franchisor Dashboard):** https://kopikomapartnerportal.vercel.app
+
+**Prototype (Partner Portal):** https://kopikomapartnerportal.vercel.app/mitra
+
+**Demo password:** demo123 (all staff accounts are listed on the login page)
 
 ## 2. Background and Assumptions
 
@@ -44,6 +57,25 @@ Franchising is the main expansion channel for Indonesian F&B brands. According t
 | 5 | Candidate screening and location decisions rely on individual judgment. | Reviewer, Manager | Inconsistent decisions and outlets opened in weak locations. |
 | 6 | Targets are only checked at the end of the month in a spreadsheet. | Manager, Sales | The team learns too late that the target will be missed. |
 | 7 | Compliance steps (delivering the franchise prospectus, personal data consent) are not recorded. | Franchisor | Legal risk under the franchise regulation (PP No. 35/2024) [5] and the Personal Data Protection Law (UU PDP No. 27/2022) [6]. |
+
+### 2.4 Current process vs proposed system
+
+The table below compares what the franchisor team and candidates can do today with the manual process against what they can do with the proposed system.
+
+| Capability | Manual (current) | System | Notes |
+|---|---|---|---|
+| Capture leads from all channels in one place | ⚠️ Limited | ✅ | Leads are currently scattered in each sales' WhatsApp and spreadsheets. The system stores every lead, from sales input or portal registration, in one pipeline. |
+| Assign leads to sales by region and detect duplicates | ❌ Not available | ✅ | The Manager currently forwards leads by chat, and two sales can contact the same person. The system assigns portal leads by region and flags duplicates and full sales capacity. |
+| See the stage and owner of every application | ⚠️ Limited | ✅ | The Manager has to ask each sales. The system shows every application on a pipeline board with its current PIC and days waiting. |
+| Track deadlines and send reminders | ❌ Not available | ✅ | Nothing tells the team when an application has been stuck too long. The system sends automatic reminders to the PIC and Manager when a stage passes its deadline. |
+| Record prospectus delivery (PP No. 35/2024) | ⚠️ Limited | ✅ | Delivery is not recorded consistently. The system requires the sales to confirm it and records the date. |
+| Assess candidates and locations consistently | ⚠️ Limited | ✅ | Decisions rely on individual judgment. The system uses structured forms per stage and an AI fit score with reasons as a decision aid. |
+| Manage quotation versions and discounts | ⚠️ Limited | ✅ | Quotations are revised by chat, so the agreed version is unclear. The system keeps every version and requires the Manager's input for revisions. |
+| Candidate checks application status | ❌ Not available | ✅ | Candidates must ask their sales. The Partner Portal shows a 7-step tracker with the assigned sales' contact. |
+| Candidate responds to a quotation with a written record | ⚠️ Limited | ✅ | Responses come by chat or phone. In the portal, the candidate agrees with an explicit confirmation, requests changes, or withdraws, and each action is recorded. |
+| Trace two-party approval | ⚠️ Limited | ✅ | Approval is scattered across chats. The system records approval 1 of 2 (candidate) and 2 of 2 (Manager) in the audit trail. |
+| Monitor target vs achievement during the period | ⚠️ Limited | ✅ | Targets are checked in a spreadsheet at the end of the month. The system shows achievement against the target to date, per sales and per package. |
+| Keep an audit trail and document access log (UU PDP) | ❌ Not available | ✅ | There is no record of who saw candidate data. The system logs every action and document access. |
 
 ## 3. Goals and Success Metrics
 
