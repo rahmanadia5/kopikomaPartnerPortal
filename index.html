@@ -1630,9 +1630,9 @@ function pipeByPkg(pkg, who) {
 }
 function perfStatus(x) { return x >= 1 ? ['ok','Di atas target'] : x >= .85 ? ['ok','Sesuai jalur'] : x >= .65 ? ['warn','Perlu dorongan'] : ['bad','Kritis']; }
 const barColor = st => st[0] === 'ok' ? 'var(--ok)' : st[0] === 'warn' ? '#C98F1E' : st[0] === 'bad' ? 'var(--bad)' : '#B9AC9D';
-/* Di awal periode, target berjalan (MTD/QTD/...) masih di bawah 1 deal: status netral, bukan "Kritis". */
-const EARLY = ['', 'Awal periode'];
-const isEarly = (target, P, unit) => !P.ended && target * P.pace < unit;
+/* Hari ke-1 sampai 9 dalam periode: status netral "Awal periode", bukan "Kritis". Mulai hari ke-10 semua dinilai normal. */
+const EARLY = ['', 'Awal periode'], EARLY_DAYS = 9;
+const isEarly = (target, P, unit) => !P.ended && P.el <= EARLY_DAYS;
 const statusOf = (x, target, P, unit) => isEarly(target, P, unit) ? EARLY : perfStatus(x);
 function totals(P) {
   const A = scope().map(s => salesAch(s, P)).reduce((acc,x) => ({g:acc.g + x.g, c:acc.c + x.c, qty:acc.qty + x.qty, rev:acc.rev + x.rev, f:acc.f.map((v,i) => v + x.f[i])}), {g:0,c:0,qty:0,rev:0,f:FUNNEL.map(() => 0)});

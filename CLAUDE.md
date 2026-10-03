@@ -50,7 +50,7 @@ Halaman masuk berisi form email + kata sandi dan daftar akun demo per role (klik
 | Reviewer | bima.prasetyo / dimas.arya @kopikoma.id | Pipeline, Tugas saya | Penilaian kelayakan |
 
 - Indikator lewat batas waktu hanya terlihat oleh Super Admin dan Manajer.
-- Status target: bila target berjalan (MTD/QTD/...) masih < 1 deal (atau < Rp 45 jt untuk revenue), status tampil "Awal periode" (abu-abu), bukan "Kritis"; status sales = metrik terlemah di antara metrik yang sudah dinilai.
+- Status target: hari ke-1 sampai 9 dalam periode (`EARLY_DAYS`) tampil "Awal periode" (abu-abu), bukan "Kritis". Mulai hari ke-10 semua metrik dinilai normal; status sales = metrik terlemah.
 - Kartu kanban tidak punya tombol Status persetujuan (dibuka dari drawer atau tabel tugas). Drawer punya 7 tab: Ringkasan (termasuk penugasan sales saat tahap Lead baru), Presentasi, Survei lokasi, Penilaian, Quotation, Negosiasi, Riwayat.
 - Pipeline punya pengalih Aktif | Selesai (`state.pview`, reset ke Aktif saat login). Kanban hanya 7 tahap aktif (muat di laptop tanpa scroll). Pengajuan disetujui/ditolak/mundur ada di tabel Selesai: hasil, tahap terakhir, alasan, nilai kesepakatan, sales, tanggal selesai; filter hasil, periode, sales, dan pencarian. Di bawah kanban ada ringkasan "Selesai bulan ini" dengan tautan Lihat semua.
 - Kartu pipeline tidak membedakan lead mandiri dan lead dari sales. Lead yang belum punya sales (tahap Lead baru) diberi chip "Belum ada sales" plus alasannya (Luar wilayah / Duplikat? / Sales penuh); setelah ditugaskan, kartu tampil seperti biasa.
