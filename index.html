@@ -547,14 +547,14 @@ const MONTHS = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustu
 const CUR_M = TODAY.getMonth() + 1;
 /* Contoh kemitraan yang sudah disetujui selalu jatuh di bulan berjalan agar Achievement bulan ini tidak kosong di awal bulan. */
 const DEAL_DAYS = Math.min(6, TODAY.getDate() - 1);
-/* Target tahunan per sales (Gerobak, Cafe). Bobot wilayah = penduduk x PDRB per kapita (BPS 2024), dibatasi kapasitas ±12-15 approval per sales per tahun.
-   Revenue target diturunkan dari harga paket. Semua target mengikuti periode yang dipilih (proporsional). */
-const SALES_T = {putri:{g:8, c:7}, wulan:{g:10, c:3}, rendi:{g:9, c:1}, agus:{g:9, c:1}};
+/* Target BULANAN per sales dalam angka bulat (Gerobak, Cafe). Tiap sales 1 Gerobak per bulan; Cafe 1 per bulan dipegang Putri
+   (Jabodebek, potensi Cafe terbesar menurut penduduk x PDRB per kapita BPS 2024). Periode lain = target bulanan x jumlah bulan. */
+const SALES_T = {putri:{g:1, c:1}, wulan:{g:1, c:0}, rendi:{g:1, c:0}, agus:{g:1, c:0}};
 const tRev = t => t.g * total('gerobak') + t.c * total('cafe');
 function mulberry32(a) { return function() { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
 const DEALS = {
   rendi:{g:[1,1,1,0,1,1,1,0,1,1,0,1], c:[0,0,0,0,0,1,0,0,0,0,0,0]},
-  putri:{g:[1,0,1,1,0,1,1,0,1,1,0,1], c:[1,0,1,0,1,0,1,0,1,0,1,1]},
+  putri:{g:[1,1,1,0,1,1,1,1,0,1,1,1], c:[1,1,0,1,1,1,1,0,1,1,1,1]},
   agus: {g:[1,0,1,1,0,1,1,1,0,1,1,1], c:[0,0,0,1,0,0,0,0,0,0,0,0]},
   wulan:{g:[1,1,0,1,1,1,0,1,1,1,1,1], c:[0,0,1,0,0,0,1,0,0,0,0,1]}
 };
@@ -965,7 +965,7 @@ function viewProfile() {
       </dl>
     </div>
     <div class="stack" style="margin:0">
-      ${u.role === 'Sales' ? `<section class="panel"><h2>Target tahunan</h2><p style="margin:0">${SALES_T[k].g} Gerobak dan ${SALES_T[k].c} Cafe, revenue kemitraan ${rpS(tRev(SALES_T[k]))} (± ${rpS(tRev(SALES_T[k]) / 12)} per bulan).</p></section>` : ''}
+      ${u.role === 'Sales' ? `<section class="panel"><h2>Target bulanan</h2><p style="margin:0">${SALES_T[k].g} Gerobak${SALES_T[k].c ? ` dan ${SALES_T[k].c} Cafe` : ''} per bulan, revenue kemitraan ${rpS(tRev(SALES_T[k]))} per bulan.</p></section>` : ''}
       <section class="panel"><div class="d-top"><h2>${u.role === 'Super Admin' ? 'Tugas di seluruh tim' : 'Tugas aktif'}</h2><span class="num">${tasks.length}</span></div>
         ${tasks.length ? `<ul class="r-list">${tasks.slice(0,5).map(a => `<li style="grid-template-columns:1fr auto"><div><button class="link" onclick="openDetail('${a.id}')">${esc(a.name)}</button><div class="small">${actionOf(a)}${u.role === 'Super Admin' ? `, ${esc(uname(picOf(a)))}` : ''}</div></div>${overdueOf(a) ? '<span class="chip bad">Lewat batas</span>' : `<span class="small">${daysIn(a.stageSince)} hari</span>`}</li>`).join('')}</ul>${tasks.length > 5 ? `<button class="link" style="margin-top:8px" onclick="setView('tasks')">Lihat semua</button>` : ''}` : '<p class="small">Tidak ada tugas aktif.</p>'}
       </section>
@@ -1647,7 +1647,7 @@ function salesAch(s, P) {
   f[f.length - 1] = g + c;
   return {g, c, qty:g + c, rev, f};
 }
-const salesTarget = (s, P) => { const t = SALES_T[s], f = P.ms.length / 12; return {g:t.g * f, c:t.c * f, qty:(t.g + t.c) * f, rev:tRev(t) * f}; };
+const salesTarget = (s, P) => { const t = SALES_T[s], f = P.ms.length; return {g:t.g * f, c:t.c * f, qty:(t.g + t.c) * f, rev:tRev(t) * f}; };
 const sisa = (target, ach) => Math.max(0, Math.ceil(target - ach - 1e-9));
 const paceOf = (target, ach, P) => { const td = target * P.pace; return td ? ach / td : (ach > 0 || !target ? 1 : 0); };
 function pipeByPkg(pkg, who) {
@@ -1662,6 +1662,9 @@ function totals(P) {
   return {A, T};
 }
 function pkgCard(title, target, ach, P, fmt, unit, pipe) {
+  if (!target) return `<div class="panel kpi"><h2 style="margin:0">${title}</h2>
+    <div class="kpi-num">${fmt(ach)}</div><div style="font-weight:700;margin:2px 0 4px;color:var(--muted)">Tidak ada target ${unit || ''} ${P.label}</div>
+    ${pipe ? `<div class="small" style="margin-top:6px;color:var(--ink)">${pipe.length ? 'Di pipeline: ' + pipe.map(([n,l]) => `${n} di ${l}`).join(', ') : 'Belum ada di tahap quotation sampai persetujuan akhir.'}</div>` : ''}</div>`;
   const tdT = target * P.pace, x = paceOf(target, ach, P), st = perfStatus(x), pct = target ? ach / target : 0, left = unit ? sisa(target, ach) : Math.max(0, target - ach);
   return `<div class="panel kpi"><div class="d-top"><h2 style="margin:0">${title}</h2><span class="chip ${st[0]}">${st[1]}</span></div>
     <div class="kpi-num">${fmt(ach)}<span class="small" style="font-size:15px;font-weight:600"> dari ${fmt(target)}</span></div>
@@ -1712,6 +1715,7 @@ function viewSales() {
   const P = periodInfo();
   const rows = SALES.map(s => ({s, ...salesScore(s, P)})).sort((x,y) => (y.score - x.score) || (y.xr - x.xr) || (y.a.rev - x.a.rev));
   const cell = (ach, target, x, unit) => { const st = perfStatus(x), left = sisa(target, ach);
+    if (!target) return `<div><b style="font-size:16px">${num1(ach)}</b></div><div class="small">Tidak ada target</div>`;
     return `<div><b style="font-size:16px">${num1(ach)}</b><span class="small"> / ${num1(target)}</span></div>
       <div class="small" style="font-weight:700;color:${left ? 'var(--bad)' : 'var(--ok)'}">${left ? `Kurang ${left} ${unit}` : 'Tercapai'}</div>
       <div class="bar" style="min-width:90px;margin-top:4px"><span style="width:${Math.min(target ? ach / target : 1,1) * 100}%;background:${barColor(st)}"></span></div>`; };
@@ -1730,7 +1734,7 @@ function viewSales() {
       <td><span class="chip ${st[0]}">${st[1]}</span></td></tr>`; }).join('')}
       <tr class="sum"><td></td><td><b>Total</b></td><td>${cell(sum.ag, sum.tg, paceOf(sum.tg, sum.ag, P), 'Gerobak')}</td><td>${cell(sum.ac, sum.tc, paceOf(sum.tc, sum.ac, P), 'Cafe')}</td><td>${revCell(sum.ar, sum.tr, paceOf(sum.tr, sum.ar, P))}</td><td><span class="chip ${sSt[0]}">${sSt[1]}</span></td></tr>
     </tbody></table></div></section>
-  <p class="small">Target tahunan per sales: ${SALES.map(s => `${first(s)} ${SALES_T[s].g} Gerobak dan ${SALES_T[s].c} Cafe (${rpS(tRev(SALES_T[s]))})`).join('; ')}. Target bulanan dan periode lain dihitung proporsional dari target tahunan.</p>`;
+  <p class="small">Target bulanan per sales: ${SALES.map(s => `${first(s)} ${SALES_T[s].g} Gerobak${SALES_T[s].c ? ` + ${SALES_T[s].c} Cafe` : ''} (${rpS(tRev(SALES_T[s]))})`).join('; ')}. Target kuartal, semester, dan tahunan = target bulanan x jumlah bulan.</p>`;
 }
 
 /* ===================== keyboard & boot ===================== */
