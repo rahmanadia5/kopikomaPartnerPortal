@@ -69,8 +69,8 @@ def table(rows):
             p.paragraph_format.space_after = Pt(0)
             add_inline(p, f'**{c}**' if i == 0 and c else c)
             if i == 0: shade(cell, 'E7E2DA')
-    widths = {'Capability': (4.2, 2.9, 1.7, 7.8), 'ID': (2.3, 4.4, 5.0, 4.9), '#': None}.get(rows[0][0])
-    if rows[0][0] == '#' and len(rows[0]) == 5: widths = (1.0, 2.2, 3.6, 2.6, 7.2)
+    widths = {'Capability': (4.8, 2.9, 1.7, 7.2), 'ID': (2.3, 4.4, 5.0, 4.9), '#': None}.get(rows[0][0])
+    if rows[0][0] == '#' and len(rows[0]) == 5: widths = (1.0, 2.2, 4.4, 1.8, 7.0)
     if widths:
         t.autofit = False
         for row in t.rows:
