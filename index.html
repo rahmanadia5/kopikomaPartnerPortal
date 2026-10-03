@@ -225,6 +225,7 @@ table.cost tr.total td{font-weight:800;border-bottom:0;padding-top:10px}
 .pcard{display:flex;gap:12px;align-items:center;border:1px solid var(--line);border-radius:var(--r-m);padding:10px 12px;margin-top:8px}
 .av{width:38px;height:38px;border-radius:50%;background:var(--roast);color:#fff;display:grid;place-items:center;font-weight:800;font-size:14px;flex:none}
 .pc-body{flex:1;min-width:0}
+@media (max-width:760px){.pcard>.chip{display:none}}
 .period{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .seg{display:flex;background:#E6E5DF;border-radius:999px;padding:3px}
 .seg button{border:0;background:none;padding:6px 12px;border-radius:999px;font-weight:600;font-size:13px;cursor:pointer;color:var(--muted)}
@@ -728,7 +729,7 @@ function render() {
   renderTop(); renderDrawer(); renderNotif(); renderApproval();
 }
 const DEMO_NOTE = {
-  'Super Admin':'Akses penuh, bisa memproses semua tahap dan mengelola pengguna.',
+  'Super Admin':'Akses penuh, bisa memproses semua tahap.',
   'Manajer':'Menugaskan sales untuk lead yang tidak otomatis, dan persetujuan akhir.',
   'Sales':'Hanya melihat lead sendiri. Input lead, presentasi, survei, quotation, negosiasi.',
   'Reviewer':'Melakukan penilaian kelayakan calon franchisee.'
@@ -851,7 +852,7 @@ function inPeriod(iso, per) {
 function doneSummary() {
   const list = visibleApps().filter(a => isDone(a) && inPeriod(a.stageSince, 'bulan'));
   const ok = list.filter(a => a.stage === 'disetujui').length;
-  return `<p class="done-sum">Selesai bulan ini: <span class="chip ok">${ok} disetujui</span><span class="chip bad">${list.length - ok} ditolak atau mundur</span><button class="link" onclick="setPView('selesai')">Lihat semua</button></p>`;
+  return `<p class="done-sum">Selesai bulan ini: <span class="chip ${ok ? 'ok' : ''}">${ok} disetujui</span><span class="chip ${list.length - ok ? 'bad' : ''}">${list.length - ok} ditolak atau mundur</span><button class="link" onclick="setPView('selesai')">Lihat semua</button></p>`;
 }
 function doneHTML() {
   const f = state.doneF || (state.doneF = {res:'all', per:'semua', s:'all'}), q = state.q.trim().toLowerCase();
@@ -914,7 +915,7 @@ function viewTasks() {
   const match = a => f === 'all' || (f === 'mine' ? picOf(a) === ME : roleOf(a) === f);
   const list = all.filter(match).sort((x,y) => (overdueOf(y) - overdueOf(x)) || (daysIn(y.stageSince) - daysIn(x.stageSince)));
   const pills = role() === 'Manajer' ? [['mine','Tugas saya'],['all','Semua'],['Sales','Sales'],['Reviewer','Reviewer']] : [['all','Semua'],['Reviewer','Reviewer'],['Sales','Sales'],['Manajer','Manajer']];
-  return `<div class="page-head"><div><h1>Tugas</h1><p class="sub">Tugas yang sedang menunggu di setiap anggota tim. Saat batas waktu terlewati, sistem otomatis mengirim pengingat ke penanggung jawab dan manajer lewat dasbor dan email.</p></div></div>
+  return `<div class="page-head"><div><h1>Tugas</h1><p class="sub">Tugas yang menunggu tindakan, untukmu dan seluruh tim. Saat batas waktu terlewati, sistem otomatis mengirim pengingat ke penanggung jawab dan manajer lewat dasbor dan email.</p></div></div>
   <div class="filters">${pills.map(([k,l]) => { const c = k === 'all' ? all.length : k === 'mine' ? all.filter(a => picOf(a) === ME).length : all.filter(a => roleOf(a) === k).length; return `<button class="pill" aria-pressed="${f === k}" onclick="state.taskFilter='${k}';render()">${l} (${c})</button>`; }).join('')}</div>
   <div class="panel">${list.length ? `<div class="table-wrap"><table class="funnel">
     <thead><tr><th>Calon franchisee</th><th>Yang perlu dilakukan</th><th>Penanggung jawab</th><th>Menunggu</th><th>Batas waktu</th><th>Pengingat otomatis</th><th></th></tr></thead>
@@ -1634,7 +1635,7 @@ function pipeByPkg(pkg, who) {
   return [['approval','persetujuan akhir'],['negosiasi','negosiasi'],['quotation','quotation']].map(([k,l]) => [list.filter(a => a.stage === k).length, l]).filter(([n]) => n);
 }
 function perfStatus(x) { return x >= 1 ? ['ok','Di atas target'] : x >= .85 ? ['ok','Sesuai jalur'] : x >= .65 ? ['warn','Perlu dorongan'] : ['bad','Kritis']; }
-const barColor = st => st[0] === 'ok' ? 'var(--ok)' : st[0] === 'warn' ? '#C98F1E' : st[0] === 'bad' ? 'var(--bad)' : '#B9AC9D';
+const barColor = (st, done) => done || st[0] === 'ok' ? 'var(--ok)' : st[0] === 'warn' ? '#C98F1E' : st[0] === 'bad' ? 'var(--bad)' : '#B9AC9D';
 /* Hari ke-1 sampai 9 dalam periode: status netral "Awal periode", bukan "Kritis". Mulai hari ke-10 semua dinilai normal. */
 const EARLY = ['', 'Awal periode'], EARLY_DAYS = 9;
 const isEarly = (target, P, unit) => !P.ended && P.el <= EARLY_DAYS;
@@ -1652,7 +1653,7 @@ function pkgCard(title, target, ach, P, fmt, unit, pipe, extra) {
   return `<div class="panel kpi"><div class="d-top"><h2 style="margin:0">${title}</h2><span class="chip ${st[0]}">${st[1]}</span></div>
     <div class="kpi-num">${fmt(ach)}<span class="small" style="font-size:15px;font-weight:600"> dari ${fmt(target)}</span></div>
     <div style="font-weight:700;margin:2px 0 4px;color:${left ? 'var(--bad)' : 'var(--ok)'}">${left ? `Kurang ${unit ? left + ' ' + unit : fmt(left)}` : 'Target periode tercapai'}</div>
-    <div class="bar" style="margin:8px 0 4px"><span style="width:${Math.min(pct,1) * 100}%;background:${barColor(st)}"></span>${P.ended ? '' : `<i style="left:${P.pace * 100}%"></i>`}</div>
+    <div class="bar" style="margin:8px 0 4px"><span style="width:${Math.min(pct,1) * 100}%;background:${barColor(st, pct >= 1)}"></span>${P.ended ? '' : `<i style="left:${P.pace * 100}%"></i>`}</div>
     <div class="small">${P.label}. Target ${P.ended ? '' : P.td + ' '}${fmt(tdT)}, tercapai ${Math.round(x * 100)}%.</div>
     ${pipe ? `<div class="small" style="margin-top:6px;color:var(--ink)">${pipe.length ? 'Di pipeline: ' + pipe.map(([n,l]) => `${n} di ${l}`).join(', ') : 'Belum ada di tahap quotation sampai persetujuan akhir.'}</div>` : ''}${extra || ''}</div>`;
 }
@@ -1668,7 +1669,7 @@ function viewDashboard() {
     const last = i === FUNNEL.length - 1, actual = !last && A.f[i] ? Math.round(A.f[i + 1] / A.f[i] * 100) + '%' : '–';
     return `<tr><td><div class="tl-title">${f.l}</div><div class="small hm">${f.d}</div></td>
       <td class="num">${num1(tg[i])}</td><td class="num">${num1(tdT)}</td><td class="num">${A.f[i]}</td>
-      <td class="hm"><div class="bar"><span style="width:${Math.min(pct,1) * 100}%;background:${barColor(st)}"></span>${P.ended ? '' : `<i style="left:${P.pace * 100}%"></i>`}</div><div class="small">${Math.round(pct * 100)}% dari target periode</div></td>
+      <td class="hm"><div class="bar"><span style="width:${Math.min(pct,1) * 100}%;background:${barColor(st, pct >= 1)}"></span>${P.ended ? '' : `<i style="left:${P.pace * 100}%"></i>`}</div><div class="small">${Math.round(pct * 100)}% dari target periode</div></td>
       <td><span class="chip ${st[0]}">${st[1]}</span></td>
       <td class="hm">${!last ? `<input class="rate" type="number" min="1" max="100" value="${state.rates[i]}" aria-label="Rasio konversi ${f.l}" onchange="setRate(${i},this.value)">%<div class="small">Aktual: ${actual}</div>` : '<span class="small">Tahap akhir</span>'}</td></tr>`;
   }).join('');
@@ -1699,11 +1700,11 @@ function viewSales() {
     if (!target) return `<div><b style="font-size:16px">${num1(ach)}</b></div><div class="small">Tidak ada target</div>`;
     return `<div><b style="font-size:16px">${num1(ach)}</b><span class="small"> / ${num1(target)}</span></div>
       <div class="small" style="font-weight:700;color:${left ? 'var(--bad)' : 'var(--ok)'}">${left ? `Kurang ${left} ${unit}` : 'Tercapai'}</div>
-      <div class="bar" style="min-width:90px;margin-top:4px"><span style="width:${Math.min(target ? ach / target : 1,1) * 100}%;background:${barColor(st)}"></span></div>`; };
+      <div class="bar" style="min-width:90px;margin-top:4px"><span style="width:${Math.min(target ? ach / target : 1,1) * 100}%;background:${barColor(st, target && ach >= target)}"></span></div>`; };
   const revCell = (ach, target, x) => { const st = statusOf(x, target, P, total('gerobak'));
     return `<div><b style="font-size:16px">${rpS(ach)}</b><span class="small"> / ${rpS(target)}</span></div>
       <div class="small">${isEarly(target, P, total('gerobak')) ? 'Awal periode' : Math.round(x * 100) + '% dari Target ' + (P.ended ? 'akhir' : P.td)}</div>
-      <div class="bar" style="min-width:90px;margin-top:4px"><span style="width:${Math.min(target ? ach / target : 1,1) * 100}%;background:${barColor(st)}"></span></div>`; };
+      <div class="bar" style="min-width:90px;margin-top:4px"><span style="width:${Math.min(target ? ach / target : 1,1) * 100}%;background:${barColor(st, target && ach >= target)}"></span></div>`; };
   const sum = rows.reduce((v,r) => ({ag:v.ag + r.a.g, tg:v.tg + r.t.g, ac:v.ac + r.a.c, tc:v.tc + r.t.c, ar:v.ar + r.a.rev, tr:v.tr + r.t.rev}), {ag:0,tg:0,ac:0,tc:0,ar:0,tr:0});
   const sLive = [[paceOf(sum.tg, sum.ag, P), sum.tg, 1], [paceOf(sum.tc, sum.ac, P), sum.tc, 1], [paceOf(sum.tr, sum.ar, P), sum.tr, total('gerobak')]].filter(([, tg, u]) => !isEarly(tg, P, u)).map(([x]) => x);
   const sSt = sLive.length ? perfStatus(Math.min(...sLive)) : EARLY;
