@@ -31,7 +31,7 @@ Aturan penting:
 - Minta perubahan saat negosiasi: aplikasi kembali ke Quotation (label Revisi). Sales dan manajer berdiskusi DI LUAR sistem; saat kirim quotation versi berikutnya sales wajib isi "Hasil diskusi dengan manajer".
 - Minta revisi lokasi: kembali ke Survei lokasi; setelah layak langsung ke Quotation (tanpa assessment ulang).
 - Pengingat sepenuhnya otomatis (notifikasi dashboard + email) ke PIC dan manajer saat lewat batas waktu. Tidak ada tombol kirim pengingat manual. Tidak ada WhatsApp.
-- Portal Mitra untuk calon franchisee (publik, tanpa akun staf, dibuka dari halaman masuk): formulir pendaftaran (masuk sebagai lead mandiri lalu ikut aturan penugasan otomatis), tracker status 7 langkah (cek dengan nomor pengajuan + email/HP), dan tanggapan quotation langsung (setujui / minta perubahan / tidak melanjutkan). Quotation dikirim via email beserta link portal. Bila franchisee menjawab lewat telepon/tatap muka, sales tetap bisa mencatat tanggapan di tab Negosiasi. Aksi franchisee tercatat di audit trail sebagai "Calon franchisee (portal mitra)" (`by: FR`).
+- Dua aplikasi terpisah dari `index.html` yang sama: dashboard franchisor di `/` (hanya POV franchisor, tanpa tautan ke sisi franchisee) dan Portal Mitra untuk calon franchisee di `/mitra` (rewrite di `vercel.json`; saat tes lokal pakai `index.html#mitra`). Portal Mitra: formulir pendaftaran (masuk sebagai lead mandiri lalu ikut aturan penugasan otomatis), tracker status 7 langkah (cek dengan nomor pengajuan + email/HP), dan tanggapan quotation langsung (setujui / minta perubahan / tidak melanjutkan). Quotation dikirim via email beserta link portal. Bila franchisee menjawab lewat telepon/tatap muka, sales tetap bisa mencatat tanggapan di tab Negosiasi. Aksi franchisee tercatat di audit trail sebagai "Calon franchisee (portal mitra)" (`by: FR`).
 
 ## Peran (login demo, password semua akun: demo123)
 | Peran | Akun | Menu | Bisa memproses |
@@ -56,13 +56,13 @@ Aturan penting:
 - Data demo "hari ini" = 20 Oktober 2026 supaya angka MTD bermakna.
 
 ## Struktur kode
-- Satu file `index.html` tanpa build: CSS di `<style>`, JS vanilla di `<script>`, font Plus Jakarta Sans dari Google Fonts.
+- Satu file `index.html` tanpa build (plus `vercel.json` untuk route `/mitra`): CSS di `<style>`, JS vanilla di `<script>`, font Plus Jakarta Sans dari Google Fonts.
 - Bagian JS ditandai komentar `/* ===================== nama ===================== */`: base, people & roles, flow, AI score, seed data, sales history, state, helpers, top bar, render (login + tab per peran), pipeline, all tasks, users & roles, profile, partner portal (calon franchisee), business process, approval status modal, detail drawer, actions, add lead, target & sales performance.
-- State di memori (`state`, `ME`); hilang saat refresh. Tombol "Reset data demo" di menu akun.
+- `MODE` (`staff` / `mitra`) menentukan aplikasi yang dirender. Data aplikasi dan notifikasi (`state.apps`, `state.notifs`, `tick`, `nid`) disimpan di localStorage (`kopikoma-demo-v1`) supaya kedua aplikasi terhubung, termasuk antar-tab lewat event `storage`. State UI dan login (`ME`) tetap di memori. Tombol "Reset data demo" di menu akun menghapus data tersimpan dan kembali ke seed.
 - UI dalam Bahasa Indonesia. Hindari em dash di teks UI.
 
 ## Cara tes
-Jalankan tes headless dengan Playwright (Python) terhadap `file://.../index.html`, panggil fungsi global seperti `quickLogin('rendi')`, `openAdd(); demoFill(); submitLead()`, `submitPresentasi`, `submitSurvey`, `submitAssessment`, `sendQuote`, `negoAgree`, `finalDecision(id,'ok')`, dan pastikan tidak ada `pageerror`. Sisi franchisee: `openPortal('form'); portalDemoFill(); submitPortal()`, lalu `openPortal('track'); portalLookup(id, email)`, `portalAgree(id)` / `portalChange(id)` / `portalWithdraw(id)`.
+Jalankan tes headless dengan Playwright (Python) terhadap `file://.../index.html`, panggil fungsi global seperti `quickLogin('rendi')`, `openAdd(); demoFill(); submitLead()`, `submitPresentasi`, `submitSurvey`, `submitAssessment`, `sendQuote`, `negoAgree`, `finalDecision(id,'ok')`, dan pastikan tidak ada `pageerror`. Bersihkan localStorage di awal tes. Sisi franchisee (buka `index.html#mitra`): `openPortal('form'); portalDemoFill(); submitPortal()`, lalu `openPortal('track'); portalLookup(id, email)`, `portalAgree(id)` / `portalChange(id)` / `portalWithdraw(id)`.
 
 ## Pekerjaan berikutnya
 1. Pertimbangkan menggabungkan kolom Disetujui dan Ditolak jadi "Selesai" (kanban sekarang 9 kolom dan perlu scroll horizontal di laptop).

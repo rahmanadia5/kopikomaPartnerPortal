@@ -1,0 +1,6 @@
+{
+  "rewrites": [
+    { "source": "/mitra", "destination": "/index.html" },
+    { "source": "/mitra/(.*)", "destination": "/index.html" }
+  ]
+}

@@ -357,11 +357,6 @@ footer{max-width:1360px;margin:0 auto;padding:0 24px 30px;font-size:12px;color:v
 .timeline li.rej .dot{background:var(--bad);border-color:var(--bad)}
 .timeline li.rej .tl-title{color:var(--bad)}
 .timeline .st-row{display:flex;justify-content:space-between;gap:10px}
-.lg-cta{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px;padding-top:20px;border-top:1px solid rgba(255,255,255,.14)}
-.lg-cta p{flex-basis:100%;max-width:none;margin:0;color:#CDB9A6;font-size:13px;font-weight:700}
-.lg-cta .lg-flow{margin-top:0}
-.lg-flow.solid{background:#E39A3B;border-color:#E39A3B;color:var(--roast)}
-.lg-flow.solid:hover{background:#EDA94F}
 .both{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0}
 .steps td{vertical-align:top;font-size:14px}
 .steps td:first-child{font-weight:800;white-space:nowrap}
@@ -651,8 +646,22 @@ const FUNNEL = [
 /* ===================== state ===================== */
 const blankForm = () => ({name:'',phone:'',email:'',city:'',paket:'gerobak',modal:'',sumber:'',pengalaman:'',kelola:'',alamat:'',jenis:'',status:'',source:'',salesk:'',ktp:'',npwp:'',dana:'',foto:'',consent:false});
 let nid = 0;
-function initState() {
+/* Dua aplikasi terpisah dari file yang sama: dashboard franchisor (/) dan portal calon franchisee (/mitra).
+   Data aplikasi dan notifikasi disimpan di localStorage agar keduanya terhubung, juga antar-tab. */
+const MODE = /^\/mitra/.test(location.pathname) || location.hash === '#mitra' ? 'mitra' : 'staff';
+const STORE = 'kopikoma-demo-v1';
+function loadShared() { try { return JSON.parse(localStorage.getItem(STORE)); } catch { return null; } }
+function saveShared() { try { localStorage.setItem(STORE, JSON.stringify({apps:state.apps, notifs:state.notifs, tick, nid})); } catch {} }
+function clearShared() { try { localStorage.removeItem(STORE); } catch {} }
+function initState(fresh) {
   tick = 0; nid = 0;
+  const saved = fresh ? null : loadShared();
+  if (saved && Array.isArray(saved.apps)) {
+    tick = saved.tick || 0; nid = saved.nid || 0;
+    return {view:'pipeline', q:'', hint:true, sel:null, tab:'ringkasan', qb:null, negoForm:null, addOpen:false, form:blankForm(), formErr:{},
+      rates:[60,55,75,90,55], apps:saved.apps, notifs:saved.notifs || [], notifOpen:false, menuOpen:false, apv:null, ptype:'bulan', pkey:CUR_M, taskFilter:'all', profile:ME,
+      pref:{email:true}, loginErr:''};
+  }
   const st = {view:'pipeline', q:'', hint:true, sel:null, tab:'ringkasan', qb:null, negoForm:null, addOpen:false, form:blankForm(), formErr:{},
     rates:[60,55,75,90,55], apps:seed(), notifs:[], notifOpen:false, menuOpen:false, apv:null, ptype:'bulan', pkey:CUR_M, taskFilter:'all', profile:ME,
     pref:{email:true}, loginErr:''};
@@ -781,9 +790,15 @@ document.addEventListener('click', e => {
 /* ===================== render ===================== */
 function render() {
   const top = document.getElementById('topbar'), foot = document.getElementById('foot');
+  saveShared();
+  if (MODE === 'mitra') {
+    top.hidden = true; foot.hidden = false;
+    document.getElementById('main').innerHTML = portalHTML();
+    return;
+  }
   if (!ME) {
     top.hidden = true; foot.hidden = true;
-    document.getElementById('main').innerHTML = state.portal ? portalHTML() : state.flowOpen
+    document.getElementById('main').innerHTML = state.flowOpen
       ? `<div class="flow-bar"><div class="logo"><b>kopi koma<i>,</i></b><span>Partner Portal</span></div><button class="btn btn-sm" onclick="closeFlowPublic()">Kembali ke halaman masuk</button></div><div class="wrap">${viewFlow()}</div>`
       : loginHTML();
     ['drawer','overlay'].forEach(id => document.getElementById(id).classList.remove('open'));
@@ -808,7 +823,6 @@ function loginHTML() {
       <div class="logo"><b>kopi koma<i>,</i></b><span>Partner Portal</span></div>
       <h1>Satu tempat untuk seluruh proses kemitraan.</h1>
       <button class="lg-flow" onclick="openFlowPublic()">Lihat alur bisnis end-to-end</button>
-      <div class="lg-cta"><p>Untuk calon franchisee</p><button class="lg-flow solid" onclick="openPortal('form')">Daftar jadi mitra</button><button class="lg-flow" onclick="openPortal('track')">Cek status pengajuan</button></div>
     </section>
     <section class="lg-form">
       <div class="lg-card">
@@ -824,7 +838,7 @@ function loginHTML() {
   </div>`;
 }
 function startSession(k) {
-  ME = k; state.loginErr = ''; state.flowOpen = false; state.portal = null; state.view = 'pipeline'; state.sel = null; state.addOpen = false; state.apv = null; state.hint = true; state.taskFilter = 'all';
+  ME = k; state.loginErr = ''; state.flowOpen = false; state.view = 'pipeline'; state.sel = null; state.addOpen = false; state.apv = null; state.hint = true; state.taskFilter = 'all';
   state.notifOpen = false; state.menuOpen = false; state.profile = k; render(); window.scrollTo(0,0);
   toast(`Masuk sebagai ${person(k)}`);
 }
@@ -838,7 +852,7 @@ function quickLogin(k) { startSession(k); }
 function logout() { ME = null; state.menuOpen = false; state.sel = null; state.addOpen = false; state.apv = null; render(); window.scrollTo(0,0); }
 function setView(v) { state.view = v; state.menuOpen = false; render(); window.scrollTo(0,0); }
 function openProfile(k) { state.profile = k; state.menuOpen = false; state.view = 'profile'; render(); window.scrollTo(0,0); }
-function resetDemo() { state = initState(); state.profile = ME; render(); toast('Data demo dikembalikan ke kondisi awal'); }
+function resetDemo() { clearShared(); state = initState(true); state.profile = ME; render(); toast('Data demo dikembalikan ke kondisi awal'); }
 const pendingAll = () => state.apps.filter(a => picOf(a));
 const myTasks = () => state.apps.filter(a => picOf(a) === ME);
 function tabsFor() {
@@ -1012,12 +1026,11 @@ const PORTAL_STEPS = [
 ];
 const PF_REQ = ['name','phone','email','city','modal','sumber','pengalaman','kelola','alamat','jenis','status'];
 function openPortal(view) { state.portal = {view, id:'', key:'', err:'', resp:null}; state.form = blankForm(); state.formErr = {}; render(); window.scrollTo(0,0); }
-function closePortal() { state.portal = null; render(); window.scrollTo(0,0); }
 function portalHTML() {
   const pv = state.portal.view;
   return `<div class="flow-bar"><div class="logo"><b>kopi koma<i>,</i></b><span>Portal Mitra</span></div>
     <nav class="pt-nav"><button ${pv === 'form' ? 'aria-current="page"' : ''} onclick="openPortal('form')">Daftar jadi mitra</button><button ${pv === 'track' ? 'aria-current="page"' : ''} onclick="openPortal('track')">Cek status pengajuan</button></nav>
-    <button class="btn btn-sm" onclick="closePortal()">Ke halaman staf</button></div>
+  </div>
   <div class="f-wrap">${pv === 'form' ? portalForm() : portalTrack()}</div>`;
 }
 function portalForm() {
@@ -1842,7 +1855,18 @@ document.addEventListener('keydown', e => {
   if (state.sel || state.addOpen) closeDetail();
 });
 state = initState();
+if (MODE === 'mitra') { state.portal = {view:'form', id:'', key:'', err:'', resp:null}; document.title = 'Portal Mitra Kopi Koma | Prototype'; }
 render();
+window.addEventListener('storage', e => {
+  if (e.key !== STORE) return;
+  const d = loadShared();
+  if (!d || !Array.isArray(d.apps)) { state = initState(true); if (MODE === 'mitra') state.portal = {view:'form', id:'', key:'', err:'', resp:null}; render(); return; }
+  state.apps = d.apps; state.notifs = d.notifs || []; tick = Math.max(tick, d.tick || 0); nid = Math.max(nid, d.nid || 0);
+  if (MODE === 'mitra') { if (state.portal.view === 'track' && !state.portal.resp) render(); return; }
+  if (!ME) return;
+  if (state.sel || state.addOpen) { document.getElementById('main').innerHTML = viewMain(); renderTop(); renderNotif(); }
+  else render();
+});
 
 
 
