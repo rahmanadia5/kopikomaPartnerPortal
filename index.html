@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Kopi Koma Partner Portal | Prototype</title>
+<title>Kopi Koma Partner Portal | Prototipe</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -329,7 +329,7 @@ footer{max-width:1360px;margin:0 auto;padding:0 24px 30px;font-size:12px;color:v
   <button class="userbtn" id="userBtn" onclick="toggleMenu(event)" aria-haspopup="true" aria-expanded="false" aria-label="Menu akun"></button>
 </header>
 <main id="main"></main>
-<footer id="foot">Prototype untuk studi kasus. Nama brand, pengguna, data pendaftar, dan angka investasi bersifat fiktif.</footer>
+<footer id="foot">Prototipe untuk studi kasus. Nama brand, pengguna, data pendaftar, dan angka investasi bersifat fiktif.</footer>
 <div class="overlay" id="overlay" onclick="closeDetail()"></div>
 <aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="dTitle"></aside>
 <div class="apv" id="apv" hidden onclick="if(event.target===this)closeApproval()"></div>
@@ -363,8 +363,8 @@ const qValue = q => total(q.paket) - (Number(q.diskon) || 0);
 const USERS = {
   arif:{name:'Arif Hakim', role:'Super Admin', email:'arif.hakim@kopikoma.id', phone:'0811-2000-1001', area:'Kantor pusat', since:'Januari 2024'},
   laras:{name:'Laras Anggraini', role:'Manajer', email:'laras.anggraini@kopikoma.id', phone:'0811-2000-1002', area:'Franchise Development', since:'Maret 2024'},
-  bima:{name:'Bima Prasetyo', role:'Reviewer', email:'bima.prasetyo@kopikoma.id', phone:'0811-2000-1003', area:'Franchise Development', since:'Juni 2024'},
-  dimas:{name:'Dimas Arya', role:'Reviewer', email:'dimas.arya@kopikoma.id', phone:'0811-2000-1004', area:'Franchise Development', since:'Februari 2025'},
+  bima:{name:'Bima Prasetyo', role:'Penilai', email:'bima.prasetyo@kopikoma.id', phone:'0811-2000-1003', area:'Franchise Development', since:'Juni 2024'},
+  dimas:{name:'Dimas Arya', role:'Penilai', email:'dimas.arya@kopikoma.id', phone:'0811-2000-1004', area:'Franchise Development', since:'Februari 2025'},
   rendi:{name:'Rendi Saputra', role:'Sales', email:'rendi.saputra@kopikoma.id', phone:'0811-2000-1005', area:'Tangerang Raya', since:'April 2024'},
   putri:{name:'Putri Maharani', role:'Sales', email:'putri.maharani@kopikoma.id', phone:'0811-2000-1006', area:'Jakarta, Bogor, Depok, Bekasi', since:'Mei 2024'},
   agus:{name:'Agus Setiawan', role:'Sales', email:'agus.setiawan@kopikoma.id', phone:'0811-2000-1007', area:'Bandung Raya', since:'Januari 2025'},
@@ -376,13 +376,13 @@ const role = () => USERS[ME].role;
 const isSA = () => role() === 'Super Admin';
 const seesOverdue = () => ['Super Admin','Manajer'].includes(role());
 const SALES = ['rendi','putri','agus','wulan'], REVIEWERS = ['bima','dimas'];
-const ROLE_ORDER = ['Super Admin','Manajer','Sales','Reviewer'];
+const ROLE_ORDER = ['Super Admin','Manajer','Sales','Penilai'];
 const MENU_ACCESS = [
   ['Pipeline', ['Semua lead','Semua lead','Lead sendiri','Semua lead']],
   ['Tugas saya', ['–','✓','✓','✓']],
   ['Semua tugas', ['✓','✓','–','–']],
   ['Target dan pencapaian', ['Semua sales','Semua sales','Milik sendiri','–']],
-  ['Performa sales', ['✓','✓','–','–']],
+  ['Kinerja sales', ['✓','✓','–','–']],
   ['Pengguna dan peran', ['✓','–','–','–']]
 ];
 const TASK_ACCESS = [
@@ -390,10 +390,10 @@ const TASK_ACCESS = [
   ['1. Lead baru: tugaskan sales', ['✓','Bila tidak otomatis','–','–']],
   ['2. Presentasi bisnis', ['✓','–','✓','–']],
   ['3. Survei lokasi', ['✓','–','✓','–']],
-  ['4. Assessment', ['✓','–','–','✓']],
+  ['4. Penilaian kelayakan', ['✓','–','–','✓']],
   ['5. Quotation', ['✓','–','✓','–']],
   ['6. Negosiasi', ['✓','Di luar sistem','✓','–']],
-  ['7. Approval akhir', ['✓','✓','–','–']]
+  ['7. Persetujuan akhir', ['✓','✓','–','–']]
 ];
 const uname = k => USERS[k].name;
 const FR = 'franchisee';
@@ -411,17 +411,17 @@ function salesFor(city) {
 
 /* ===================== flow ===================== */
 const STAGES = [
-  {k:'baru',l:'Lead baru'},{k:'presentasi',l:'Presentasi bisnis'},{k:'survei',l:'Survei lokasi'},{k:'assessment',l:'Assessment'},{k:'quotation',l:'Quotation'},
-  {k:'negosiasi',l:'Negosiasi'},{k:'approval',l:'Approval akhir'},{k:'disetujui',l:'Disetujui'},{k:'ditolak',l:'Ditolak'}
+  {k:'baru',l:'Lead baru'},{k:'presentasi',l:'Presentasi bisnis'},{k:'survei',l:'Survei lokasi'},{k:'assessment',l:'Penilaian kelayakan'},{k:'quotation',l:'Quotation'},
+  {k:'negosiasi',l:'Negosiasi'},{k:'approval',l:'Persetujuan akhir'},{k:'disetujui',l:'Disetujui'},{k:'ditolak',l:'Ditolak'}
 ];
 const ORDER = ['baru','presentasi','survei','assessment','quotation','negosiasi','approval','disetujui'];
 const stageLabel = k => STAGES.find(s => s.k === k).l;
 const SLA = {baru:1, presentasi:4, survei:5, assessment:4, quotation:3, negosiasi:7, approval:2};
-const ASSESS = [['interview','Interview calon franchisee'],['background','Background check: riwayat usaha dan reputasi'],['finansial','Verifikasi kemampuan finansial dan sumber dana'],['kyc','KYC: verifikasi identitas (KTP, NPWP)'],['komitmen','Komitmen mengikuti SOP dan pelatihan pusat']];
+const ASSESS = [['interview','Wawancara calon franchisee'],['background','Pemeriksaan latar belakang: riwayat usaha dan reputasi'],['finansial','Verifikasi kemampuan finansial dan sumber dana'],['kyc','KYC: verifikasi identitas (KTP, NPWP)'],['komitmen','Komitmen mengikuti SOP dan pelatihan pusat']];
 const DOCS = [['ktp','KTP'],['npwp','NPWP'],['dana','Bukti dana (rekening koran 3 bulan terakhir)'],['foto','Foto lokasi']];
 const SOURCES = ['Pameran','Referensi','Kunjungan langsung','Event komunitas','Media sosial'];
 const CHANGE_TYPES = ['Diskon','Termin pembayaran','Ganti paket','Jadwal pembukaan','Lainnya'];
-const PRES_MODE = ['Tatap muka di kantor','Online (video call)','Di lokasi pameran'];
+const PRES_MODE = ['Tatap muka di kantor','Online (panggilan video)','Di lokasi pameran'];
 const VIS = [['1','1, tertutup'],['2','2'],['3','3'],['4','4'],['5','5, sangat terlihat']];
 const RATE = [['1','1, tidak layak'],['2','2'],['3','3'],['4','4'],['5','5, sangat layak']];
 
@@ -506,10 +506,10 @@ function mkApp(n, name, city, paket, stage, days, o = {}) {
   if (ri >= 2) { a.survey = {traffic:140, komp:2, vis:'4', parkir:'Tersedia', ojol:'Mudah', rating:'4', note:'Area ramai pekerja kantor saat jam makan siang.', result:'layak'}; ev.push([sales,'Survei lokasi: layak']); }
   if (rej) {
     a.assess = {res:{interview:'Lulus', background:'Lulus', finansial:'Tidak lulus', kyc:'Lulus', komitmen:'Lulus'}, note:o.reason, result:'tidak lolos'};
-    a.rejectReason = o.reason; a.rejectStep = 3; ev.push([a.reviewer,'Assessment: tidak lolos, aplikasi ditolak']);
+    a.rejectReason = o.reason; a.rejectStep = 3; ev.push([a.reviewer,'Penilaian kelayakan: tidak lolos, aplikasi ditolak']);
   } else if (ri >= 3) {
     a.assess = {res:Object.fromEntries(ASSESS.map(x => [x[0],'Lulus'])), note:'Profil, finansial, dan identitas terverifikasi.', result:'lolos'};
-    ev.push([a.reviewer,'Assessment: lolos']);
+    ev.push([a.reviewer,'Penilaian kelayakan: lolos']);
   }
   if (o.flow === 'change') {
     a.quotes.push({v:1, paket, lokasi:a.alamat, buka:'November 2026', diskon:0, skema:'Lunas', note:'', status:'perubahan diminta'});
@@ -526,7 +526,7 @@ function mkApp(n, name, city, paket, stage, days, o = {}) {
     ev.push([sales,'Quotation versi 1 dikirim ke calon franchisee']);
     if (ri >= 5) ev.push([sales,'Calon franchisee menyetujui quotation versi 1']);
   }
-  if (stage === 'disetujui') ev.push([MANAGER,'Approval akhir: kemitraan disetujui']);
+  if (stage === 'disetujui') ev.push([MANAGER,'Persetujuan akhir: kemitraan disetujui']);
   const end = new Date(daysAgo(days)).getTime(), start = new Date(daysAgo(days + 3 * ev.length)).getTime();
   a.log = ev.map((e,i) => ({t:new Date(ev.length === 1 ? end : start + (end - start) * i / (ev.length - 1)).toISOString(), by:e[0], text:e[1]}));
   if (a.presentasi) a.presentasi.date = a.log.find(l => /Presentasi bisnis selesai/.test(l.text)).t.slice(0,10);
@@ -582,10 +582,10 @@ const HIST = (() => {
 const FUNNEL = [
   {l:'Lead masuk', key:'lead', d:'Input sales dan pendaftaran mandiri'},
   {l:'Presentasi selesai', key:'survei', d:'Lanjut ke survei lokasi'},
-  {l:'Lokasi layak', key:'assessment', d:'Lanjut ke assessment'},
-  {l:'Lolos assessment', key:'quotation', d:'Lanjut ke quotation'},
+  {l:'Lokasi layak', key:'assessment', d:'Lanjut ke penilaian kelayakan'},
+  {l:'Lolos penilaian kelayakan', key:'quotation', d:'Lanjut ke quotation'},
   {l:'Quotation terkirim', key:'negosiasi', d:'Masuk tahap negosiasi'},
-  {l:'Disetujui', key:'disetujui', d:'Approval akhir diberikan'}
+  {l:'Disetujui', key:'disetujui', d:'Persetujuan akhir diberikan'}
 ];
 
 /* ===================== state ===================== */
@@ -594,7 +594,7 @@ let nid = 0;
 /* Dua aplikasi terpisah dari file yang sama: dashboard franchisor (/) dan portal calon franchisee (/mitra).
    Data aplikasi dan notifikasi disimpan di localStorage agar keduanya terhubung, juga antar-tab. */
 const MODE = /^\/mitra/.test(location.pathname) || location.hash === '#mitra' ? 'mitra' : 'staff';
-const STORE = 'kopikoma-demo-v1';
+const STORE = 'kopikoma-demo-v2';
 function loadShared() { try { return JSON.parse(localStorage.getItem(STORE)); } catch { return null; } }
 function saveShared() { try { localStorage.setItem(STORE, JSON.stringify({apps:state.apps, notifs:state.notifs, tick, nid})); } catch {} }
 function clearShared() { try { localStorage.removeItem(STORE); } catch {} }
@@ -617,9 +617,9 @@ function initState(fresh) {
   const n = (user, appId, text, d, read) => st.notifs.push({id:++nid, user, appId, text, t:daysAgo(d), read});
   n('putri','KK-0241','Lead baru: Budi Santoso (Bekasi, Gerobak). Jadwalkan presentasi bisnis.',1,true);
   n('agus','KK-0243','Lead mandiri baru di wilayahmu: Agung Firmansyah (Cimahi). Jadwalkan presentasi bisnis.',0,false);
-  n('bima','KK-0246','Dewi Lestari siap di-assessment. Lokasi sudah dinilai layak.',2,false);
+  n('bima','KK-0246','Dewi Lestari siap dinilai kelayakannya. Lokasi sudah dinilai layak.',2,false);
   n(MANAGER,'KK-0249','Lina Marlina meminta diskon. Wulan Kusuma akan mendiskusikannya denganmu sebelum mengirim quotation versi 2.',2,false);
-  n(MANAGER,'KK-0251','Hendra Gunawan menyetujui quotation. Perlu approval akhir.',1,false);
+  n(MANAGER,'KK-0251','Hendra Gunawan menyetujui quotation. Perlu persetujuan akhir.',1,false);
   n('putri','KK-0252','Kemitraan Maya Putri disetujui. Lanjutkan ke perjanjian.',6,true);
   n(MANAGER,'KK-0254','Lead baru perlu ditugaskan: Teguh Wibowo. Kota Surabaya di luar wilayah sales yang ada.',2,false);
   n(MANAGER,'KK-0255','Lead baru perlu ditugaskan: Rina W. Terindikasi duplikat dengan Rina Wijaya (KK-0250).',0,false);
@@ -627,7 +627,7 @@ function initState(fresh) {
     const p = picOf(a), d = daysIn(a.stageSince);
     st.notifs.push({id:++nid, user:p, appId:a.id, text:`Pengingat otomatis: ${a.name} sudah ${d} hari di tahap ${stageLabel(a.stage)} (batas ${SLA[a.stage]} hari).`, t:TODAY.toISOString(), read:false});
     if (p !== MANAGER) st.notifs.push({id:++nid, user:MANAGER, appId:a.id, text:`Eskalasi otomatis: ${a.name} tertahan ${d} hari di tahap ${stageLabel(a.stage)}, menunggu ${uname(p)}.`, t:TODAY.toISOString(), read:false});
-    a.log.push({t:TODAY.toISOString(), by:null, text:`Pengingat otomatis dikirim ke ${uname(p)}${p !== MANAGER ? ' dan manajer' : ''} lewat dashboard dan email`});
+    a.log.push({t:TODAY.toISOString(), by:null, text:`Pengingat otomatis dikirim ke ${uname(p)}${p !== MANAGER ? ' dan manajer' : ''} lewat dasbor dan email`});
   });
   st.notifs.sort((x,y) => new Date(y.t) - new Date(x.t));
   return st;
@@ -670,10 +670,10 @@ function actionOf(a) {
     case 'baru': return `Tugaskan sales${a.triage ? ` (${a.triage.label.toLowerCase().replace('?','')})` : ''}`;
     case 'presentasi': return 'Presentasi bisnis dan kirim prospektus';
     case 'survei': return a.survey && a.survey.revisiNote ? 'Survei ulang lokasi (revisi dari manajer)' : 'Survei lokasi';
-    case 'assessment': return 'Assessment calon franchisee';
+    case 'assessment': return 'Penilaian kelayakan calon franchisee';
     case 'quotation': return latest(a) ? `Revisi quotation ke versi ${latest(a).v + 1}` : 'Buat dan kirim quotation';
-    case 'negosiasi': return 'Follow up dan catat tanggapan calon franchisee';
-    case 'approval': return 'Approval akhir kemitraan';
+    case 'negosiasi': return 'Tindak lanjuti dan catat tanggapan calon franchisee';
+    case 'approval': return 'Persetujuan akhir kemitraan';
     default: return '';
   }
 }
@@ -704,7 +704,7 @@ function renderTop() {
   if (state.menuOpen) m.innerHTML = `<div class="um-head"><span class="av">${initials(u.name)}</span><div><b>${esc(u.name)}</b><div class="small">${esc(u.email)}</div><span class="chip dark" style="margin-top:4px">${u.role}</span></div></div>
     <button class="um-item" onclick="openProfile('${ME}')">Profil saya</button>
     ${isSA() ? `<button class="um-item" onclick="state.menuOpen=false;setView('users')">Pengguna dan peran</button>` : ''}
-    <button class="um-item" onclick="resetDemo()">Reset data demo</button>
+    <button class="um-item" onclick="resetDemo()">Reset data demo (khusus prototipe)</button>
     <button class="um-item" style="color:var(--bad)" onclick="logout()">Keluar</button>`;
 }
 function toggleMenu(e) { e.stopPropagation(); state.menuOpen = !state.menuOpen; state.notifOpen = false; renderTop(); renderNotif(); }
@@ -716,7 +716,7 @@ function renderNotif() {
   bell.setAttribute('aria-expanded', state.notifOpen);
   pop.hidden = !state.notifOpen;
   if (!state.notifOpen) return;
-  pop.innerHTML = `<div class="np-head"><div><b>${isSA() ? 'Notifikasi sistem' : 'Notifikasi'}</b><div class="small">${isSA() ? 'Semua notifikasi tim, terkirim lewat dashboard dan email' : 'Juga dikirim ke ' + esc(USERS[ME].email)}</div></div>${unread ? '<button class="link" onclick="markAll()">Tandai dibaca</button>' : ''}</div>
+  pop.innerHTML = `<div class="np-head"><div><b>${isSA() ? 'Notifikasi sistem' : 'Notifikasi'}</b><div class="small">${isSA() ? 'Semua notifikasi tim, terkirim lewat dasbor dan email' : 'Juga dikirim ke ' + esc(USERS[ME].email)}</div></div>${unread ? '<button class="link" onclick="markAll()">Tandai dibaca</button>' : ''}</div>
     ${list.length ? `<ul class="np-list">${list.map(n => `<li><button class="np-item ${n.read ? '' : 'unread'}" onclick="openNotif(${n.id})">
       <span>${esc(n.text)}</span><span class="small">${isSA() ? `Untuk ${esc(person(n.user))}, ` : ''}${fmtDT(n.t)}</span></button></li>`).join('')}</ul>` : '<p class="np-empty">Belum ada notifikasi.</p>'}`;
 }
@@ -754,9 +754,9 @@ function render() {
 }
 const DEMO_NOTE = {
   'Super Admin':'Akses penuh, bisa memproses semua tahap dan mengelola pengguna.',
-  'Manajer':'Menugaskan sales untuk lead yang tidak otomatis, dan approval akhir.',
+  'Manajer':'Menugaskan sales untuk lead yang tidak otomatis, dan persetujuan akhir.',
   'Sales':'Hanya melihat lead sendiri. Input lead, presentasi, survei, quotation, negosiasi.',
-  'Reviewer':'Melakukan assessment calon franchisee.'
+  'Penilai':'Melakukan penilaian kelayakan calon franchisee.'
 };
 function loginHTML() {
   const groups = ROLE_ORDER.map(r => `<div class="lg-group"><p class="sec-title">${r}</p><p class="small" style="margin:-4px 0 8px">${DEMO_NOTE[r]}</p>
@@ -799,8 +799,8 @@ const pendingAll = () => state.apps.filter(a => picOf(a));
 const myTasks = () => state.apps.filter(a => picOf(a) === ME);
 function tabsFor() {
   const r = role(), m = myTasks().length;
-  if (r === 'Super Admin') return [['pipeline','Pipeline'],['tasks',`Semua tugas (${pendingAll().length})`],['dashboard','Target dan pencapaian'],['sales','Performa sales'],['users','Pengguna dan peran']];
-  if (r === 'Manajer') return [['pipeline','Pipeline'],['mytasks',`Tugas saya (${m})`],['tasks','Semua tugas'],['dashboard','Target dan pencapaian'],['sales','Performa sales']];
+  if (r === 'Super Admin') return [['pipeline','Pipeline'],['tasks',`Semua tugas (${pendingAll().length})`],['dashboard','Target dan pencapaian'],['sales','Kinerja sales'],['users','Pengguna dan peran']];
+  if (r === 'Manajer') return [['pipeline','Pipeline'],['mytasks',`Tugas saya (${m})`],['tasks','Semua tugas'],['dashboard','Target dan pencapaian'],['sales','Kinerja sales']];
   if (r === 'Sales') return [['pipeline','Pipeline saya'],['mytasks',`Tugas saya (${m})`],['dashboard','Target dan pencapaian saya']];
   return [['pipeline','Pipeline'],['mytasks',`Tugas saya (${m})`]];
 }
@@ -814,8 +814,8 @@ function viewMain() {
 }
 function viewMyTasks() {
   const list = myTasks().sort((x,y) => (overdueOf(y) - overdueOf(x)) || (daysIn(y.stageSince) - daysIn(x.stageSince))), mgr = seesOverdue();
-  const intro = {Manajer:'Lead baru yang tidak bisa ditugaskan otomatis, dan aplikasi yang menunggu approval akhir.', Sales:'Calon franchisee yang kamu dampingi dan sedang menunggu tindakanmu.', Reviewer:'Calon franchisee yang menunggu assessment.'}[role()];
-  return `<div class="page-head"><div><h1>Tugas saya</h1><p class="sub">${intro} Pengingat otomatis dikirim lewat dashboard dan email bila mendekati batas waktu.</p></div></div>
+  const intro = {Manajer:'Lead baru yang tidak bisa ditugaskan otomatis, dan aplikasi yang menunggu persetujuan akhir.', Sales:'Calon franchisee yang kamu dampingi dan sedang menunggu tindakanmu.', Penilai:'Calon franchisee yang menunggu penilaian kelayakan.'}[role()];
+  return `<div class="page-head"><div><h1>Tugas saya</h1><p class="sub">${intro} Pengingat otomatis dikirim lewat dasbor dan email bila mendekati batas waktu.</p></div></div>
   <div class="panel">${list.length ? `<div class="table-wrap"><table class="funnel">
     <thead><tr><th>Calon franchisee</th><th>Yang perlu dilakukan</th><th>Menunggu</th>${mgr ? '<th>Batas waktu</th>' : ''}<th></th></tr></thead>
     <tbody>${list.map(a => { const d = daysIn(a.stageSince), od = overdueOf(a); return `<tr>
@@ -823,16 +823,16 @@ function viewMyTasks() {
       <td>${actionOf(a)}<div class="small">Tahap ${stageLabel(a.stage)}</div></td>
       <td class="num" style="font-size:15px">${d} hari</td>
       ${mgr ? `<td>${od ? `<span class="chip bad">Lewat ${d - SLA[a.stage]} hari</span>` : `<span class="chip ok">Batas ${SLA[a.stage]} hari</span>`}</td>` : ''}
-      <td style="white-space:nowrap"><button class="btn btn-ghost btn-sm" onclick="openApproval('${a.id}')">Status approval</button> <button class="btn btn-primary btn-sm" onclick="openDetail('${a.id}')">Proses</button></td>
+      <td style="white-space:nowrap"><button class="btn btn-ghost btn-sm" onclick="openApproval('${a.id}')">Status persetujuan</button> <button class="btn btn-primary btn-sm" onclick="openDetail('${a.id}')">Proses</button></td>
     </tr>`; }).join('')}</tbody></table></div>` : '<p class="np-empty" style="padding:4px 0">Tidak ada tugas yang menunggu tindakanmu saat ini.</p>'}</div>`;
 }
 
 /* ===================== pipeline ===================== */
 const HINTS = {
-  'Super Admin':'Coba alur lengkap: klik <b>Tambah lead</b> atau <b>Simulasikan lead dari website</b>, lalu proses kartunya sampai Approval akhir. Sebagai Super Admin kamu bisa memproses semua tahap.',
-  'Manajer':'Tugasmu: menugaskan sales untuk lead di kolom <b>Lead baru</b> yang tidak bisa ditugaskan otomatis, dan <b>Approval akhir</b>. Coba <b>Simulasikan lead dari website</b> untuk melihat penugasan otomatis bekerja.',
+  'Super Admin':'Coba alur lengkap: klik <b>Tambah lead</b> atau <b>Simulasikan lead dari website</b>, lalu proses kartunya sampai Persetujuan akhir. Sebagai Super Admin kamu bisa memproses semua tahap.',
+  'Manajer':'Tugasmu: menugaskan sales untuk lead di kolom <b>Lead baru</b> yang tidak bisa ditugaskan otomatis, dan <b>Persetujuan akhir</b>. Coba <b>Simulasikan lead dari website</b> untuk melihat penugasan otomatis bekerja.',
   'Sales':'Kamu hanya melihat calon franchisee yang kamu dampingi. Input lead baru lewat <b>Tambah lead</b> setelah calon franchisee menunjukkan minat.',
-  'Reviewer':'Tugasmu: assessment calon franchisee di kolom <b>Assessment</b>. Tahap lain bisa kamu lihat, tapi tidak bisa kamu proses.'
+  'Penilai':'Tugasmu: penilaian kelayakan calon franchisee di kolom <b>Penilaian kelayakan</b>. Tahap lain bisa kamu lihat, tapi tidak bisa kamu proses.'
 };
 function viewPipeline() {
   const apps = visibleApps(), active = apps.filter(a => !isDone(a)).length, od = apps.filter(overdueOf).length;
@@ -873,7 +873,7 @@ function card(a) {
       ${p ? `<span class="card-pic">Menunggu ${esc(uname(p))}</span>` : ''}
       ${dTxt}
     </button>
-    <button class="card-apv" onclick="openApproval('${a.id}',event)">Status approval</button>
+    <button class="card-apv" onclick="openApproval('${a.id}',event)">Status persetujuan</button>
   </article>`;
 }
 
@@ -882,8 +882,8 @@ function viewTasks() {
   const all = pendingAll(), roleOf = a => USERS[picOf(a)].role;
   const f = state.taskFilter;
   const list = all.filter(a => f === 'all' || roleOf(a) === f).sort((x,y) => (overdueOf(y) - overdueOf(x)) || (daysIn(y.stageSince) - daysIn(x.stageSince)));
-  const pills = [['all','Semua'],['Reviewer','Reviewer'],['Sales','Sales'],['Manajer','Manajer']];
-  return `<div class="page-head"><div><h1>Semua tugas</h1><p class="sub">Tugas yang sedang menunggu di setiap anggota tim. Saat batas waktu terlewati, sistem otomatis mengirim pengingat ke penanggung jawab dan manajer lewat dashboard dan email.</p></div></div>
+  const pills = [['all','Semua'],['Penilai','Penilai'],['Sales','Sales'],['Manajer','Manajer']];
+  return `<div class="page-head"><div><h1>Semua tugas</h1><p class="sub">Tugas yang sedang menunggu di setiap anggota tim. Saat batas waktu terlewati, sistem otomatis mengirim pengingat ke penanggung jawab dan manajer lewat dasbor dan email.</p></div></div>
   <div class="filters">${pills.map(([k,l]) => { const c = k === 'all' ? all.length : all.filter(a => roleOf(a) === k).length; return `<button class="pill" aria-pressed="${f === k}" onclick="state.taskFilter='${k}';render()">${l} (${c})</button>`; }).join('')}</div>
   <div class="panel">${list.length ? `<div class="table-wrap"><table class="funnel">
     <thead><tr><th>Calon franchisee</th><th>Yang perlu dilakukan</th><th>Penanggung jawab</th><th>Menunggu</th><th>Batas waktu</th><th>Pengingat otomatis</th><th></th></tr></thead>
@@ -894,7 +894,7 @@ function viewTasks() {
       <td class="num" style="font-size:15px">${d} hari</td>
       <td>${od ? `<span class="chip bad">Lewat ${d - SLA[a.stage]} hari</span>` : `<span class="chip ok">Batas ${SLA[a.stage]} hari</span>`}</td>
       <td class="small">${od ? 'Terkirim ke penanggung jawab dan manajer' : 'Belum perlu'}</td>
-      <td style="white-space:nowrap"><button class="btn btn-ghost btn-sm" onclick="openApproval('${a.id}')">Status approval</button> <button class="btn btn-primary btn-sm" onclick="openDetail('${a.id}')">Buka</button></td>
+      <td style="white-space:nowrap"><button class="btn btn-ghost btn-sm" onclick="openApproval('${a.id}')">Status persetujuan</button> <button class="btn btn-primary btn-sm" onclick="openDetail('${a.id}')">Buka</button></td>
     </tr>`; }).join('')}</tbody></table></div>` : '<p class="np-empty" style="padding:4px 0">Tidak ada tugas di kategori ini.</p>'}</div>`;
 }
 
@@ -941,7 +941,7 @@ function viewProfile() {
         ${tasks.length ? `<ul class="r-list">${tasks.slice(0,5).map(a => `<li style="grid-template-columns:1fr auto"><div><button class="link" onclick="openDetail('${a.id}')">${esc(a.name)}</button><div class="small">${actionOf(a)}${u.role === 'Super Admin' ? `, ${esc(uname(picOf(a)))}` : ''}</div></div>${overdueOf(a) ? '<span class="chip bad">Lewat batas</span>' : `<span class="small">${daysIn(a.stageSince)} hari</span>`}</li>`).join('')}</ul>${tasks.length > 5 ? `<button class="link" style="margin-top:8px" onclick="setView('tasks')">Lihat semua</button>` : ''}` : '<p class="small">Tidak ada tugas aktif.</p>'}
       </section>
       ${mine ? `<section class="panel"><h2>Notifikasi</h2>
-        <label class="consent" style="margin-bottom:10px"><input type="checkbox" checked disabled><span>Notifikasi dashboard<br><span class="small">Selalu aktif agar tidak ada tugas yang terlewat.</span></span></label>
+        <label class="consent" style="margin-bottom:10px"><input type="checkbox" checked disabled><span>Notifikasi dasbor<br><span class="small">Selalu aktif agar tidak ada tugas yang terlewat.</span></span></label>
         <label class="consent"><input type="checkbox" ${state.pref.email ? 'checked' : ''} onchange="state.pref.email=this.checked;toast(this.checked?'Notifikasi email diaktifkan':'Notifikasi email dimatikan')"><span>Notifikasi email<br><span class="small">Pengingat otomatis dan tugas baru dikirim ke ${esc(u.email)}.</span></span></label>
       </section>` : ''}
       <section class="panel"><h2>Aktivitas terakhir</h2>${acts.length ? `<ul class="log">${acts.map(l => `<li><time>${fmtDT(l.t)}</time><span>${esc(l.text)}, <button class="link" onclick="openDetail('${l.a.id}')">${esc(l.a.name)}</button></span></li>`).join('')}</ul>` : '<p class="small">Belum ada aktivitas.</p>'}</section>
@@ -954,7 +954,7 @@ const PORTAL_STEPS = [
   ['Pengajuan diterima','Tim kemitraan memeriksa data dan menunjuk sales pendamping sesuai wilayahmu.'],
   ['Presentasi bisnis','Sales pendamping menjelaskan model bisnis dan mengirim prospektus penawaran waralaba.'],
   ['Survei lokasi','Sales meninjau lokasi yang kamu ajukan.'],
-  ['Penilaian kelayakan','Interview, verifikasi identitas dan kemampuan finansial.'],
+  ['Penilaian kelayakan','Wawancara, verifikasi identitas dan kemampuan finansial.'],
   ['Quotation dikirim','Penawaran paket kemitraan dikirim ke email dan bisa dilihat di sini.'],
   ['Persetujuan kamu','Kamu meninjau quotation: setuju, minta perubahan, atau mundur.'],
   ['Persetujuan Kopi Koma','Manajer kemitraan memberi persetujuan akhir.']
@@ -1088,8 +1088,8 @@ function portalQuote(a) {
 function portalAgree(id) {
   const a = find(id), L = latest(a); L.status = 'disetujui franchisee';
   setStage(a,'approval'); log(a, `Calon franchisee menyetujui quotation versi ${L.v} lewat portal mitra`, FR);
-  notify(a, MANAGER, `${a.name} menyetujui quotation versi ${L.v} (${rp(qValue(L))}) lewat portal mitra. Perlu approval akhir.`);
-  notify(a, a.sales, `${a.name} menyetujui quotation versi ${L.v} lewat portal mitra. Diteruskan ke manajer untuk approval akhir.`);
+  notify(a, MANAGER, `${a.name} menyetujui quotation versi ${L.v} (${rp(qValue(L))}) lewat portal mitra. Perlu persetujuan akhir.`);
+  notify(a, a.sales, `${a.name} menyetujui quotation versi ${L.v} lewat portal mitra. Diteruskan ke manajer untuk persetujuan akhir.`);
   state.portal.resp = null; toast('Terima kasih, persetujuanmu tercatat. Menunggu persetujuan akhir Kopi Koma.'); render();
 }
 function portalChange(id) {
@@ -1114,10 +1114,10 @@ const STEP_DEF = [
   ['1. Lead baru', a => a.stage === 'baru' || (a.stage === 'ditolak' && a.rejectStep === 0) ? MANAGER : (a.assignedBy || 'auto'), /Sales ditugaskan|Diteruskan otomatis/, 'Ditugaskan'],
   ['2. Presentasi bisnis', a => a.sales, /Presentasi bisnis selesai|tidak melanjutkan setelah presentasi/, 'Selesai'],
   ['3. Survei lokasi', a => a.sales, /Survei lokasi:/, 'Layak'],
-  ['4. Assessment', a => a.reviewer, /Assessment:/, 'Lolos'],
+  ['4. Penilaian kelayakan', a => a.reviewer, /Penilaian kelayakan:/, 'Lolos'],
   ['5. Quotation', a => a.sales, /Quotation versi \d+ dikirim/, 'Terkirim'],
   ['6. Negosiasi', a => a.sales, /menyetujui quotation/, 'Sepakat'],
-  ['7. Approval akhir', a => MANAGER, /Approval akhir/, 'Disetujui']
+  ['7. Persetujuan akhir', a => MANAGER, /Persetujuan akhir/, 'Disetujui']
 ];
 function curStep(a) {
   const i = ORDER.indexOf(a.stage);
@@ -1150,7 +1150,7 @@ function renderApproval() {
       let ctx = '';
       if (i === 0 && a.triage) ctx = `Tidak bisa ditugaskan otomatis: ${esc(a.triage.text)}.`;
       if (revisi) ctx = `Calon franchisee meminta perubahan ${ch.type.toLowerCase()}. Sales berdiskusi dengan manajer di luar sistem, lalu mengirim quotation versi ${L.v + 1}.`;
-      if (i === 5) ctx = `Menunggu tanggapan ${esc(a.name)} atas quotation versi ${L.v}. Sales melakukan follow up.`;
+      if (i === 5) ctx = `Menunggu tanggapan ${esc(a.name)} atas quotation versi ${L.v}. Sales menindaklanjuti.`;
       extra = `${ctx ? `<div class="small">${ctx}</div>` : ''}
         <div class="pcard"><span class="av">${initials(uname(who))}</span><div class="pc-body"><b>${esc(uname(who))}</b><div class="small">${USERS[who].role}, menunggu ${d} hari${seesOverdue() ? ` (batas ${SLA[a.stage]} hari)` : ''}</div>
         ${od ? '<div class="small" style="color:var(--bad)">Pengingat otomatis sudah dikirim ke penanggung jawab dan manajer</div>' : ''}</div>
@@ -1162,7 +1162,7 @@ function renderApproval() {
     return `<li class="st ${cls}"><span class="dot"></span><div class="st-row"><span class="st-title">${label}</span><span class="chip ${chip}">${txt}</span></div>${extra}</li>`;
   }).join('');
   el.innerHTML = `<div class="apv-box" role="dialog" aria-modal="true" aria-labelledby="apvT">
-    <div class="apv-head"><div><h2 id="apvT" style="margin:0">Status approval</h2><p class="small" style="margin:2px 0 0">${esc(a.name)}, ${a.id}, paket ${PAKET[a.paket].nama}</p></div><button class="close" onclick="closeApproval()" aria-label="Tutup status approval">×</button></div>
+    <div class="apv-head"><div><h2 id="apvT" style="margin:0">Status persetujuan</h2><p class="small" style="margin:2px 0 0">${esc(a.name)}, ${a.id}, paket ${PAKET[a.paket].nama}</p></div><button class="close" onclick="closeApproval()" aria-label="Tutup status persetujuan">×</button></div>
     <ol class="apv-list">${items}</ol></div>`;
 }
 
@@ -1193,12 +1193,12 @@ function renderDrawer() {
   const a = state.sel ? find(state.sel) : null;
   if (!a) { el.classList.remove('open'); ov.classList.remove('open'); return; }
   el.classList.add('open'); ov.classList.add('open');
-  const tabs = [['ringkasan','Ringkasan'],['baru','Lead baru'],['presentasi','Presentasi'],['survei','Survei lokasi'],['assessment','Assessment'],['quotation','Quotation'],['nego','Negosiasi dan approval'],['riwayat','Riwayat']];
+  const tabs = [['ringkasan','Ringkasan'],['baru','Lead baru'],['presentasi','Presentasi'],['survei','Survei lokasi'],['assessment','Penilaian'],['quotation','Quotation'],['nego','Negosiasi'],['riwayat','Riwayat']];
   const d = daysIn(a.stageSince), p = picOf(a);
   const body = {ringkasan:tabRingkasan, baru:tabBaru, presentasi:tabPresentasi, survei:tabSurvei, assessment:tabAssessment, quotation:tabQuotation, nego:tabNego, riwayat:tabRiwayat}[state.tab](a);
   el.innerHTML = `<div class="d-head">
       <div class="d-top"><div><h2 id="dTitle" style="margin:0">${esc(a.name)}</h2><p class="sub">${a.id}, ${esc(a.city)}, paket ${PAKET[a.paket].nama}</p></div>
-      <div style="display:flex;gap:8px;align-items:center"><button class="btn btn-ghost btn-sm" onclick="openApproval('${a.id}')">Status approval</button><button class="close" onclick="closeDetail()" aria-label="Tutup detail">×</button></div></div>
+      <div style="display:flex;gap:8px;align-items:center"><button class="btn btn-ghost btn-sm" onclick="openApproval('${a.id}')">Status persetujuan</button><button class="close" onclick="closeDetail()" aria-label="Tutup detail">×</button></div></div>
       <div style="margin-top:10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span class="chip ${stageChip(a.stage)}">${stageLabel(a.stage)}</span>
         ${isDone(a) ? '' : `<span class="small">${d === 0 ? 'Masuk tahap ini hari ini' : d + ' hari di tahap ini'}${seesOverdue() ? `, batas ${SLA[a.stage]} hari` : ''}</span>`}${showOverdue(a) ? '<span class="chip bad">Lewat batas</span>' : ''}</div>
       ${p ? `<p class="small" style="margin:8px 0 0">Menunggu: <b style="color:var(--ink)">${esc(person(p))}</b>, ${actionOf(a).toLowerCase()}</p>` : ''}
@@ -1220,7 +1220,7 @@ function tabRingkasan(a) {
     <dt>Sumber lead</dt><dd>${esc(a.source)}</dd>
     <dt>Diinput oleh</dt><dd>${a.inputBy ? esc(person(a.inputBy)) : 'Pendaftar mandiri lewat ' + esc(a.source.replace(' (mandiri)',''))}</dd>
     <dt>Sales pendamping</dt><dd>${a.sales ? esc(person(a.sales)) + (a.inputBy ? '' : `<div class="small">${a.assignedBy ? 'Ditugaskan ' + esc(uname(a.assignedBy)) : 'Ditugaskan otomatis sesuai wilayah'}</div>`) : '<span class="chip warn">Belum ditugaskan</span>'}</dd>
-    <dt>Reviewer assessment</dt><dd>${esc(person(a.reviewer))}</dd>
+    <dt>Penilai</dt><dd>${esc(person(a.reviewer))}</dd>
   </dl>
   <p class="sec-title">Rencana lokasi</p>
   <dl class="kv"><dt>Alamat</dt><dd>${esc(a.alamat)}</dd><dt>Jenis lokasi</dt><dd>${esc(a.jenisLokasi)}</dd><dt>Status lokasi</dt><dd>${esc(a.statusLokasi)}</dd></dl>
@@ -1279,13 +1279,13 @@ function tabSurvei(a) {
 }
 function tabAssessment(a) {
   if (a.stage === 'assessment') return !canAct(a) ? viewOnly(a) : takeover(a) + scoreCard(a) + `<p class="muted">Nilai setiap aspek. Semua aspek harus lulus agar calon franchisee lanjut ke quotation.</p>
-    <div class="field"><label for="as-date">Tanggal interview</label><input id="as-date" type="date" value="2026-10-20"></div>
+    <div class="field"><label for="as-date">Tanggal wawancara</label><input id="as-date" type="date" value="2026-10-20"></div>
     <table class="cost assess"><tbody>${ASSESS.map(([k,l]) => `<tr><td>${l}</td><td><select id="as-${k}" aria-label="${l}"><option value="">Pilih hasil</option><option>Lulus</option><option>Tidak lulus</option></select></td></tr>`).join('')}</tbody></table>
-    <div class="field" style="margin-top:12px"><label for="as-note">Catatan assessment</label><textarea id="as-note" placeholder="Wajib diisi jika tidak lolos"></textarea></div>
-    <div class="actions"><button class="btn btn-primary" onclick="submitAssessment('${a.id}',true)">Lolos, lanjut ke quotation</button><button class="btn btn-danger" onclick="submitAssessment('${a.id}',false)">Tidak lolos</button><button class="link" onclick="fillAssess()">Isi contoh hasil assessment</button></div>`;
+    <div class="field" style="margin-top:12px"><label for="as-note">Catatan penilaian kelayakan</label><textarea id="as-note" placeholder="Wajib diisi jika tidak lolos"></textarea></div>
+    <div class="actions"><button class="btn btn-primary" onclick="submitAssessment('${a.id}',true)">Lolos, lanjut ke quotation</button><button class="btn btn-danger" onclick="submitAssessment('${a.id}',false)">Tidak lolos</button><button class="link" onclick="fillAssess()">Isi contoh hasil penilaian kelayakan</button></div>`;
   if (a.assess) return `<div class="callout ${a.assess.result === 'lolos' ? 'ok' : 'bad'}">Hasil assessment: ${a.assess.result}</div>
     <ul class="result-list">${ASSESS.map(([k,l]) => `<li><span class="${a.assess.res[k] === 'Lulus' ? 'y' : 'n'}">${a.assess.res[k] === 'Lulus' ? '✓' : '✗'}</span>${l}</li>`).join('')}</ul>${a.assess.note ? `<p><b>Catatan:</b> ${esc(a.assess.note)}</p>` : ''}`;
-  return `${scoreCard(a)}<p class="muted">Assessment dilakukan reviewer setelah lokasi dinilai layak.</p>`;
+  return `${scoreCard(a)}<p class="muted">Penilaian kelayakan dilakukan penilai setelah lokasi dinilai layak.</p>`;
 }
 function quoteHTML(q) {
   const pk = PAKET[q.paket], disc = Number(q.diskon) || 0;
@@ -1295,7 +1295,7 @@ function quoteHTML(q) {
   ${q.note ? `<p><b>Catatan:</b> ${esc(q.note)}</p>` : ''}`;
 }
 function qStatus(a, q) {
-  if (a.stage === 'disetujui' && q === latest(a)) return '<span class="chip ok">Deal</span>';
+  if (a.stage === 'disetujui' && q === latest(a)) return '<span class="chip ok">Sepakat</span>';
   return ({'terkirim':'<span class="chip warn">Menunggu tanggapan</span>','perubahan diminta':'<span class="chip aren">Perubahan diminta</span>','disetujui franchisee':'<span class="chip ok">Disetujui calon franchisee</span>'})[q.status];
 }
 function versionsHTML(a) {
@@ -1325,7 +1325,7 @@ function tabQuotation(a) {
       <div class="actions"><button class="btn btn-primary" onclick="sendQuote('${a.id}')">Kirim quotation versi ${N}</button></div>${versionsHTML(a)}${changesHTML(a)}`;
   }
   if (a.quotes.length) return `<div class="d-top"><h3 style="margin-top:0">Quotation versi ${latest(a).v}</h3>${qStatus(a, latest(a))}</div>${quoteHTML(latest(a))}${versionsHTML(a)}${changesHTML(a)}`;
-  return '<p class="muted">Quotation dibuat sales setelah calon franchisee lolos assessment.</p>';
+  return '<p class="muted">Quotation dibuat sales setelah calon franchisee lolos penilaian kelayakan.</p>';
 }
 function tabNego(a) {
   const L = latest(a);
@@ -1342,11 +1342,11 @@ function tabNego(a) {
       <div class="actions"><button class="btn btn-ok" onclick="negoAgree('${a.id}')">Setuju dengan quotation</button><button class="btn btn-ghost" onclick="state.negoForm='change';renderDrawer()">Minta perubahan</button><button class="btn btn-danger" onclick="state.negoForm='withdraw';renderDrawer()">Mundur</button></div>
       ${form}<h3>Quotation versi ${L.v}</h3>${quoteHTML(L)}${changesHTML(a)}`;
   }
-  if (a.stage === 'approval') return !canAct(a) ? viewOnly(a) : takeover(a) + `<div class="callout ok">${esc(a.name)} menyetujui quotation versi ${L.v} senilai <b>${rp(qValue(L))}</b>. Tinjau laporan survei, hasil assessment, dan quotation sebelum memutuskan.</div>
+  if (a.stage === 'approval') return !canAct(a) ? viewOnly(a) : takeover(a) + `<div class="callout ok">${esc(a.name)} menyetujui quotation versi ${L.v} senilai <b>${rp(qValue(L))}</b>. Tinjau laporan survei, hasil penilaian kelayakan, dan quotation sebelum memutuskan.</div>
       ${scoreCard(a)}${quoteHTML(L)}
       <div class="field"><label for="mg-note">Catatan keputusan</label><textarea id="mg-note" placeholder="Wajib diisi jika ditolak atau minta revisi lokasi"></textarea></div>
       <div class="actions"><button class="btn btn-ok" onclick="finalDecision('${a.id}','ok')">Setujui kemitraan</button><button class="btn btn-ghost" onclick="finalDecision('${a.id}','lokasi')">Minta revisi lokasi</button><button class="btn btn-danger" onclick="finalDecision('${a.id}','tolak')">Tolak</button></div>${changesHTML(a)}`;
-  if (a.stage === 'disetujui') return `<div class="callout ok">Kemitraan disetujui. Nilai deal ${rp(dealValue(a))}. Proses berlanjut ke penandatanganan perjanjian.</div>${quoteHTML(L)}${versionsHTML(a)}${changesHTML(a)}`;
+  if (a.stage === 'disetujui') return `<div class="callout ok">Kemitraan disetujui. Nilai kesepakatan ${rp(dealValue(a))}. Proses berlanjut ke penandatanganan perjanjian.</div>${quoteHTML(L)}${versionsHTML(a)}${changesHTML(a)}`;
   if (a.stage === 'ditolak') return `<div class="callout bad">Aplikasi ditutup${a.rejectReason ? ': ' + esc(a.rejectReason) : '.'}</div>${changesHTML(a)}`;
   return '<p class="muted">Negosiasi dimulai setelah quotation dikirim.</p>';
 }
@@ -1363,7 +1363,7 @@ function assignSales(id) {
   a.sales = s; a.assignedBy = ME; a.triage = null; setStage(a,'presentasi');
   log(a, `Sales ditugaskan oleh ${role().toLowerCase()}: ${uname(s)}${note ? ` (${note})` : ''}`);
   notify(a, s, `Kamu ditugaskan mendampingi ${a.name} (${a.city}). Jadwalkan presentasi bisnis.`);
-  state.tab = 'presentasi'; toast(`Ditugaskan ke ${uname(s)}. Notifikasi otomatis terkirim lewat dashboard dan email.`); render();
+  state.tab = 'presentasi'; toast(`Ditugaskan ke ${uname(s)}. Notifikasi otomatis terkirim lewat dasbor dan email.`); render();
 }
 function closeLead(id) {
   const a = find(id), note = document.getElementById('tb-note').value.trim();
@@ -1395,11 +1395,11 @@ function submitSurvey(id, layak) {
   log(a,'Survei lokasi: layak');
   if (a.assess && a.assess.result === 'lolos') {
     setStage(a,'quotation'); state.tab = 'quotation'; state.qb = initQb(a);
-    toast('Lokasi baru layak. Calon franchisee sudah lolos assessment, lanjut ke quotation revisi.');
+    toast('Lokasi baru layak. Calon franchisee sudah lolos penilaian kelayakan, lanjut ke quotation revisi.');
   } else {
     setStage(a,'assessment'); state.tab = 'assessment';
-    notify(a, a.reviewer, `${a.name} siap di-assessment. Lokasi sudah dinilai layak.`);
-    toast(`Lokasi layak. Notifikasi otomatis dikirim ke ${uname(a.reviewer)} untuk assessment.`);
+    notify(a, a.reviewer, `${a.name} siap dinilai kelayakannya. Lokasi sudah dinilai layak.`);
+    toast(`Lokasi layak. Notifikasi otomatis dikirim ke ${uname(a.reviewer)} untuk penilaian kelayakan.`);
   }
   render();
 }
@@ -1414,12 +1414,12 @@ function submitAssessment(id, pass) {
   if (!pass && !note) return toast('Tulis alasan tidak lolos di catatan.','bad');
   a.assess = {res, note, result:pass ? 'lolos' : 'tidak lolos'};
   if (pass) {
-    setStage(a,'quotation'); log(a,'Assessment: lolos'); state.tab = 'quotation'; state.qb = initQb(a);
-    notify(a, a.sales, `${a.name} lolos assessment. Buat dan kirim quotation.`);
-    toast(`Lolos assessment. Notifikasi otomatis dikirim ke ${uname(a.sales)} untuk membuat quotation.`);
+    setStage(a,'quotation'); log(a,'Penilaian kelayakan: lolos'); state.tab = 'quotation'; state.qb = initQb(a);
+    notify(a, a.sales, `${a.name} lolos penilaian kelayakan. Buat dan kirim quotation.`);
+    toast(`Lolos penilaian kelayakan. Notifikasi otomatis dikirim ke ${uname(a.sales)} untuk membuat quotation.`);
   } else {
-    reject(a, 3, note, 'Assessment: tidak lolos, aplikasi ditolak');
-    notify(a, a.sales, `${a.name} tidak lolos assessment.`); toast('Aplikasi ditolak.');
+    reject(a, 3, note, 'Penilaian kelayakan: tidak lolos, aplikasi ditolak');
+    notify(a, a.sales, `${a.name} tidak lolos penilaian kelayakan.`); toast('Aplikasi ditolak.');
   }
   render();
 }
@@ -1438,8 +1438,8 @@ function sendQuote(id) {
 function negoAgree(id) {
   const a = find(id), L = latest(a); L.status = 'disetujui franchisee';
   setStage(a,'approval'); log(a, `Calon franchisee menyetujui quotation versi ${L.v}`);
-  notify(a, MANAGER, `${a.name} menyetujui quotation versi ${L.v} (${rp(qValue(L))}). Perlu approval akhir.`);
-  toast(`Tercatat. Notifikasi otomatis dikirim ke ${uname(MANAGER)} untuk approval akhir.`); render();
+  notify(a, MANAGER, `${a.name} menyetujui quotation versi ${L.v} (${rp(qValue(L))}). Perlu persetujuan akhir.`);
+  toast(`Tercatat. Notifikasi otomatis dikirim ke ${uname(MANAGER)} untuk persetujuan akhir.`); render();
 }
 function negoChange(id) {
   const a = find(id), L = latest(a), type = document.getElementById('ng-type').value, note = document.getElementById('ng-note').value.trim();
@@ -1459,14 +1459,14 @@ function finalDecision(id, act) {
   const a = find(id), note = document.getElementById('mg-note').value.trim();
   if (act !== 'ok' && !note) return toast('Tulis alasan di catatan keputusan.','bad');
   if (act === 'ok') {
-    setStage(a,'disetujui'); a.approvedAt = TODAY.toISOString(); log(a,'Approval akhir: kemitraan disetujui');
-    notify(a, a.sales, `Kemitraan ${a.name} disetujui. Lanjutkan ke perjanjian.`); toast(`Kemitraan disetujui. Nilai deal ${rp(dealValue(a))}.`);
+    setStage(a,'disetujui'); a.approvedAt = TODAY.toISOString(); log(a,'Persetujuan akhir: kemitraan disetujui');
+    notify(a, a.sales, `Kemitraan ${a.name} disetujui. Lanjutkan ke perjanjian.`); toast(`Kemitraan disetujui. Nilai kesepakatan ${rp(dealValue(a))}.`);
   } else if (act === 'lokasi') {
-    a.survey = {revisiNote:note}; setStage(a,'survei'); log(a, `Approval akhir: minta revisi lokasi (${note})`);
+    a.survey = {revisiNote:note}; setStage(a,'survei'); log(a, `Persetujuan akhir: minta revisi lokasi (${note})`);
     notify(a, a.sales, `Manajer meminta revisi lokasi untuk ${a.name}: ${note}`); state.tab = 'survei';
     toast(`Dikembalikan ke survei lokasi. Notifikasi otomatis dikirim ke ${uname(a.sales)}.`);
   } else {
-    reject(a, 6, note, 'Approval akhir: ditolak'); notify(a, a.sales, `Kemitraan ${a.name} ditolak pada approval akhir.`); toast('Aplikasi ditolak.');
+    reject(a, 6, note, 'Persetujuan akhir: ditolak'); notify(a, a.sales, `Kemitraan ${a.name} ditolak pada persetujuan akhir.`); toast('Aplikasi ditolak.');
   }
   render();
 }
@@ -1650,9 +1650,9 @@ function viewDashboard() {
   return `<div class="page-head"><div><h1>${role() === 'Sales' ? 'Target dan pencapaian saya' : 'Target dan pencapaian'}, ${P.label}</h1><p class="sub">${P.ended ? 'Periode sudah selesai.' : `Data per 20 Oktober 2026, hari ke-${P.el} dari ${P.totalD}.`} Data demo.</p></div>${periodControls()}</div>
   <div class="kpis">
     ${kpi('Franchisee disetujui', T.qty, A.qty, P, v => num1(v), `Gerobak ${A.g}, cafe ${A.c}.`)}
-    ${kpi('Revenue kemitraan', T.rev, A.rev, P, rpS, 'Nilai deal dari franchisee yang disetujui.')}
+    ${kpi('Revenue kemitraan', T.rev, A.rev, P, rpS, 'Nilai kesepakatan dari franchisee yang disetujui.')}
     <div class="panel kpi"><h2 style="margin:0">Nilai pipeline</h2><div class="kpi-num">${rpS(pipeVal)}</div>
-      <div class="small">${pipe.length} aplikasi di tahap quotation, negosiasi, dan approval akhir. Potensi revenue jika semuanya disetujui.</div>
+      <div class="small">${pipe.length} aplikasi di tahap quotation, negosiasi, dan persetujuan akhir. Potensi revenue jika semuanya disetujui.</div>
       ${role() === 'Sales' ? '' : `<button class="link" style="margin-top:10px" onclick="setView('sales')">Lihat per sales</button>`}</div>
   </div>
   <div class="panel" style="margin-bottom:16px"><h2>Perlu perhatian</h2>${ws >= .85 ? '<p>Semua tahap funnel sesuai jalur untuk periode ini.</p>' : `<p>Tahap <b>${FUNNEL[worst].l}</b> paling tertinggal: ${A.f[worst]} dari seharusnya ${num1(tg[worst] * P.pace)} (${Math.round(ws * 100)}%).</p>`}
@@ -1672,15 +1672,15 @@ function viewSales() {
     const gap = g => g >= 0 ? `<span style="color:var(--ok);font-weight:700">+${fmt(g)}</span>` : `<span style="color:var(--bad);font-weight:700">−${fmt(-g)}</span>`;
     const pc = (pct, st) => `<div class="bar" style="min-width:110px"><span style="width:${Math.min(pct,1) * 100}%;background:${barColor(st)}"></span></div><div class="small">${Math.round(pct * 100)}%</div>`;
     return `<section class="panel" style="margin-bottom:16px"><h2>${title}</h2><p class="small" style="margin-top:-4px">${note}</p>
-      <div class="table-wrap"><table class="funnel"><thead><tr><th style="width:36px">#</th><th>Sales</th><th>Target ${P.label}</th><th>Seharusnya ${dateTxt}</th><th>Achievement</th><th>Achievement vs seharusnya</th><th>Selisih</th><th>Status</th></tr></thead>
+      <div class="table-wrap"><table class="funnel"><thead><tr><th style="width:36px">#</th><th>Sales</th><th>Target ${P.label}</th><th>Seharusnya ${dateTxt}</th><th>Capaian</th><th>Capaian vs seharusnya</th><th>Selisih</th><th>Status</th></tr></thead>
       <tbody>${rows.map((r,i) => `<tr><td class="num" style="font-size:15px;color:var(--muted)">${i + 1}</td>
         <td><div class="who-cell"><span class="av sm">${initials(uname(r.s))}</span><div><button class="link" style="color:var(--ink);text-decoration:none" onclick="openProfile('${r.s}')">${uname(r.s)}</button><div class="small">${USERS[r.s].area}</div></div></div></td>
         <td>${fmt(r.full)}</td><td><b>${fmt(r.should)}</b></td><td class="num" style="font-size:16px">${fmt(r.ach)}</td><td>${pc(r.pct, r.st)}</td><td>${gap(r.ach - r.should)}</td><td><span class="chip ${r.st[0]}">${r.st[1]}</span></td></tr>`).join('')}
         <tr class="sum"><td></td><td><b>Total</b></td><td><b>${fmt(sum.full)}</b></td><td><b>${fmt(sum.should)}</b></td><td class="num" style="font-size:16px">${fmt(sum.ach)}</td><td>${pc(sPct, sSt)}</td><td>${gap(sum.ach - sum.should)}</td><td><span class="chip ${sSt[0]}">${sSt[1]}</span></td></tr>
       </tbody></table></div></section>`;
   };
-  return `<div class="page-head"><div><h1>Performa sales, ${P.label}</h1><p class="sub">${P.ended ? 'Periode sudah selesai.' : `Data per 20 Oktober 2026, hari ke-${P.el} dari ${P.totalD}.`} "Seharusnya" adalah target yang mestinya sudah tercapai pada tanggal ini, sesuai proporsi hari yang sudah berjalan.</p></div>${periodControls()}</div>
-  ${table('Target revenue','rev',rpS,'Revenue dari nilai deal franchisee yang disetujui. Diurutkan dari sales paling perform.')}
+  return `<div class="page-head"><div><h1>Kinerja sales, ${P.label}</h1><p class="sub">${P.ended ? 'Periode sudah selesai.' : `Data per 20 Oktober 2026, hari ke-${P.el} dari ${P.totalD}.`} "Seharusnya" adalah target yang mestinya sudah tercapai pada tanggal ini, sesuai proporsi hari yang sudah berjalan.</p></div>${periodControls()}</div>
+  ${table('Target revenue','rev',rpS,'Revenue dari nilai kesepakatan franchisee yang disetujui. Diurutkan dari sales paling perform.')}
   ${table('Target kuantitas','qty',num1,'Jumlah franchisee yang disetujui. Diurutkan dari sales paling perform.')}
   <p class="small">Target bulanan per sales: ${SALES.map(s => `${first(s)} ${SALES_T[s].q} franchisee dan ${rpS(SALES_T[s].r)}`).join('; ')}. Target kuartal, semester, dan tahunan adalah penjumlahan target bulanan.</p>`;
 }
@@ -1693,7 +1693,7 @@ document.addEventListener('keydown', e => {
   if (state.sel || state.addOpen) closeDetail();
 });
 state = initState();
-if (MODE === 'mitra') { state.portal = {view:'form', id:'', key:'', err:'', resp:null}; document.title = 'Portal Mitra Kopi Koma | Prototype'; }
+if (MODE === 'mitra') { state.portal = {view:'form', id:'', key:'', err:'', resp:null}; document.title = 'Portal Mitra Kopi Koma | Prototipe'; }
 render();
 window.addEventListener('storage', e => {
   if (e.key !== STORE) return;
