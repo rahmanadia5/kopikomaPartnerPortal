@@ -200,7 +200,7 @@ table.cost tr.total td{font-weight:800;border-bottom:0;padding-top:10px}
 .reasons li{font-size:14px;padding:3px 0}
 .reasons .y,.reasons .n{display:inline-block;width:18px;font-weight:800}
 .reasons .y{color:var(--ok)} .reasons .n{color:var(--bad)}
-@media (max-width:760px){.subnav{flex-wrap:wrap}.r-list li{grid-template-columns:1fr}.ai-split{grid-template-columns:1fr}}
+@media (max-width:760px){.subnav{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}.subnav::-webkit-scrollbar{display:none}.r-list li{grid-template-columns:1fr}.ai-split{grid-template-columns:1fr}}
 .chip.blue{background:#E3ECF8;color:#2C5C9A}
 .card{padding:0;gap:0;cursor:default}
 .card-main{display:flex;flex-direction:column;gap:5px;text-align:left;background:none;border:0;padding:10px 12px 8px;cursor:pointer;width:100%;border-radius:var(--r-s) var(--r-s) 0 0}
@@ -753,9 +753,8 @@ function loginHTML() {
   </div>`;
 }
 function startSession(k) {
-  ME = k; state.loginErr = ''; state.view = 'pipeline'; state.sel = null; state.addOpen = false; state.apv = null; state.hint = true; state.taskFilter = 'all'; state.pview = 'aktif'; state.pkg = '';
+  ME = k; state.loginErr = ''; state.view = 'pipeline'; state.sel = null; state.addOpen = false; state.apv = null; state.hint = !hintClosed().includes(k); state.taskFilter = USERS[k].role === 'Manajer' ? 'mine' : 'all'; state.pview = 'aktif'; state.pkg = '';
   state.notifOpen = false; state.menuOpen = false; state.profile = k; render(); window.scrollTo(0,0);
-  toast(`Masuk sebagai ${person(k)}`);
 }
 function doLogin() {
   const email = document.getElementById('lg-email').value.trim().toLowerCase(), pw = document.getElementById('lg-pw').value;
@@ -765,15 +764,18 @@ function doLogin() {
 }
 function quickLogin(k) { startSession(k); }
 function logout() { ME = null; state.menuOpen = false; state.sel = null; state.addOpen = false; state.apv = null; render(); window.scrollTo(0,0); }
+/* Petunjuk di Pipeline cukup sekali: setelah ditutup, tidak muncul lagi untuk user tersebut (disimpan di browser). */
+function hintClosed() { try { return JSON.parse(localStorage.getItem('kopikoma-hint-closed')) || []; } catch { return []; } }
+function closeHint() { state.hint = false; try { localStorage.setItem('kopikoma-hint-closed', JSON.stringify([...new Set([...hintClosed(), ME])])); } catch {} render(); }
 function setView(v) { state.view = v; state.menuOpen = false; render(); window.scrollTo(0,0); }
 function openProfile(k) { state.profile = k; state.menuOpen = false; state.view = 'profile'; render(); window.scrollTo(0,0); }
-function resetDemo() { clearShared(); state = initState(true); state.profile = ME; render(); toast('Data demo dikembalikan ke kondisi awal'); }
+function resetDemo() { clearShared(); try { localStorage.removeItem('kopikoma-hint-closed'); } catch {} state = initState(true); state.profile = ME; state.hint = true; state.taskFilter = role() === 'Manajer' ? 'mine' : 'all'; render(); toast('Data demo dikembalikan ke kondisi awal'); }
 const pendingAll = () => state.apps.filter(a => picOf(a));
 const myTasks = () => state.apps.filter(a => picOf(a) === ME);
 function tabsFor() {
   const r = role(), m = myTasks().length;
   if (r === 'Super Admin') return [['pipeline','Pipeline'],['tasks',`Semua tugas (${pendingAll().length})`],['dashboard','Target vs Achievement'],['sales','Performa Sales']];
-  if (r === 'Manajer') return [['pipeline','Pipeline'],['mytasks',`Tugas saya (${m})`],['tasks','Semua tugas'],['dashboard','Target vs Achievement'],['sales','Performa Sales']];
+  if (r === 'Manajer') return [['pipeline','Pipeline'],['tasks',`Semua tugas (${m} untukmu)`],['dashboard','Target vs Achievement'],['sales','Performa Sales']];
   if (r === 'Sales') return [['pipeline','Pipeline saya'],['mytasks',`Tugas saya (${m})`],['dashboard','Target vs Achievement saya']];
   return [['pipeline','Pipeline'],['mytasks',`Tugas saya (${m})`]];
 }
@@ -812,7 +814,7 @@ function viewPipeline() {
   const pv = state.pview || 'aktif';
   const canAdd = isSA() || role() === 'Sales';
   const autoN = state.apps.filter(a => !a.inputBy && a.assignedBy === null && a.stage !== 'baru' && a.sales).length;
-  return `${state.hint ? `<div class="hint"><span>${HINTS[role()]}</span><button class="link" onclick="state.hint=false;render()">Tutup</button></div>` : ''}
+  return `${state.hint ? `<div class="hint"><span>${HINTS[role()]}</span><button class="link" onclick="closeHint()">Tutup</button></div>` : ''}
   <div class="page-head">
     <div><h1>${role() === 'Sales' ? 'Pipeline saya' : 'Pipeline calon franchisee'}</h1><p class="sub">${active} aplikasi aktif${od && seesOverdue() ? `, <button class="link" onclick="setView('${isSA() ? 'tasks' : 'tasks'}')">${od} lewat batas waktu</button>, pengingat otomatis sudah terkirim` : ''}</p></div>
     <div class="head-actions">
@@ -907,10 +909,11 @@ function card(a) {
 function viewTasks() {
   const all = pendingAll(), roleOf = a => USERS[picOf(a)].role;
   const f = state.taskFilter;
-  const list = all.filter(a => f === 'all' || roleOf(a) === f).sort((x,y) => (overdueOf(y) - overdueOf(x)) || (daysIn(y.stageSince) - daysIn(x.stageSince)));
-  const pills = [['all','Semua'],['Reviewer','Reviewer'],['Sales','Sales'],['Manajer','Manajer']];
+  const match = a => f === 'all' || (f === 'mine' ? picOf(a) === ME : roleOf(a) === f);
+  const list = all.filter(match).sort((x,y) => (overdueOf(y) - overdueOf(x)) || (daysIn(y.stageSince) - daysIn(x.stageSince)));
+  const pills = role() === 'Manajer' ? [['mine','Tugas saya'],['all','Semua'],['Sales','Sales'],['Reviewer','Reviewer']] : [['all','Semua'],['Reviewer','Reviewer'],['Sales','Sales'],['Manajer','Manajer']];
   return `<div class="page-head"><div><h1>Semua tugas</h1><p class="sub">Tugas yang sedang menunggu di setiap anggota tim. Saat batas waktu terlewati, sistem otomatis mengirim pengingat ke penanggung jawab dan manajer lewat dasbor dan email.</p></div></div>
-  <div class="filters">${pills.map(([k,l]) => { const c = k === 'all' ? all.length : all.filter(a => roleOf(a) === k).length; return `<button class="pill" aria-pressed="${f === k}" onclick="state.taskFilter='${k}';render()">${l} (${c})</button>`; }).join('')}</div>
+  <div class="filters">${pills.map(([k,l]) => { const c = k === 'all' ? all.length : k === 'mine' ? all.filter(a => picOf(a) === ME).length : all.filter(a => roleOf(a) === k).length; return `<button class="pill" aria-pressed="${f === k}" onclick="state.taskFilter='${k}';render()">${l} (${c})</button>`; }).join('')}</div>
   <div class="panel">${list.length ? `<div class="table-wrap"><table class="funnel">
     <thead><tr><th>Calon franchisee</th><th>Yang perlu dilakukan</th><th>Penanggung jawab</th><th>Menunggu</th><th>Batas waktu</th><th>Pengingat otomatis</th><th></th></tr></thead>
     <tbody>${list.map(a => { const d = daysIn(a.stageSince), od = overdueOf(a), p = picOf(a); return `<tr>
