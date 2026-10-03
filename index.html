@@ -991,7 +991,7 @@ function portalHTML() {
 }
 function portalForm() {
   const f = state.form, e = state.formErr;
-  return `<section class="hero"><h1>Buka outlet Kopi Koma <i>di kotamu.</i></h1><p>Isi formulir pendaftaran, lalu pantau setiap tahap peninjauan sampai kemitraan disepakati, semuanya dari portal ini.</p></section>
+  return `<section class="hero"><h1>Buka outlet Kopi Koma <i>di kotamu.</i></h1></section>
   <div class="paket-list" style="margin-bottom:22px">${Object.entries(PAKET).map(([k,p]) => `<div class="paket"><h3>${p.nama}</h3><div class="price">${rp(total(k))}</div>
     <dl class="mini"><dt>Royalti</dt><dd>${p.royalti}</dd><dt>Estimasi balik modal</dt><dd>${p.bep}</dd></dl></div>`).join('')}</div>
   <div class="formcard"><div class="d-top"><h2>Formulir pendaftaran mitra</h2><button class="link" onclick="saveForm();portalDemoFill()">Isi data contoh</button></div>
