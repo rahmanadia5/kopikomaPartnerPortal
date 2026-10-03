@@ -582,7 +582,7 @@ let nid = 0;
 /* Dua aplikasi terpisah dari file yang sama: dashboard franchisor (/) dan portal calon franchisee (/mitra).
    Data aplikasi dan notifikasi disimpan di localStorage agar keduanya terhubung, juga antar-tab. */
 const MODE = /^\/mitra/.test(location.pathname) || location.hash === '#mitra' ? 'mitra' : 'staff';
-const STORE = 'kopikoma-demo-v3';
+const STORE = 'kopikoma-demo-v4';
 function loadShared() { try { return JSON.parse(localStorage.getItem(STORE)); } catch { return null; } }
 function saveShared() { try { localStorage.setItem(STORE, JSON.stringify({apps:state.apps, notifs:state.notifs, tick, nid})); } catch {} }
 function clearShared() { try { localStorage.removeItem(STORE); } catch {} }
@@ -608,7 +608,7 @@ function initState(fresh) {
   n('bima','KK-0246','Dewi Lestari siap dinilai kelayakannya. Lokasi sudah dinilai layak.',2,false);
   n(MANAGER,'KK-0249','Lina Marlina meminta diskon. Wulan Kusuma akan mendiskusikannya denganmu sebelum mengirim quotation versi 2.',2,false);
   n(MANAGER,'KK-0251','Hendra Gunawan menyetujui quotation. Perlu persetujuan akhir.',1,false);
-  n('putri','KK-0252','Kemitraan Maya Putri disetujui. Lanjutkan ke perjanjian.',DEAL_DAYS,true);
+  n('putri','KK-0252','Kemitraan Maya Putri disetujui. Perjanjian waralaba dikirim lewat Privy untuk tanda tangan elektronik, dampingi prosesnya.',DEAL_DAYS,true);
   n(MANAGER,'KK-0254','Lead baru perlu ditugaskan: Teguh Wibowo. Kota Surabaya di luar wilayah sales yang ada.',2,false);
   n(MANAGER,'KK-0255','Lead baru perlu ditugaskan: Rina W. Terindikasi duplikat dengan Rina Wijaya (KK-0250).',0,false);
   st.apps.filter(a => overdueOf(a)).forEach(a => {
@@ -1027,7 +1027,7 @@ function trackerHTML(a) {
   <div class="formcard"><div class="d-top"><div><div class="small">${a.id}, paket ${PAKET[a.paket].nama}, ${esc(a.city)}</div><h2 style="margin:2px 0 0">${esc(a.name)}</h2></div><span class="chip ${status[0]}">${status[1]}</span></div>
     <div style="margin:14px 0 18px">${salesCard}</div>
     <ol class="timeline">${items}</ol>
-    ${ok ? `<div class="callout ok" style="margin:6px 0 0">Selamat, kemitraan disepakati kedua pihak dengan nilai ${rp(dealValue(a))}. Langkah berikutnya: penandatanganan perjanjian waralaba bersama sales pendamping.</div>` : ''}
+    ${ok ? `<div class="callout ok" style="margin:6px 0 0">Selamat, kemitraan disepakati kedua pihak dengan nilai ${rp(dealValue(a))}. Langkah berikutnya: perjanjian waralaba dikirim lewat <b>Privy</b> ke ${esc(a.email)} untuk ditandatangani secara elektronik (tanda tangan elektronik tersertifikasi). Sales pendamping akan mendampingi prosesnya.</div>` : ''}
   </div>
   ${portalQuote(a)}`;
 }
@@ -1047,14 +1047,16 @@ function portalQuote(a) {
     if (pt.resp === 'withdraw') form = `<div class="formbox"><div class="field"><label for="ng-note">Alasan tidak melanjutkan</label><textarea id="ng-note"></textarea></div>
       <div class="actions"><button class="btn btn-danger" onclick="portalWithdraw('${a.id}')">Saya tidak melanjutkan</button><button class="btn btn-ghost" onclick="state.portal.resp=null;render()">Batal</button></div></div>`;
     act = `<div class="callout">Tinjau quotation di bawah. Dengan menekan <b>Setujui quotation</b>, kamu menyetujui penawaran ini dan pengajuan diteruskan ke Kopi Koma untuk persetujuan akhir.</div>
+      <label class="consent" style="margin:4px 0 0"><input type="checkbox" id="pq-confirm"><span>Saya sudah membaca dan menyetujui isi quotation versi ${L.v} senilai ${rp(qValue(L))}.</span></label>
       <div class="actions"><button class="btn btn-ok" onclick="portalAgree('${a.id}')">Setujui quotation</button><button class="btn btn-ghost" onclick="state.portal.resp='change';render()">Minta perubahan</button><button class="btn btn-danger" onclick="state.portal.resp='withdraw';render()">Tidak melanjutkan</button></div>${form}`;
   } else if (L.status === 'disetujui franchisee' && a.stage === 'approval') act = `<div class="callout ok">Kamu sudah menyetujui quotation versi ${L.v}. Menunggu persetujuan akhir dari Kopi Koma.</div>`;
   return `<div class="formcard" style="margin-top:16px"><div class="d-top"><h2>Quotation versi ${L.v}</h2>${qStatus(a, L)}</div>${act}<div class="preview" style="margin-top:12px">${quoteHTML(L)}</div>
     ${a.quotes.length > 1 ? `<p class="small" style="margin:0">Versi sebelumnya: ${a.quotes.slice(0,-1).map(q => `versi ${q.v} (${rp(qValue(q))})`).join(', ')}.</p>` : ''}</div>`;
 }
 function portalAgree(id) {
+  if (!document.getElementById('pq-confirm')?.checked) return toast('Centang konfirmasi bahwa kamu sudah membaca dan menyetujui isi quotation.','bad');
   const a = find(id), L = latest(a); L.status = 'disetujui franchisee';
-  setStage(a,'approval'); log(a, `Calon franchisee menyetujui quotation versi ${L.v} lewat portal mitra`, FR);
+  setStage(a,'approval'); log(a, `Calon franchisee menyetujui quotation versi ${L.v} lewat portal mitra (konfirmasi telah membaca isi quotation)`, FR);
   notify(a, MANAGER, `${a.name} menyetujui quotation versi ${L.v} (${rp(qValue(L))}) lewat portal mitra. Perlu persetujuan akhir.`);
   notify(a, a.sales, `${a.name} menyetujui quotation versi ${L.v} lewat portal mitra. Diteruskan ke manajer untuk persetujuan akhir.`);
   state.portal.resp = null; toast('Terima kasih, persetujuanmu tercatat. Menunggu persetujuan akhir Kopi Koma.'); render();
@@ -1311,7 +1313,7 @@ function tabNego(a) {
       ${scoreCard(a)}${quoteHTML(L)}
       <div class="field"><label for="mg-note">Catatan keputusan</label><textarea id="mg-note" placeholder="Wajib diisi jika ditolak atau minta revisi lokasi"></textarea></div>
       <div class="actions"><button class="btn btn-ok" onclick="finalDecision('${a.id}','ok')">Setujui kemitraan</button><button class="btn btn-ghost" onclick="finalDecision('${a.id}','lokasi')">Minta revisi lokasi</button><button class="btn btn-danger" onclick="finalDecision('${a.id}','tolak')">Tolak</button></div>${changesHTML(a)}`;
-  if (a.stage === 'disetujui') return `<div class="callout ok">Kemitraan disetujui. Nilai kesepakatan ${rp(dealValue(a))}. Proses berlanjut ke penandatanganan perjanjian.</div>${quoteHTML(L)}${versionsHTML(a)}${changesHTML(a)}`;
+  if (a.stage === 'disetujui') return `<div class="callout ok">Kemitraan disetujui. Nilai kesepakatan ${rp(dealValue(a))}. Langkah berikutnya: perjanjian waralaba dikirim lewat <b>Privy</b> untuk ditandatangani secara elektronik oleh calon franchisee dan Kopi Koma.</div>${quoteHTML(L)}${versionsHTML(a)}${changesHTML(a)}`;
   if (a.stage === 'ditolak') return `<div class="callout bad">Aplikasi ditutup${a.rejectReason ? ': ' + esc(a.rejectReason) : '.'}</div>${changesHTML(a)}`;
   return '<p class="muted">Negosiasi dimulai setelah quotation dikirim.</p>';
 }
@@ -1425,7 +1427,7 @@ function finalDecision(id, act) {
   if (act !== 'ok' && !note) return toast('Tulis alasan di catatan keputusan.','bad');
   if (act === 'ok') {
     setStage(a,'disetujui'); a.approvedAt = TODAY.toISOString(); log(a,'Persetujuan akhir: kemitraan disetujui');
-    notify(a, a.sales, `Kemitraan ${a.name} disetujui. Lanjutkan ke perjanjian.`); toast(`Kemitraan disetujui. Nilai kesepakatan ${rp(dealValue(a))}.`);
+    notify(a, a.sales, `Kemitraan ${a.name} disetujui. Perjanjian waralaba dikirim lewat Privy untuk tanda tangan elektronik, dampingi prosesnya.`); toast(`Kemitraan disetujui. Nilai kesepakatan ${rp(dealValue(a))}.`);
   } else if (act === 'lokasi') {
     a.survey = {revisiNote:note}; setStage(a,'survei'); log(a, `Persetujuan akhir: minta revisi lokasi (${note})`);
     notify(a, a.sales, `Manajer meminta revisi lokasi untuk ${a.name}: ${note}`); state.tab = 'survei';

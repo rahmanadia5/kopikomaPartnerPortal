@@ -48,7 +48,7 @@ Halaman masuk berisi form email + kata sandi dan daftar akun demo per role (klik
 - Wilayah sales: Rendi = Tangerang Raya; Putri = Jakarta, Bogor, Depok, Bekasi, Cikarang; Agus = Bandung Raya; Wulan = Jawa Tengah.
 
 ## Fitur lain
-- Persetujuan dua pihak: 1 dari 2 = franchisee menyetujui quotation (di portal atau dicatat sales), 2 dari 2 = persetujuan akhir manajer.
+- Persetujuan dua pihak: 1 dari 2 = franchisee menyetujui quotation (di portal atau dicatat sales), 2 dari 2 = persetujuan akhir manajer. Di portal, tombol Setujui quotation butuh centang konfirmasi "sudah membaca dan menyetujui isi quotation versi N" (tercatat di audit trail). Setelah disepakati, prototipe hanya menampilkan info langkah berikutnya: perjanjian waralaba dikirim lewat Privy (tanda tangan elektronik tersertifikasi). Integrasi e-sign = di luar cakupan MVP / roadmap.
 - Status persetujuan per aplikasi (modal timeline 7 langkah, PIC + lama menunggu), dari kartu, drawer, dan tabel tugas.
 - Skor kecocokan AI (profil 40%, lokasi 60%) dengan alasan plus/minus. DISIMULASIKAN dengan pembobotan aturan + data peta simulasi; jujur sebutkan di PRD. Alat bantu, bukan penolakan otomatis.
 - Target vs Achievement: periode Bulanan/Kuartal/Semester/Tahunan, target vs "Target MTD/QTD/HTD/YTD" (target proporsional per hari ini), revenue + kuantitas, funnel 6 tahap dihitung mundur dari rasio konversi (bisa diubah).
@@ -61,7 +61,7 @@ Halaman masuk berisi form email + kata sandi dan daftar akun demo per role (klik
 ## Struktur kode
 - Satu file `index.html` tanpa build (plus `vercel.json` untuk route `/mitra`): CSS di `<style>`, JS vanilla di `<script>`, font Plus Jakarta Sans dari Google Fonts.
 - Bagian JS ditandai komentar `/* ===================== nama ===================== */`: base, people & roles, flow, AI score, seed data, sales history, state, helpers, top bar, render (login + tab per peran), pipeline, all tasks, users & roles, profile, partner portal (calon franchisee), approval status modal, detail drawer, actions, add lead, target & sales performance.
-- `MODE` (`staff` / `mitra`) menentukan aplikasi yang dirender. Data aplikasi dan notifikasi (`state.apps`, `state.notifs`, `tick`, `nid`) disimpan di localStorage (`kopikoma-demo-v3`; naikkan versinya bila seed atau teks log berubah agar data lama otomatis diganti) supaya kedua aplikasi terhubung, termasuk antar-tab lewat event `storage`. State UI dan login (`ME`) tetap di memori. Tombol "Reset data demo (khusus prototipe)" di menu akun menghapus data tersimpan dan kembali ke seed.
+- `MODE` (`staff` / `mitra`) menentukan aplikasi yang dirender. Data aplikasi dan notifikasi (`state.apps`, `state.notifs`, `tick`, `nid`) disimpan di localStorage (`kopikoma-demo-v4`; naikkan versinya bila seed atau teks log berubah agar data lama otomatis diganti) supaya kedua aplikasi terhubung, termasuk antar-tab lewat event `storage`. State UI dan login (`ME`) tetap di memori. Tombol "Reset data demo (khusus prototipe)" di menu akun menghapus data tersimpan dan kembali ke seed.
 - UI dalam Bahasa Indonesia. Istilah bisnis yang lazim tetap dipakai: Sales, Lead, Quotation, Pipeline, Franchisee, KYC, Super Admin, Reviewer, User, Role, revenue, funnel, Target vs Achievement, Performa Sales. Selain itu pakai Bahasa Indonesia (Penilaian kelayakan, Persetujuan, dasbor, tindak lanjut, kesepakatan, wawancara, prototipe, Wilayah). Hindari em dash di teks UI.
 
 ## Cara tes
