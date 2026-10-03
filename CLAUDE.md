@@ -22,14 +22,15 @@
 | 3 | Survei lokasi | Sales | 5 hari |
 | 4 | Penilaian kelayakan: wawancara, pemeriksaan latar belakang, verifikasi finansial, KYC, komitmen | Reviewer | 4 hari |
 | 5 | Quotation (dulu "proposal") | Sales | 3 hari |
-| 6 | Negosiasi: sales catat tanggapan (setuju / minta perubahan / mundur) | Sales | 7 hari |
-| 7 | Persetujuan akhir: setujui / tolak / minta revisi lokasi | Manajer | 2 hari |
+| 6 | Negosiasi: franchisee (portal) atau sales mencatat tanggapan (setuju / minta perubahan / mundur) | Sales | 7 hari |
+| 7 | Persetujuan akhir: setujui / tolak (gerbang ya/tidak, tanpa revisi lokasi) | Manajer | 2 hari |
 | + | Disetujui, Ditolak | | |
 
 Aturan penting:
 - Lead baru: lead dari sales langsung diteruskan ke presentasi. Lead mandiri (website/Instagram) otomatis ditugaskan ke sales sesuai wilayah. Masuk antrean manajer bila: kota di luar wilayah, terindikasi duplikat (HP/email sama dengan lead aktif), atau sales wilayah sudah memegang 5 lead aktif.
 - Minta perubahan saat negosiasi: aplikasi kembali ke Quotation (label Revisi). Sales dan manajer berdiskusi DI LUAR sistem; saat kirim quotation versi berikutnya sales wajib isi "Hasil diskusi dengan manajer".
-- Minta revisi lokasi: kembali ke Survei lokasi; setelah layak langsung ke Quotation (tanpa penilaian kelayakan ulang).
+- Ganti lokasi: jenis perubahan di negosiasi (dari portal atau dicatat sales), wajib isi alamat baru. Aplikasi kembali ke Survei lokasi untuk lokasi baru; setelah layak langsung ke Quotation revisi (tanpa penilaian kelayakan ulang, tetap isi "Hasil diskusi dengan manajer"). Survei tidak layak = ditolak.
+- Keputusan lokasi diselesaikan di tahap survei: bila skor lokasi AI < 60, tab survei menampilkan pengingat SOP untuk diskusi dengan manajer sebelum menyatakan layak. Persetujuan akhir tidak punya opsi revisi lokasi.
 - Pengingat sepenuhnya otomatis (notifikasi dashboard + email) ke PIC dan manajer saat lewat batas waktu. Tidak ada tombol kirim pengingat manual. Tidak ada WhatsApp.
 - Dua aplikasi terpisah dari `index.html` yang sama: dashboard franchisor di `/` (hanya POV franchisor, tanpa tautan ke sisi franchisee) dan Portal Mitra untuk calon franchisee di `/mitra` (rewrite di `vercel.json`; saat tes lokal pakai `index.html#mitra`). Portal Mitra: formulir pendaftaran (masuk sebagai lead mandiri lalu ikut aturan penugasan otomatis), tracker status 7 langkah (cek dengan nomor pengajuan + email/HP), dan tanggapan quotation langsung (setujui / minta perubahan / tidak melanjutkan). Quotation dikirim via email beserta link portal. Bila franchisee menjawab lewat telepon/tatap muka, sales tetap bisa mencatat tanggapan di tab Negosiasi. Aksi franchisee tercatat di audit trail sebagai "Calon franchisee (portal mitra)" (`by: FR`).
 

@@ -406,7 +406,7 @@ const SLA = {baru:1, presentasi:4, survei:5, assessment:4, quotation:3, negosias
 const ASSESS = [['interview','Wawancara calon franchisee'],['background','Pemeriksaan latar belakang: riwayat usaha dan reputasi'],['finansial','Verifikasi kemampuan finansial dan sumber dana'],['kyc','KYC: verifikasi identitas (KTP, NPWP)'],['komitmen','Komitmen mengikuti SOP dan pelatihan pusat']];
 const DOCS = [['ktp','KTP'],['npwp','NPWP'],['dana','Bukti dana (rekening koran 3 bulan terakhir)'],['foto','Foto lokasi']];
 const SOURCES = ['Pameran','Referensi','Kunjungan langsung','Event komunitas','Media sosial'];
-const CHANGE_TYPES = ['Diskon','Termin pembayaran','Ganti paket','Jadwal pembukaan','Lainnya'];
+const CHANGE_TYPES = ['Diskon','Termin pembayaran','Ganti paket','Ganti lokasi','Jadwal pembukaan','Lainnya'];
 const PRES_MODE = ['Tatap muka di kantor','Online (panggilan video)','Di lokasi pameran'];
 const VIS = [['1','1, tertutup'],['2','2'],['3','3'],['4','4'],['5','5, sangat terlihat']];
 const RATE = [['1','1, tidak layak'],['2','2'],['3','3'],['4','4'],['5','5, sangat layak']];
@@ -657,7 +657,7 @@ function actionOf(a) {
   switch (a.stage) {
     case 'baru': return `Tugaskan sales${a.triage ? ` (${a.triage.label.toLowerCase().replace('?','')})` : ''}`;
     case 'presentasi': return 'Presentasi bisnis dan kirim prospektus';
-    case 'survei': return a.survey && a.survey.revisiNote ? 'Survei ulang lokasi (revisi dari manajer)' : 'Survei lokasi';
+    case 'survei': return a.survey && a.survey.revisiNote ? 'Survei lokasi baru (ganti lokasi)' : 'Survei lokasi';
     case 'assessment': return 'Penilaian kelayakan calon franchisee';
     case 'quotation': return latest(a) ? `Revisi quotation ke versi ${latest(a).v + 1}` : 'Buat dan kirim quotation';
     case 'negosiasi': return 'Tindak lanjuti dan catat tanggapan calon franchisee';
@@ -855,7 +855,7 @@ function card(a) {
       <span class="card-city">${esc(a.city)}${a.sales && !noSales ? `, sales ${esc(first(a.sales))}` : ''}</span>
       <span class="card-foot"><span class="chip">${PAKET[a.paket].nama}</span><span class="chip ${sc.level[0]}">Skor ${sc.c}</span>
         ${noSales ? '<span class="chip blue">Belum ada sales</span>' : ''}${noSales && a.triage ? `<span class="chip ${a.triage.code === 'duplikat' ? 'bad' : 'warn'}">${a.triage.label}</span>` : ''}
-        ${a.stage === 'quotation' && latest(a) ? '<span class="chip aren">Revisi</span>' : ''}${a.stage === 'survei' && a.survey && a.survey.revisiNote ? '<span class="chip aren">Revisi lokasi</span>' : ''}${a.isNew && a.stage === 'presentasi' ? '<span class="chip dark">Baru</span>' : ''}</span>
+        ${a.stage === 'quotation' && latest(a) ? '<span class="chip aren">Revisi</span>' : ''}${a.stage === 'survei' && a.survey && a.survey.revisiNote ? '<span class="chip aren">Lokasi baru</span>' : ''}${a.isNew && a.stage === 'presentasi' ? '<span class="chip dark">Baru</span>' : ''}</span>
       ${p ? `<span class="card-pic">Menunggu ${esc(uname(p))}</span>` : ''}
       ${dTxt}
     </button>
@@ -1015,7 +1015,7 @@ function trackerHTML(a) {
       note = i === 5 ? 'Quotation menunggu tanggapanmu, lihat di bawah.'
         : i === 4 && ch ? `Permintaan perubahan ${ch.type.toLowerCase()} sedang didiskusikan. Quotation versi ${L.v + 1} akan dikirim ke emailmu.`
         : `Sedang diproses, perkiraan selesai dalam ${SLA[a.stage]} hari kerja.`;
-      if (i === 2 && a.survey && a.survey.revisiNote) note = 'Tim kemitraan meminta peninjauan ulang lokasi. Sales pendamping akan menghubungimu.';
+      if (i === 2 && a.survey && a.survey.revisiNote) note = 'Sales pendamping meninjau lokasi baru yang kamu ajukan.';
     }
     const when = (i < cur || ok) ? doneAt(a, i) : '';
     return `<li class="${cls}"><span class="dot"></span><div class="st-row"><span class="tl-title">${i + 1}. ${t}</span>${when ? `<span class="small">${when}</span>` : ''}</div>
@@ -1041,7 +1041,7 @@ function portalQuote(a) {
   let act = '';
   if (a.stage === 'negosiasi' && L.status === 'terkirim') {
     let form = '';
-    if (pt.resp === 'change') form = `<div class="formbox"><div class="field"><label for="ng-type">Apa yang ingin diubah?</label><select id="ng-type">${CHANGE_TYPES.map(t => `<option>${t}</option>`).join('')}</select></div>
+    if (pt.resp === 'change') form = `<div class="formbox"><div class="field"><label for="ng-type">Apa yang ingin diubah?</label>${typeSelect()}</div>${addrField()}
       <div class="field"><label for="ng-note">Detail permintaan</label><textarea id="ng-note" placeholder="Contoh: biaya kemitraan dibayar dalam 2 termin"></textarea></div>
       <div class="actions"><button class="btn btn-primary" onclick="portalChange('${a.id}')">Kirim permintaan</button><button class="btn btn-ghost" onclick="state.portal.resp=null;render()">Batal</button></div></div>`;
     if (pt.resp === 'withdraw') form = `<div class="formbox"><div class="field"><label for="ng-note">Alasan tidak melanjutkan</label><textarea id="ng-note"></textarea></div>
@@ -1062,13 +1062,9 @@ function portalAgree(id) {
   state.portal.resp = null; toast('Terima kasih, persetujuanmu tercatat. Menunggu persetujuan akhir Kopi Koma.'); render();
 }
 function portalChange(id) {
-  const a = find(id), L = latest(a), type = document.getElementById('ng-type').value, note = document.getElementById('ng-note').value.trim();
-  if (!note) return toast('Tulis detail permintaan perubahan.','bad');
-  L.status = 'perubahan diminta'; a.changes.push({v:L.v, type, note, result:null});
-  setStage(a,'quotation'); log(a, `Calon franchisee meminta perubahan: ${type} (lewat portal mitra)`, FR);
-  notify(a, a.sales, `${a.name} meminta perubahan ${type.toLowerCase()} lewat portal mitra. Diskusikan dengan manajer, lalu kirim quotation versi ${L.v + 1}.`);
-  notify(a, MANAGER, `${a.name} meminta perubahan ${type.toLowerCase()}. ${uname(a.sales)} akan mendiskusikannya denganmu sebelum mengirim quotation versi ${L.v + 1}.`);
-  state.portal.resp = null; toast('Permintaan perubahan terkirim ke sales pendamping.'); render();
+  const r = applyChange(find(id), FR);
+  if (!r) return;
+  state.portal.resp = null; toast(r === 'lokasi' ? 'Lokasi baru terkirim. Sales pendamping akan menjadwalkan survei lokasi.' : 'Permintaan perubahan terkirim ke sales pendamping.'); render();
 }
 function portalWithdraw(id) {
   const a = find(id), note = document.getElementById('ng-note').value.trim();
@@ -1142,6 +1138,7 @@ function initQb(a) {
   const L = latest(a), ch = pendingChange(a);
   const qb = {paket:L ? L.paket : a.paket, lokasi:L ? L.lokasi : a.alamat, buka:L ? L.buka : monthLabel(2), diskon:L ? L.diskon : 0, skema:L ? L.skema : 'Lunas', note:L ? L.note : 'Termasuk pendampingan grand opening selama 3 hari.', result:''};
   if (ch && ch.type === 'Termin pembayaran') qb.skema = '2 termin';
+  if (ch && ch.type === 'Ganti lokasi') qb.lokasi = a.alamat;
   return qb;
 }
 function saveQb() {
@@ -1233,7 +1230,8 @@ function selField(id, label, opts) {
 }
 function tabSurvei(a) {
   const head = `<div class="callout">Lokasi yang diajukan: ${esc(a.alamat)} (${esc(a.jenisLokasi)}, ${esc(a.statusLokasi).toLowerCase()})</div>`;
-  if (a.stage === 'survei') return !canAct(a) ? viewOnly(a) : takeover(a) + head + (a.survey && a.survey.revisiNote ? `<div class="callout bad">Manajer meminta revisi lokasi: ${esc(a.survey.revisiNote)}</div>` : '') + `<div class="grid2">
+  if (a.stage === 'survei') return !canAct(a) ? viewOnly(a) : takeover(a) + head + (a.survey && a.survey.prevAlamat ? `<div class="callout">Calon franchisee mengganti lokasi saat negosiasi (sebelumnya ${esc(a.survey.prevAlamat)}).${a.survey.revisiNote ? ' Catatan: ' + esc(a.survey.revisiNote.replace(/[.!?]?$/, '.')) : ''} Setelah layak, lanjut ke quotation revisi tanpa penilaian kelayakan ulang.</div>` : '')
+      + (aiScore(a).l < 60 ? `<div class="callout bad">Skor lokasi AI rendah (${aiScore(a).l} dari 100). Sesuai SOP, diskusikan dengan manajer sebelum menyatakan lokasi layak, supaya masalah lokasi tidak baru muncul di persetujuan akhir.</div>` : '') + `<div class="grid2">
       <div class="field"><label for="sv-traffic">Pejalan kaki per jam saat jam sibuk</label><input id="sv-traffic" type="number" min="0"></div>
       <div class="field"><label for="sv-komp">Kedai minuman dalam radius 500 m</label><input id="sv-komp" type="number" min="0"></div>
       ${selField('sv-vis','Visibilitas dari jalan',VIS)}${selField('sv-parkir','Parkir',['Tersedia','Terbatas','Tidak ada'])}
@@ -1298,9 +1296,9 @@ function tabNego(a) {
   const L = latest(a);
   if (a.stage === 'negosiasi') {
     let form = '';
-    if (state.negoForm === 'change') form = `<div class="formbox"><div class="field"><label for="ng-type">Jenis perubahan yang diminta</label><select id="ng-type">${CHANGE_TYPES.map(t => `<option>${t}</option>`).join('')}</select></div>
+    if (state.negoForm === 'change') form = `<div class="formbox"><div class="field"><label for="ng-type">Jenis perubahan yang diminta</label>${typeSelect()}</div>${addrField()}
       <div class="field"><label for="ng-note">Detail permintaan</label><textarea id="ng-note" placeholder="Contoh: minta potongan biaya kemitraan Rp 3 jt"></textarea></div>
-      <p class="small">Setelah dicatat, aplikasi kembali ke tahap Quotation. Sales mendiskusikan permintaan ini dengan manajer di luar sistem, lalu mengirim quotation versi ${L.v + 1}.</p>
+      <p class="small">Setelah dicatat, aplikasi kembali ke tahap Quotation. Sales mendiskusikan permintaan ini dengan manajer di luar sistem, lalu mengirim quotation versi ${L.v + 1}. Khusus ganti lokasi, aplikasi kembali ke survei lokasi baru dulu.</p>
       <div class="actions"><button class="btn btn-primary" onclick="negoChange('${a.id}')">Catat permintaan</button><button class="btn btn-ghost" onclick="state.negoForm=null;renderDrawer()">Batal</button></div></div>`;
     if (state.negoForm === 'withdraw') form = `<div class="formbox"><div class="field"><label for="ng-note">Alasan calon franchisee mundur</label><textarea id="ng-note"></textarea></div>
       <div class="actions"><button class="btn btn-danger" onclick="negoWithdraw('${a.id}')">Tutup aplikasi</button><button class="btn btn-ghost" onclick="state.negoForm=null;renderDrawer()">Batal</button></div></div>`;
@@ -1311,8 +1309,8 @@ function tabNego(a) {
   }
   if (a.stage === 'approval') return !canAct(a) ? viewOnly(a) : takeover(a) + `<div class="callout ok">${esc(a.name)} menyetujui quotation versi ${L.v} senilai <b>${rp(qValue(L))}</b>. Tinjau laporan survei, hasil penilaian kelayakan, dan quotation sebelum memutuskan.</div>
       ${scoreCard(a)}${quoteHTML(L)}
-      <div class="field"><label for="mg-note">Catatan keputusan</label><textarea id="mg-note" placeholder="Wajib diisi jika ditolak atau minta revisi lokasi"></textarea></div>
-      <div class="actions"><button class="btn btn-ok" onclick="finalDecision('${a.id}','ok')">Setujui kemitraan</button><button class="btn btn-ghost" onclick="finalDecision('${a.id}','lokasi')">Minta revisi lokasi</button><button class="btn btn-danger" onclick="finalDecision('${a.id}','tolak')">Tolak</button></div>${changesHTML(a)}`;
+      <div class="field"><label for="mg-note">Catatan keputusan</label><textarea id="mg-note" placeholder="Wajib diisi jika ditolak"></textarea></div>
+      <div class="actions"><button class="btn btn-ok" onclick="finalDecision('${a.id}','ok')">Setujui kemitraan</button><button class="btn btn-danger" onclick="finalDecision('${a.id}','tolak')">Tolak</button></div>${changesHTML(a)}`;
   if (a.stage === 'disetujui') return `<div class="callout ok">Kemitraan disetujui. Nilai kesepakatan ${rp(dealValue(a))}. Langkah berikutnya: perjanjian waralaba dikirim lewat <b>Privy</b> untuk ditandatangani secara elektronik oleh calon franchisee dan Kopi Koma.</div>${quoteHTML(L)}${versionsHTML(a)}${changesHTML(a)}`;
   if (a.stage === 'ditolak') return `<div class="callout bad">Aplikasi ditutup${a.rejectReason ? ': ' + esc(a.rejectReason) : '.'}</div>${changesHTML(a)}`;
   return '<p class="muted">Negosiasi dimulai setelah quotation dikirim.</p>';
@@ -1408,14 +1406,37 @@ function negoAgree(id) {
   notify(a, MANAGER, `${a.name} menyetujui quotation versi ${L.v} (${rp(qValue(L))}). Perlu persetujuan akhir.`);
   toast(`Tercatat. Notifikasi otomatis dikirim ke ${uname(MANAGER)} untuk persetujuan akhir.`); render();
 }
-function negoChange(id) {
-  const a = find(id), L = latest(a), type = document.getElementById('ng-type').value, note = document.getElementById('ng-note').value.trim();
-  if (!note) return toast('Tulis detail permintaan perubahan.','bad');
-  L.status = 'perubahan diminta'; a.changes.push({v:L.v, type, note, result:null}); state.negoForm = null;
-  setStage(a,'quotation'); log(a, `Calon franchisee meminta perubahan: ${type}`);
-  state.qb = initQb(a); state.tab = 'quotation';
+const addrField = () => `<div class="field" id="ng-addr-wrap" hidden><label for="ng-addr">Alamat lokasi baru</label><input id="ng-addr" placeholder="Contoh: Jl. Margonda Raya No. 21, Depok"><span class="help">Pengajuan kembali ke survei lokasi baru, lalu langsung ke quotation tanpa penilaian kelayakan ulang.</span></div>`;
+const typeSelect = () => `<select id="ng-type" onchange="document.getElementById('ng-addr-wrap').hidden=this.value!=='Ganti lokasi'">${CHANGE_TYPES.map(t => `<option>${t}</option>`).join('')}</select>`;
+/* Permintaan perubahan saat negosiasi, dari sales (by = ME) atau dari portal mitra (by = FR).
+   Ganti lokasi kembali ke survei lokasi baru; jenis lain kembali ke quotation. */
+function applyChange(a, by) {
+  const L = latest(a), type = document.getElementById('ng-type').value, note = document.getElementById('ng-note').value.trim();
+  const addr = (document.getElementById('ng-addr')?.value || '').trim(), via = by === FR ? ' (lewat portal mitra)' : '';
+  if (type === 'Ganti lokasi' && !addr) { toast('Isi alamat lokasi baru.','bad'); return null; }
+  if (type !== 'Ganti lokasi' && !note) { toast('Tulis detail permintaan perubahan.','bad'); return null; }
+  L.status = 'perubahan diminta';
+  if (type === 'Ganti lokasi') {
+    a.changes.push({v:L.v, type, note:`Lokasi baru: ${addr}${note ? '. ' + note : ''}`, result:null});
+    a.survey = {revisiNote:note, prevAlamat:a.alamat}; a.alamat = addr; a.map = genMap(addr + a.city);
+    setStage(a,'survei'); log(a, `Calon franchisee meminta ganti lokasi ke ${addr}${via}`, by);
+    notify(a, a.sales, `${a.name} mengganti lokasi outlet ke ${addr}. Lakukan survei lokasi baru.`);
+    notify(a, MANAGER, `${a.name} mengganti lokasi outlet ke ${addr}. ${uname(a.sales)} akan survei lokasi baru sebelum mengirim quotation versi ${L.v + 1}.`);
+    return 'lokasi';
+  }
+  a.changes.push({v:L.v, type, note, result:null});
+  setStage(a,'quotation'); log(a, `Calon franchisee meminta perubahan: ${type}${via}`, by);
+  if (by === FR) notify(a, a.sales, `${a.name} meminta perubahan ${type.toLowerCase()} lewat portal mitra. Diskusikan dengan manajer, lalu kirim quotation versi ${L.v + 1}.`);
   notify(a, MANAGER, `${a.name} meminta perubahan ${type.toLowerCase()}. ${uname(a.sales)} akan mendiskusikannya denganmu sebelum mengirim quotation versi ${L.v + 1}.`);
-  toast(`Permintaan tercatat. Diskusikan dengan manajer, lalu kirim quotation versi ${L.v + 1}.`); render();
+  return 'quotation';
+}
+function negoChange(id) {
+  const a = find(id), v = latest(a).v, r = applyChange(a, ME);
+  if (!r) return;
+  state.negoForm = null;
+  if (r === 'lokasi') { state.tab = 'survei'; toast('Ganti lokasi tercatat. Lakukan survei lokasi baru, lalu kirim quotation revisi.'); }
+  else { state.qb = initQb(a); state.tab = 'quotation'; toast(`Permintaan tercatat. Diskusikan dengan manajer, lalu kirim quotation versi ${v + 1}.`); }
+  render();
 }
 function negoWithdraw(id) {
   const a = find(id), note = document.getElementById('ng-note').value.trim();
@@ -1428,10 +1449,6 @@ function finalDecision(id, act) {
   if (act === 'ok') {
     setStage(a,'disetujui'); a.approvedAt = TODAY.toISOString(); log(a,'Persetujuan akhir: kemitraan disetujui');
     notify(a, a.sales, `Kemitraan ${a.name} disetujui. Perjanjian waralaba dikirim lewat Privy untuk tanda tangan elektronik, dampingi prosesnya.`); toast(`Kemitraan disetujui. Nilai kesepakatan ${rp(dealValue(a))}.`);
-  } else if (act === 'lokasi') {
-    a.survey = {revisiNote:note}; setStage(a,'survei'); log(a, `Persetujuan akhir: minta revisi lokasi (${note})`);
-    notify(a, a.sales, `Manajer meminta revisi lokasi untuk ${a.name}: ${note}`); state.tab = 'survei';
-    toast(`Dikembalikan ke survei lokasi. Notifikasi otomatis dikirim ke ${uname(a.sales)}.`);
   } else {
     reject(a, 6, note, 'Persetujuan akhir: ditolak'); notify(a, a.sales, `Kemitraan ${a.name} ditolak pada persetujuan akhir.`); toast('Aplikasi ditolak.');
   }
