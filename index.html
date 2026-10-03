@@ -350,10 +350,22 @@ footer{max-width:1360px;margin:0 auto;padding:0 24px 30px;font-size:12px;color:v
 .fl-x{position:absolute;z-index:2;font-size:10.5px;font-weight:700;color:var(--bad);white-space:nowrap;line-height:1.25}
 .fl-lbl{font:700 10.5px 'Plus Jakarta Sans',system-ui,sans-serif;fill:var(--muted);paint-order:stroke;stroke:#fff;stroke-width:4px;stroke-linejoin:round}
 .fl-lbl.loop{fill:var(--aren-ink)}
+.pt-nav{display:flex;gap:4px;margin-right:auto}
+.pt-nav button{border:0;background:none;color:#CDB9A6;font-weight:700;font-size:14px;padding:8px 12px;border-radius:999px;cursor:pointer}
+.pt-nav button[aria-current="page"]{background:rgba(255,255,255,.12);color:#fff}
+.flow-bar .logo{margin-right:8px}
+.timeline li.rej .dot{background:var(--bad);border-color:var(--bad)}
+.timeline li.rej .tl-title{color:var(--bad)}
+.timeline .st-row{display:flex;justify-content:space-between;gap:10px}
+.lg-cta{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px;padding-top:20px;border-top:1px solid rgba(255,255,255,.14)}
+.lg-cta p{flex-basis:100%;max-width:none;margin:0;color:#CDB9A6;font-size:13px;font-weight:700}
+.lg-cta .lg-flow{margin-top:0}
+.lg-flow.solid{background:#E39A3B;border-color:#E39A3B;color:var(--roast)}
+.lg-flow.solid:hover{background:#EDA94F}
 .both{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0}
 .steps td{vertical-align:top;font-size:14px}
 .steps td:first-child{font-weight:800;white-space:nowrap}
-@media (max-width:760px){.both{grid-template-columns:1fr}.flow-bar{padding:10px 14px}.flow-bar .logo span{display:none}}
+@media (max-width:760px){.both{grid-template-columns:1fr}.flow-bar{padding:10px 14px;flex-wrap:wrap;gap:8px}.flow-bar .logo span{display:none}.pt-nav{order:3;width:100%}.pt-nav button{padding:6px 10px;font-size:13px}}
 </style>
 </head>
 <body>
@@ -444,6 +456,8 @@ const TASK_ACCESS = [
   ['7. Approval akhir', ['✓','✓','–','–']]
 ];
 const uname = k => USERS[k].name;
+const FR = 'franchisee';
+const byLabel = (k, full) => !k ? (full ? 'Sistem' : 'Sistem (otomatis)') : k === FR ? 'Calon franchisee (portal mitra)' : full ? person(k) : uname(k);
 const person = k => `${USERS[k].name} (${USERS[k].role})`;
 const first = k => USERS[k].name.split(' ')[0];
 function salesFor(city) {
@@ -769,7 +783,7 @@ function render() {
   const top = document.getElementById('topbar'), foot = document.getElementById('foot');
   if (!ME) {
     top.hidden = true; foot.hidden = true;
-    document.getElementById('main').innerHTML = state.flowOpen
+    document.getElementById('main').innerHTML = state.portal ? portalHTML() : state.flowOpen
       ? `<div class="flow-bar"><div class="logo"><b>kopi koma<i>,</i></b><span>Partner Portal</span></div><button class="btn btn-sm" onclick="closeFlowPublic()">Kembali ke halaman masuk</button></div><div class="wrap">${viewFlow()}</div>`
       : loginHTML();
     ['drawer','overlay'].forEach(id => document.getElementById(id).classList.remove('open'));
@@ -794,6 +808,7 @@ function loginHTML() {
       <div class="logo"><b>kopi koma<i>,</i></b><span>Partner Portal</span></div>
       <h1>Satu tempat untuk seluruh proses kemitraan.</h1>
       <button class="lg-flow" onclick="openFlowPublic()">Lihat alur bisnis end-to-end</button>
+      <div class="lg-cta"><p>Untuk calon franchisee</p><button class="lg-flow solid" onclick="openPortal('form')">Daftar jadi mitra</button><button class="lg-flow" onclick="openPortal('track')">Cek status pengajuan</button></div>
     </section>
     <section class="lg-form">
       <div class="lg-card">
@@ -809,7 +824,7 @@ function loginHTML() {
   </div>`;
 }
 function startSession(k) {
-  ME = k; state.loginErr = ''; state.flowOpen = false; state.view = 'pipeline'; state.sel = null; state.addOpen = false; state.apv = null; state.hint = true; state.taskFilter = 'all';
+  ME = k; state.loginErr = ''; state.flowOpen = false; state.portal = null; state.view = 'pipeline'; state.sel = null; state.addOpen = false; state.apv = null; state.hint = true; state.taskFilter = 'all';
   state.notifOpen = false; state.menuOpen = false; state.profile = k; render(); window.scrollTo(0,0);
   toast(`Masuk sebagai ${person(k)}`);
 }
@@ -985,6 +1000,167 @@ function viewProfile() {
   </div>`;
 }
 
+/* ===================== partner portal (calon franchisee) ===================== */
+const PORTAL_STEPS = [
+  ['Pengajuan diterima','Tim kemitraan memeriksa data dan menunjuk sales pendamping sesuai wilayahmu.'],
+  ['Presentasi bisnis','Sales pendamping menjelaskan model bisnis dan mengirim prospektus penawaran waralaba.'],
+  ['Survei lokasi','Sales meninjau lokasi yang kamu ajukan.'],
+  ['Penilaian kelayakan','Interview, verifikasi identitas dan kemampuan finansial.'],
+  ['Quotation dikirim','Penawaran paket kemitraan dikirim ke email dan bisa dilihat di sini.'],
+  ['Persetujuan kamu','Kamu meninjau quotation: setuju, minta perubahan, atau mundur.'],
+  ['Persetujuan Kopi Koma','Manajer kemitraan memberi persetujuan akhir.']
+];
+const PF_REQ = ['name','phone','email','city','modal','sumber','pengalaman','kelola','alamat','jenis','status'];
+function openPortal(view) { state.portal = {view, id:'', key:'', err:'', resp:null}; state.form = blankForm(); state.formErr = {}; render(); window.scrollTo(0,0); }
+function closePortal() { state.portal = null; render(); window.scrollTo(0,0); }
+function portalHTML() {
+  const pv = state.portal.view;
+  return `<div class="flow-bar"><div class="logo"><b>kopi koma<i>,</i></b><span>Portal Mitra</span></div>
+    <nav class="pt-nav"><button ${pv === 'form' ? 'aria-current="page"' : ''} onclick="openPortal('form')">Daftar jadi mitra</button><button ${pv === 'track' ? 'aria-current="page"' : ''} onclick="openPortal('track')">Cek status pengajuan</button></nav>
+    <button class="btn btn-sm" onclick="closePortal()">Ke halaman staf</button></div>
+  <div class="f-wrap">${pv === 'form' ? portalForm() : portalTrack()}</div>`;
+}
+function portalForm() {
+  const f = state.form, e = state.formErr;
+  return `<section class="hero"><h1>Buka outlet Kopi Koma <i>di kotamu.</i></h1><p>Isi formulir pendaftaran, lalu pantau setiap tahap peninjauan sampai kemitraan disepakati, semuanya dari portal ini.</p></section>
+  <div class="paket-list" style="margin-bottom:22px">${Object.entries(PAKET).map(([k,p]) => `<div class="paket"><h3>${p.nama}</h3><div class="price">${rp(total(k))}</div>
+    <dl class="mini"><dt>Royalti</dt><dd>${p.royalti}</dd><dt>Estimasi balik modal</dt><dd>${p.bep}</dd></dl></div>`).join('')}</div>
+  <div class="formcard"><div class="d-top"><h2>Formulir pendaftaran mitra</h2><button class="link" onclick="saveForm();portalDemoFill()">Isi data contoh</button></div>
+    <p class="sec-title" style="margin-top:6px">Data diri</p>
+    <div class="grid2">${fIn('name','Nama lengkap')}${fIn('phone','Nomor HP','tel')}${fIn('email','Email','email','Status pengajuan dan quotation dikirim ke email ini')}${fIn('city','Kota domisili')}</div>
+    <p class="sec-title">Paket dan modal</p>
+    <div class="grid2">${fSel('paket','Paket yang diminati', Object.entries(PAKET).map(([k,p]) => [k, `${p.nama} (${rp(total(k))})`]))}
+      ${fIn('modal','Modal tersedia (Rp)','number')}
+      ${fSel('sumber','Sumber modal',P(['Dana pribadi','Patungan dengan rekan','Pinjaman bank']))}
+      ${fSel('pengalaman','Pengalaman usaha',P(['Belum pernah usaha','Pernah usaha non-F&B','Pernah usaha F&B']))}
+      ${fSel('kelola','Rencana pengelolaan',P(['Dikelola sendiri','Dikelola karyawan, dipantau sendiri','Investor pasif']))}</div>
+    <p class="sec-title">Rencana lokasi</p>
+    ${fIn('alamat','Alamat lokasi yang diajukan')}
+    <div class="grid2">${fSel('jenis','Jenis lokasi',P(['Dekat sekolah/kampus','Ruko / area perkantoran','Ruko 2 lantai','Mall / foodcourt','Pemukiman']))}
+      ${fSel('status','Status lokasi',P(['Milik sendiri','Sewa 1 tahun','Sewa 3 tahun','Sewa 5 tahun']))}</div>
+    <p class="sec-title">Dokumen</p>
+    ${DOCS.map(([k,l]) => `<div class="field"><label for="f-${k}">${l}${k === 'ktp' ? '' : ' (opsional, bisa menyusul)'}</label><input id="f-${k}" type="file" accept=".jpg,.jpeg,.png,.pdf" onchange="setPortalFile('${k}',this)">${f[k] ? `<span class="help">Terunggah: ${esc(f[k])}</span>` : ''}${e[k] ? `<span class="err">${e[k]}</span>` : ''}</div>`).join('')}
+    <label class="consent"><input type="checkbox" id="f-consent" ${f.consent ? 'checked' : ''}><span>Saya menyetujui Kopi Koma memproses data pribadi saya, termasuk dokumen identitas dan keuangan, untuk keperluan seleksi kemitraan sesuai UU Pelindungan Data Pribadi.</span></label>
+    ${e.consent ? `<p class="err" style="margin-top:6px">${e.consent}</p>` : ''}
+    <div class="actions" style="margin-top:20px"><button class="btn btn-primary" onclick="submitPortal()">Kirim pendaftaran</button></div>
+  </div>`;
+}
+function setPortalFile(k, input) { saveForm(); state.form[k] = input.files[0] ? input.files[0].name : ''; delete state.formErr[k]; render(); }
+function portalDemoFill() {
+  Object.assign(state.form, {name:'Sari Wulandari', phone:'0819-7731-2045', email:'sari.wulandari@mail.com', city:'Tangerang Selatan', paket:'gerobak', modal:'55000000',
+    sumber:'Dana pribadi', pengalaman:'Pernah usaha non-F&B', kelola:'Dikelola sendiri', alamat:'Jl. Pajajaran No. 12, Pamulang, Tangerang Selatan',
+    jenis:'Dekat sekolah/kampus', status:'Sewa 3 tahun', ktp:'ktp_sari.jpg', npwp:'npwp_sari.pdf', dana:'rekening_koran_sari.pdf', foto:'foto_lokasi_pamulang.jpg', consent:true});
+  state.formErr = {}; render();
+}
+function submitPortal() {
+  saveForm(); const f = state.form, err = {};
+  PF_REQ.forEach(k => { if (!f[k]) err[k] = 'Wajib diisi.'; });
+  if (f.email && !/^\S+@\S+\.\S+$/.test(f.email)) err.email = 'Format email belum benar.';
+  if (!f.ktp) err.ktp = 'KTP wajib diunggah.';
+  if (!f.consent) err.consent = 'Persetujuan pemrosesan data pribadi diperlukan untuk mengirim pendaftaran.';
+  state.formErr = err;
+  if (Object.keys(err).length) { render(); toast('Lengkapi isian yang ditandai.','bad'); return; }
+  const a = newApp({name:f.name, phone:f.phone, email:f.email, city:f.city, paket:f.paket, modal:Number(f.modal), sumber:f.sumber, pengalaman:f.pengalaman,
+    pengelolaan:f.kelola, alamat:f.alamat, jenisLokasi:f.jenis, statusLokasi:f.status, docs:{ktp:f.ktp, npwp:f.npwp, dana:f.dana, foto:f.foto},
+    source:'Website (mandiri)', inputBy:null, sales:null, stage:'baru'});
+  log(a, 'Lead masuk dari portal mitra (pendaftaran mandiri), persetujuan UU PDP diberikan', FR);
+  routeNew(a);
+  state.form = blankForm(); state.formErr = {};
+  state.portal = {view:'track', id:a.id, key:a.email, err:'', open:a.id, fresh:true, resp:null};
+  render(); window.scrollTo(0,0);
+}
+function portalLookup(id, key) {
+  const a = find((id || '').trim().toUpperCase()), k = (key || '').trim().toLowerCase();
+  if (!a || (a.email.toLowerCase() !== k && a.phone.replace(/\D/g,'') !== k.replace(/\D/g,''))) {
+    state.portal = {...state.portal, view:'track', id, key, err:'Nomor pengajuan dan email/HP tidak cocok.', open:null}; render(); return;
+  }
+  state.portal = {...state.portal, view:'track', id:a.id, key, err:'', open:a.id, fresh:false, resp:null}; render();
+}
+const PORTAL_DEMO = [['KK-0250','Menunggu persetujuanmu atas quotation'],['KK-0249','Permintaan perubahan sedang diproses'],['KK-0251','Menunggu persetujuan Kopi Koma'],['KK-0252','Kemitraan disepakati'],['KK-0246','Penilaian kelayakan']];
+function portalTrack() {
+  const pt = state.portal, a = pt.open ? find(pt.open) : null;
+  const look = `<div class="formcard"><h2>Cek status pengajuan</h2><p class="muted">Masukkan nomor pengajuan dari email konfirmasi, beserta email atau nomor HP yang kamu daftarkan.</p>
+    <div class="grid2"><div class="field"><label for="pt-id">Nomor pengajuan</label><input id="pt-id" value="${esc(pt.id)}" placeholder="KK-0000"></div>
+      <div class="field"><label for="pt-key">Email atau nomor HP</label><input id="pt-key" value="${esc(pt.key)}" onkeydown="if(event.key==='Enter')portalLookup(document.getElementById('pt-id').value,this.value)"></div></div>
+    ${pt.err ? `<p class="err" role="alert">${pt.err}</p>` : ''}
+    <button class="btn btn-primary" onclick="portalLookup(document.getElementById('pt-id').value,document.getElementById('pt-key').value)">Cek status</button>
+    <p class="small" style="margin:16px 0 6px">Contoh pengajuan untuk demo:</p>
+    <div class="chips">${PORTAL_DEMO.map(([id,l]) => { const x = find(id); return x ? `<button class="pill" onclick="portalLookup('${id}','${esc(x.email)}')">${id}, ${esc(x.name)}: ${l}</button>` : ''; }).join('')}</div></div>`;
+  return a ? trackerHTML(a) + `<div style="margin-top:16px"><button class="link" onclick="state.portal.open=null;state.portal.fresh=false;render()">Cek pengajuan lain</button></div>` : look;
+}
+function trackerHTML(a) {
+  const pt = state.portal, cur = curStep(a), rej = a.stage === 'ditolak', ok = a.stage === 'disetujui', L = latest(a), ch = pendingChange(a);
+  const status = ok ? ['ok','Disepakati kedua pihak'] : rej ? ['bad','Tidak dilanjutkan'] : a.stage === 'negosiasi' ? ['warn','Menunggu tanggapanmu'] : ['blue','Sedang ditinjau'];
+  const items = PORTAL_STEPS.map(([t, d], i) => {
+    let cls = 'todo', note = '';
+    if (i < cur || ok) cls = 'done';
+    else if (i === cur && rej) { cls = 'rej'; note = i === 5 ? 'Kamu memilih tidak melanjutkan.' : 'Mohon maaf, pengajuan belum dapat dilanjutkan. Sales pendamping akan menghubungimu untuk penjelasan.'; }
+    else if (i === cur) {
+      cls = 'cur';
+      note = i === 5 ? 'Quotation menunggu tanggapanmu, lihat di bawah.'
+        : i === 4 && ch ? `Permintaan perubahan ${ch.type.toLowerCase()} sedang didiskusikan. Quotation versi ${L.v + 1} akan dikirim ke emailmu.`
+        : `Sedang diproses, perkiraan selesai dalam ${SLA[a.stage]} hari kerja.`;
+      if (i === 2 && a.survey && a.survey.revisiNote) note = 'Tim kemitraan meminta peninjauan ulang lokasi. Sales pendamping akan menghubungimu.';
+    }
+    const when = (i < cur || ok) ? doneAt(a, i) : '';
+    return `<li class="${cls}"><span class="dot"></span><div class="st-row"><span class="tl-title">${i + 1}. ${t}</span>${when ? `<span class="small">${when}</span>` : ''}</div>
+      <div class="small">${note || d}</div></li>`;
+  }).join('');
+  const salesCard = a.sales ? `<div class="pcard" style="margin:0"><span class="av">${initials(uname(a.sales))}</span><div class="pc-body"><b>${esc(uname(a.sales))}</b><div class="small">Sales pendamping, ${esc(USERS[a.sales].phone)}, ${esc(USERS[a.sales].email)}</div></div></div>`
+    : '<p class="small" style="margin:0">Sales pendamping sedang ditentukan oleh tim kemitraan.</p>';
+  return `${pt.fresh ? `<div class="callout ok"><b>Pendaftaran terkirim.</b> Nomor pengajuanmu <b>${a.id}</b>. Simpan nomor ini untuk cek status, konfirmasi juga dikirim ke ${esc(a.email)}.</div>` : ''}
+  <div class="formcard"><div class="d-top"><div><div class="small">${a.id}, paket ${PAKET[a.paket].nama}, ${esc(a.city)}</div><h2 style="margin:2px 0 0">${esc(a.name)}</h2></div><span class="chip ${status[0]}">${status[1]}</span></div>
+    <div style="margin:14px 0 18px">${salesCard}</div>
+    <ol class="timeline">${items}</ol>
+    ${ok ? `<div class="callout ok" style="margin:6px 0 0">Selamat, kemitraan disepakati kedua pihak dengan nilai ${rp(dealValue(a))}. Langkah berikutnya: penandatanganan perjanjian waralaba bersama sales pendamping.</div>` : ''}
+  </div>
+  ${portalQuote(a)}`;
+}
+function doneAt(a, i) {
+  const e = a.log.slice().reverse().find(l => STEP_DEF[i][2].test(l.text));
+  return e ? fmtDT(e.t).split(',')[0] : '';
+}
+function portalQuote(a) {
+  const L = latest(a); if (!L) return '';
+  const pt = state.portal;
+  let act = '';
+  if (a.stage === 'negosiasi' && L.status === 'terkirim') {
+    let form = '';
+    if (pt.resp === 'change') form = `<div class="formbox"><div class="field"><label for="ng-type">Apa yang ingin diubah?</label><select id="ng-type">${CHANGE_TYPES.map(t => `<option>${t}</option>`).join('')}</select></div>
+      <div class="field"><label for="ng-note">Detail permintaan</label><textarea id="ng-note" placeholder="Contoh: biaya kemitraan dibayar dalam 2 termin"></textarea></div>
+      <div class="actions"><button class="btn btn-primary" onclick="portalChange('${a.id}')">Kirim permintaan</button><button class="btn btn-ghost" onclick="state.portal.resp=null;render()">Batal</button></div></div>`;
+    if (pt.resp === 'withdraw') form = `<div class="formbox"><div class="field"><label for="ng-note">Alasan tidak melanjutkan</label><textarea id="ng-note"></textarea></div>
+      <div class="actions"><button class="btn btn-danger" onclick="portalWithdraw('${a.id}')">Saya tidak melanjutkan</button><button class="btn btn-ghost" onclick="state.portal.resp=null;render()">Batal</button></div></div>`;
+    act = `<div class="callout">Tinjau quotation di bawah. Dengan menekan <b>Setujui quotation</b>, kamu menyetujui penawaran ini dan pengajuan diteruskan ke Kopi Koma untuk persetujuan akhir.</div>
+      <div class="actions"><button class="btn btn-ok" onclick="portalAgree('${a.id}')">Setujui quotation</button><button class="btn btn-ghost" onclick="state.portal.resp='change';render()">Minta perubahan</button><button class="btn btn-danger" onclick="state.portal.resp='withdraw';render()">Tidak melanjutkan</button></div>${form}`;
+  } else if (L.status === 'disetujui franchisee' && a.stage === 'approval') act = `<div class="callout ok">Kamu sudah menyetujui quotation versi ${L.v}. Menunggu persetujuan akhir dari Kopi Koma.</div>`;
+  return `<div class="formcard" style="margin-top:16px"><div class="d-top"><h2>Quotation versi ${L.v}</h2>${qStatus(a, L)}</div>${act}<div class="preview" style="margin-top:12px">${quoteHTML(L)}</div>
+    ${a.quotes.length > 1 ? `<p class="small" style="margin:0">Versi sebelumnya: ${a.quotes.slice(0,-1).map(q => `versi ${q.v} (${rp(qValue(q))})`).join(', ')}.</p>` : ''}</div>`;
+}
+function portalAgree(id) {
+  const a = find(id), L = latest(a); L.status = 'disetujui franchisee';
+  setStage(a,'approval'); log(a, `Calon franchisee menyetujui quotation versi ${L.v} lewat portal mitra`, FR);
+  notify(a, MANAGER, `${a.name} menyetujui quotation versi ${L.v} (${rp(qValue(L))}) lewat portal mitra. Perlu approval akhir.`);
+  notify(a, a.sales, `${a.name} menyetujui quotation versi ${L.v} lewat portal mitra. Diteruskan ke manajer untuk approval akhir.`);
+  state.portal.resp = null; toast('Terima kasih, persetujuanmu tercatat. Menunggu persetujuan akhir Kopi Koma.'); render();
+}
+function portalChange(id) {
+  const a = find(id), L = latest(a), type = document.getElementById('ng-type').value, note = document.getElementById('ng-note').value.trim();
+  if (!note) return toast('Tulis detail permintaan perubahan.','bad');
+  L.status = 'perubahan diminta'; a.changes.push({v:L.v, type, note, result:null});
+  setStage(a,'quotation'); log(a, `Calon franchisee meminta perubahan: ${type} (lewat portal mitra)`, FR);
+  notify(a, a.sales, `${a.name} meminta perubahan ${type.toLowerCase()} lewat portal mitra. Diskusikan dengan manajer, lalu kirim quotation versi ${L.v + 1}.`);
+  notify(a, MANAGER, `${a.name} meminta perubahan ${type.toLowerCase()}. ${uname(a.sales)} akan mendiskusikannya denganmu sebelum mengirim quotation versi ${L.v + 1}.`);
+  state.portal.resp = null; toast('Permintaan perubahan terkirim ke sales pendamping.'); render();
+}
+function portalWithdraw(id) {
+  const a = find(id), note = document.getElementById('ng-note').value.trim();
+  if (!note) return toast('Tulis alasan tidak melanjutkan.','bad');
+  setStage(a,'ditolak'); a.rejectReason = note; a.rejectStep = 5; log(a, 'Calon franchisee mundur saat negosiasi (lewat portal mitra)', FR);
+  notify(a, a.sales, `${a.name} memilih tidak melanjutkan lewat portal mitra: ${note}`);
+  state.portal.resp = null; toast('Tanggapanmu tercatat.'); render();
+}
+
 /* ===================== business process (end-to-end) ===================== */
 const FL = {LW:124, CW:152, LH:150, HD:34, cols:17};
 const FL_LANES = ['Calon franchisee','Sales','Sistem (Partner Portal)','Reviewer','Manajer'];
@@ -992,7 +1168,7 @@ const FL_PHASES = [[0,3,'Pengajuan'],[4,5,'Presentasi'],[6,9,'Survei dan assessm
 const FL_SIZE = {task:[136,80], dec:[140,92], term:[132,58], note:[136,72]};
 const FL_NODES = [
   {id:'start', l:0, c:0, t:'term', txt:'Calon franchisee tertarik'},
-  {id:'f1', l:0, c:1, t:'task', k:'fr', txt:'Mandiri: daftar lewat website / Instagram', s:'Isi data + setuju UU PDP'},
+  {id:'f1', l:0, c:1, t:'task', k:'fr', txt:'Isi formulir di portal mitra', s:'Dari website / IG, setuju UU PDP'},
   {id:'s1', l:1, c:1, t:'task', txt:'Sales input lead dari pameran / referensi', s:'Termasuk setuju UU PDP'},
   {id:'y2', l:2, c:2, t:'task', k:'sys', no:1, txt:'Lead tercatat, cek wilayah, duplikat, kapasitas sales', s:'Batas 1 hari'},
   {id:'d3', l:2, c:3, t:'dec', txt:'Bisa ditugaskan otomatis?'},
@@ -1003,11 +1179,12 @@ const FL_NODES = [
   {id:'d7', l:1, c:7, t:'dec', txt:'Lokasi layak?', x:['bottom','Tidak: ditolak']},
   {id:'n7', l:2, c:7, t:'note', txt:'Skor kecocokan AI sebagai alat bantu keputusan'},
   {id:'r8', l:3, c:8, t:'task', no:4, txt:'Assessment: interview, background, finansial, KYC', s:'Batas 4 hari'},
+  {id:'n8', l:0, c:8, t:'note', txt:'Pantau status kapan saja lewat tracker portal mitra'},
   {id:'d9', l:3, c:9, t:'dec', txt:'Lolos assessment?', x:['bottom','Tidak: ditolak']},
   {id:'s10', l:1, c:10, t:'task', no:5, txt:'Buat quotation, kirim via email', s:'Batas 3 hari'},
   {id:'d11', l:0, c:12, t:'dec', txt:'Setuju dengan quotation?', x:['top','Mundur: aplikasi ditutup']},
   {id:'s11', l:1, c:12, t:'task', txt:'Diskusi dengan manajer (di luar sistem)'},
-  {id:'s12', l:1, c:13, t:'task', k:'ap', no:6, tag:'Persetujuan 1 dari 2', txt:'Sales catat persetujuan franchisee', s:'Batas 7 hari'},
+  {id:'s12', l:0, c:13, t:'task', k:'ap', no:6, tag:'Persetujuan 1 dari 2', txt:'Klik Setujui quotation di portal mitra', s:'Batas 7 hari'},
   {id:'d13', l:4, c:14, t:'dec', k:'ap', no:7, tag:'Persetujuan 2 dari 2', txt:'Approval akhir manajer', x:['br','Tolak: ditolak']},
   {id:'y14', l:2, c:15, t:'task', k:'sys', txt:'Status Disetujui, notifikasi otomatis, nilai deal tercatat'},
   {id:'end', l:0, c:16, t:'term', k:'end', txt:'Disepakati kedua pihak, lanjut ke perjanjian'}
@@ -1016,8 +1193,8 @@ const FL_EDGES = [
   ['start','f1','H'], ['start','s1','VH','Via sales'], ['f1','y2','HV'], ['s1','s4','H','Langsung ke sales'],
   ['y2','d3','H'], ['d3','s4','HV','Ya'], ['d3','m3','V','Tidak'], ['m3','s4','HV'],
   ['s4','d5','HV'], ['d5','s6','HV','Ya'], ['s6','d7','H'], ['d7','r8','HV','Layak'], ['n7','r8','VH',null,'note'],
-  ['r8','d9','H'], ['d9','s10','HV','Lolos'], ['s10','d11','VH','Kirim quotation'],
-  ['d11','s11','V','Minta perubahan'], ['s11','s10','H','Quotation versi baru','loop'], ['d11','s12','Z','Setuju'],
+  ['r8','d9','H'], ['d9','s10','HV','Lolos'], ['s10','d11','VH','Email + link portal'],
+  ['d11','s11','V','Minta perubahan'], ['s11','s10','H','Quotation versi baru','loop'], ['d11','s12','H','Ya'],
   ['s12','d13','Z'], ['d13','y14','HV','Setujui'], ['d13','s6','LOOP','Minta revisi lokasi, tanpa assessment ulang','loop'], ['y14','end','HV']
 ];
 function flowDiagram() {
@@ -1050,16 +1227,16 @@ function flowDiagram() {
   </div></div>`;
 }
 const FL_STEPS = [
-  ['1','Lead baru','Calon franchisee, Sistem, Manajer','Calon franchisee daftar mandiri (website/Instagram) atau sales menginput lead dari pameran/referensi. Persetujuan data pribadi (UU PDP) wajib. Lead mandiri otomatis ditugaskan ke sales sesuai wilayah.','Masuk antrean manajer bila kota di luar wilayah, terindikasi duplikat, atau sales sudah memegang 5 lead aktif.','1 hari'],
+  ['1','Lead baru','Calon franchisee, Sistem, Manajer','Calon franchisee mengisi formulir di portal mitra (tautan dari website/Instagram) atau sales menginput lead dari pameran/referensi. Calon franchisee menerima nomor pengajuan untuk memantau status di tracker. Persetujuan data pribadi (UU PDP) wajib. Lead mandiri otomatis ditugaskan ke sales sesuai wilayah.','Masuk antrean manajer bila kota di luar wilayah, terindikasi duplikat, atau sales sudah memegang 5 lead aktif.','1 hari'],
   ['2','Presentasi bisnis','Sales, Calon franchisee','Sales mempresentasikan model bisnis dan mengirim prospektus penawaran waralaba (wajib secara regulasi).','Calon franchisee lanjut, atau aplikasi ditutup bila tidak tertarik.','4 hari'],
   ['3','Survei lokasi','Sales','Sales menilai traffic, kompetitor, visibilitas, parkir, akses ojol, dan memberi rating lokasi.','Layak lanjut ke assessment, tidak layak ditolak.','5 hari'],
   ['4','Assessment','Reviewer','Interview, background check, verifikasi finansial, KYC, dan komitmen SOP. Skor kecocokan AI menjadi alat bantu, bukan penolakan otomatis.','Lolos lanjut ke quotation, tidak lolos ditolak.','4 hari'],
   ['5','Quotation','Sales','Sales menyusun quotation (paket, lokasi, target buka, diskon, skema bayar) dan mengirimnya ke email calon franchisee.','Quotation versi N terkirim.','3 hari'],
-  ['6','Negosiasi (persetujuan franchisee)','Calon franchisee, Sales, Manajer','Calon franchisee meninjau quotation. Sales mencatat tanggapannya: setuju, minta perubahan, atau mundur. Permintaan perubahan didiskusikan sales dengan manajer di luar sistem, lalu sales mengirim quotation versi berikutnya dengan catatan hasil diskusi.','Setuju menjadi persetujuan pihak franchisee dan otomatis diteruskan ke manajer.','7 hari'],
+  ['6','Negosiasi (persetujuan franchisee)','Calon franchisee, Sales, Manajer','Calon franchisee meninjau quotation di portal mitra (tautan dikirim bersama email quotation) dan memilih: setuju, minta perubahan, atau mundur. Bila menjawab lewat telepon atau tatap muka, sales yang mencatat. Permintaan perubahan didiskusikan sales dengan manajer di luar sistem, lalu sales mengirim quotation versi berikutnya dengan catatan hasil diskusi.','Setuju menjadi persetujuan pihak franchisee dan otomatis diteruskan ke manajer.','7 hari'],
   ['7','Approval akhir (persetujuan franchisor)','Manajer','Manajer meninjau seluruh riwayat: hasil survei, assessment, skor AI, dan quotation yang disetujui franchisee.','Setujui: kemitraan disepakati kedua pihak. Tolak: ditolak. Minta revisi lokasi: kembali ke survei tanpa assessment ulang.','2 hari']
 ];
 function viewFlow() {
-  return `<div class="page-head"><div><h1>Alur bisnis end-to-end</h1><p class="sub">Dari pengajuan oleh calon franchisee sampai quotation disetujui kedua pihak: calon franchisee dan Kopi Koma sebagai franchisor.</p></div></div>
+  return `<div class="page-head"><div><h1>Alur bisnis end-to-end</h1><p class="sub">Dari pengajuan oleh calon franchisee sampai quotation disetujui kedua pihak: calon franchisee dan Kopi Koma sebagai franchisor. Calon franchisee mendaftar, memantau status, dan menyetujui quotation lewat portal mitra.</p></div></div>
   <div class="fl-legend">
     <span><i></i>Aktivitas</span><span><i class="fr"></i>Aktivitas calon franchisee</span><span><i class="sys"></i>Otomatis oleh sistem</span>
     <span><i class="dec"></i>Keputusan</span><span><i class="ap"></i>Titik persetujuan</span><span><i class="note"></i>Alat bantu</span>
@@ -1069,7 +1246,7 @@ function viewFlow() {
   <p class="small" style="margin-top:8px">Angka 1 sampai 7 sesuai tahap di pipeline. Batas waktu dihitung per tahap, pengingat otomatis dikirim lewat dashboard dan email ke PIC dan manajer bila terlewat.</p>
   <div class="both">
     <section class="panel"><span class="chip ok">Persetujuan 1 dari 2</span><h2 style="margin-top:8px">Pihak calon franchisee</h2>
-      <p class="muted">Calon franchisee menyetujui quotation yang dikirim via email. Sales mencatat persetujuan beserta versi quotation yang disetujui, sehingga nilai deal terkunci dan tercatat di audit trail.</p></section>
+      <p class="muted">Calon franchisee menekan Setujui quotation di portal mitra. Versi quotation yang disetujui terkunci sebagai nilai deal dan tercatat di audit trail. Bila calon franchisee menjawab lewat telepon, sales mencatat persetujuannya di sistem.</p></section>
     <section class="panel"><span class="chip ok">Persetujuan 2 dari 2</span><h2 style="margin-top:8px">Pihak franchisor (Kopi Koma)</h2>
       <p class="muted">Manajer memberi approval akhir atas quotation yang sudah disetujui calon franchisee. Setelah disetujui, status menjadi Disetujui, sales menerima notifikasi untuk lanjut ke perjanjian, dan nilai deal masuk ke pencapaian revenue.</p></section>
   </div>
@@ -1109,7 +1286,7 @@ function renderApproval() {
     let cls, chip, txt, extra = '';
     if (i < cur) {
       cls = 'done'; chip = 'ok'; txt = doneTxt;
-      const by = entry ? (entry.by ? uname(entry.by) : 'Sistem (otomatis)') : nameOf(who);
+      const by = entry ? byLabel(entry.by) : nameOf(who);
       extra = i === 0
         ? `<div class="small">${a.inputBy ? `Diinput ${esc(uname(a.inputBy))}` : `Pendaftaran mandiri lewat ${esc(a.source.replace(' (mandiri)',''))}`}. Sales: ${esc(uname(a.sales))}, ${a.inputBy ? 'diteruskan otomatis' : a.assignedBy ? 'ditugaskan ' + esc(uname(a.assignedBy)) : 'ditugaskan otomatis sesuai wilayah'}${entry ? ', ' + fmtDT(entry.t) : ''}</div>`
         : `<div class="small">${esc(by)}${entry ? ', ' + fmtDT(entry.t) : ''}</div>`;
@@ -1309,7 +1486,7 @@ function tabNego(a) {
       <div class="actions"><button class="btn btn-primary" onclick="negoChange('${a.id}')">Catat permintaan</button><button class="btn btn-ghost" onclick="state.negoForm=null;renderDrawer()">Batal</button></div></div>`;
     if (state.negoForm === 'withdraw') form = `<div class="formbox"><div class="field"><label for="ng-note">Alasan calon franchisee mundur</label><textarea id="ng-note"></textarea></div>
       <div class="actions"><button class="btn btn-danger" onclick="negoWithdraw('${a.id}')">Tutup aplikasi</button><button class="btn btn-ghost" onclick="state.negoForm=null;renderDrawer()">Batal</button></div></div>`;
-    return !canAct(a) ? viewOnly(a) : takeover(a) + `<div class="callout">Quotation versi ${L.v} senilai ${rp(qValue(L))} sudah dikirim. Follow up calon franchisee, lalu catat tanggapannya.</div>
+    return !canAct(a) ? viewOnly(a) : takeover(a) + `<div class="callout">Quotation versi ${L.v} senilai ${rp(qValue(L))} sudah dikirim. Calon franchisee bisa menanggapi langsung di portal mitra. Bila tanggapan diberikan lewat telepon atau tatap muka, catat di sini.</div>
       <h3 style="margin-top:0">Tanggapan calon franchisee</h3>
       <div class="actions"><button class="btn btn-ok" onclick="negoAgree('${a.id}')">Setuju dengan quotation</button><button class="btn btn-ghost" onclick="state.negoForm='change';renderDrawer()">Minta perubahan</button><button class="btn btn-danger" onclick="state.negoForm='withdraw';renderDrawer()">Mundur</button></div>
       ${form}<h3>Quotation versi ${L.v}</h3>${quoteHTML(L)}${changesHTML(a)}`;
@@ -1324,7 +1501,7 @@ function tabNego(a) {
 }
 function tabRiwayat(a) {
   return `<p class="muted">Setiap keputusan, perubahan, dan akses dokumen tercatat otomatis.</p>
-  <ul class="log">${a.log.slice().reverse().map(l => `<li><time>${fmtDT(l.t)}</time><span><span class="who">${l.by ? esc(person(l.by)) : 'Sistem'}</span>: ${esc(l.text)}</span></li>`).join('')}</ul>`;
+  <ul class="log">${a.log.slice().reverse().map(l => `<li><time>${fmtDT(l.t)}</time><span><span class="who">${esc(byLabel(l.by, true))}</span>: ${esc(l.text)}</span></li>`).join('')}</ul>`;
 }
 
 /* ===================== actions ===================== */
@@ -1405,7 +1582,7 @@ function sendQuote(id) {
   a.quotes.push({v, paket:q.paket, lokasi:q.lokasi.trim(), buka:q.buka.trim(), diskon:Number(q.diskon) || 0, skema:q.skema, note:q.note.trim(), status:'terkirim'});
   setStage(a,'negosiasi');
   log(a, `Quotation versi ${v} dikirim ke calon franchisee${ch ? ' (revisi setelah diskusi dengan manajer)' : ''}`);
-  state.tab = 'nego'; toast(`Quotation versi ${v} dikirim ke email ${a.email}.`); render();
+  state.tab = 'nego'; toast(`Quotation versi ${v} dikirim ke email ${a.email} beserta link portal mitra.`); render();
 }
 function negoAgree(id) {
   const a = find(id), L = latest(a); L.status = 'disetujui franchisee';
