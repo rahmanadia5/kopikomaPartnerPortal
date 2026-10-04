@@ -277,7 +277,7 @@ I used Claude (Anthropic) throughout the project. The product decisions were min
 
 | Activity | AI did | I did |
 |---|---|---|
-| Pain points, features, and flow | Proposed an initial pain point list, MVP feature list (MoSCoW), and funnel stages; reviewed my flow and pointed out edge cases | Finalized the pain points and defined the business process (stages, PIC, deadlines, and approval rules), designed the end-to-end flow, added features such as Target vs Achievement, sales performance, notifications, and roles, then decided which suggestions to accept |
+| Pain points, features, and flow | Tidied up my pain points, feature list, and funnel into a clear structure | Defined the pain points, features, and funnel, designed the business process (stages, PIC, deadlines, and approval rules), and pointed out the special cases the flow must handle (for example, duplicate leads, leads outside any sales region, and location changes during negotiation) |
 | Prototype | Built the HTML prototype, first in Claude chat and then in Claude Code, over many feedback rounds | Reviewed each version and decided layout, wording, and terminology |
 | Testing | Ran automated browser tests on every role and screen size | Defined what "correct" means and checked results |
 | Development and deployment | Set up the GitHub repository, pushed every revision, and guided the Vercel deployment so the live prototype updates automatically on each push | Created the Vercel project, connected it to GitHub, and checked each deployed version |

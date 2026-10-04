@@ -65,8 +65,8 @@ def find(snippet, nth=0):
 
 SECTIONS = [
     ('Pain points, features, and flow',
-     'Proposed an initial pain point list, MVP feature list (MoSCoW), and funnel stages; reviewed my flow and pointed out edge cases (for example, where a location change should go back to)',
-     'Finalized the pain points and defined the business process (stages, PIC, deadlines, and approval rules), designed the end-to-end flow, added features such as Target vs Achievement, sales performance, notifications, and roles, then decided which suggestions to accept',
+     'Tidied up my pain points, feature list, and funnel into a clear structure',
+     'Defined the pain points, features, and funnel, designed the business process (stages, PIC, deadlines, and approval rules), and pointed out the special cases the flow must handle (for example, duplicate leads, leads outside any sales region, and location changes during negotiation)',
      ['i need an end to end business process', 'submit applicationnya', 'separate this two dashboard', 'musti ada e-sign', 'dua duanya kali ya',
       'minta ganti lokasi di akhir', 'oke usul lu semua diterima']),
     ('Prototype',
