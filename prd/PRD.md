@@ -272,8 +272,9 @@ I used Claude (Anthropic) throughout the project. The product decisions were min
 
 | Activity | AI did | I did |
 |---|---|---|
-| Pain points and flow | Reviewed my pain points and flow, pointed out edge cases (for example, where a location change should go back to), and proposed options for business rules | Defined the scope and pain points and designed the end-to-end flow, then decided which suggestions to accept |
-| Prototype | Built the HTML prototype through Claude Code over many feedback rounds | Reviewed each version and decided layout, wording, and terminology |
+| Understanding the case | Explained the brief, clarified the scope (a franchise recruitment portal, not an ERP), and suggested the F&B sector with supporting data | Chose the sector, the franchisor point of view, and the scope |
+| Pain points, features, and flow | Proposed an initial pain point list, MVP feature list (MoSCoW), and funnel stages; reviewed my flow and pointed out edge cases | Finalized the pain points and defined the business process (stages, PIC, deadlines, and approval rules), designed the end-to-end flow, added features such as Target vs Achievement, sales performance, notifications, and roles, then decided which suggestions to accept |
+| Prototype | Built the HTML prototype, first in Claude chat and then in Claude Code, over many feedback rounds | Reviewed each version and decided layout, wording, and terminology |
 | Testing | Ran automated browser tests on every role and screen size | Defined what "correct" means and checked results |
 | Research | Searched industry and regulation data | Verified sources, corrected an outdated statistic and replaced PP No. 42/2007 with PP No. 35/2024 |
 | Writing | Drafted this document from the prototype | Restructured and edited it |
@@ -291,4 +292,4 @@ Lesson: AI is fast at producing options and code, but can sound confident about 
 
 ## Appendix: AI Conversation Screenshots
 
-[Attach screenshots or a PDF of the AI conversation here.]
+The AI conversation log is attached as a separate PDF.
