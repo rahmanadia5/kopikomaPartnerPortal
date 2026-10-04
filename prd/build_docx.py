@@ -89,7 +89,7 @@ def grid(spec):
         c = t.cell(0, j); c.paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
         c.paragraphs[0].add_run().add_picture(str(HERE / path.strip()), width=Cm(width))
         q = t.cell(1, j).paragraphs[0]; q.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        r = q.add_run(cap.strip()); set_font(r, 10); r.italic = True
+        r = q.add_run(cap.strip()); set_font(r, 11); r.italic = True
     doc.add_paragraph().paragraph_format.space_after = Pt(0)
 i = 0
 while i < len(lines):
