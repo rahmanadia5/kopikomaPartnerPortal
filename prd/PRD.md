@@ -205,6 +205,7 @@ The system covers **12 features** across two applications:
 | Eligibility assessment | Yes | No | No | Yes | No |
 | Final approval | Yes | Yes | No | No | No |
 | View candidate documents | Yes | Yes | Own | Yes | Own |
+| View signed agreement (Privy) | Yes | Yes | Own | No | Own |
 | Overdue indicators, Sales Performance | Yes | Yes | No | No | No |
 | Target | Team | Team | Own | No | No |
 

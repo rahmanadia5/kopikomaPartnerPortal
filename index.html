@@ -634,6 +634,7 @@ const latest = a => a.quotes[a.quotes.length - 1];
 const lastChange = a => a.changes[a.changes.length - 1];
 const isDone = a => a.stage === 'disetujui' || a.stage === 'ditolak';
 const signOf = a => a.sign || {fr:null, kk:null};
+const canSeeDoc = a => MODE === 'mitra' || ['Super Admin','Manajer'].includes(role()) || (role() === 'Sales' && a.sales === ME);
 const signChip = a => { const g = signOf(a); return g.fr && g.kk ? ['ok','Sudah ditandatangani'] : g.fr ? ['warn','Menunggu TTD Kopi Koma'] : g.kk ? ['warn','Menunggu TTD calon franchisee'] : ['warn','Belum ditandatangani']; };
 const dealValue = a => latest(a) ? qValue(latest(a)) : total(a.paket);
 const activeLoad = (s, apps = state.apps) => apps.filter(a => a.sales === s && !isDone(a)).length;
@@ -886,7 +887,7 @@ function doneHTML() {
       ${[['all','Semua'],['ok','Disetujui'],['no','Ditolak atau mundur']].map(([k,l]) => `<button class="pill" aria-pressed="${f.res === k}" onclick="${setF('res', k)}">${l}</button>`).join('')}
       <select class="search" style="min-width:0;width:auto" aria-label="Periode" onchange="state.doneF.per=this.value;refreshPipeline()">${[['semua','Semua waktu'],['bulan','Bulan ini'],['kuartal','Kuartal ini'],['tahun','Tahun ini']].map(([k,l]) => `<option value="${k}" ${f.per === k ? 'selected' : ''}>${l}</option>`).join('')}</select>
       ${role() === 'Sales' ? '' : `<select class="search" style="min-width:0;width:auto" aria-label="Sales" onchange="state.doneF.s=this.value;refreshPipeline()"><option value="all">Semua sales</option>${SALES.map(k => `<option value="${k}" ${f.s === k ? 'selected' : ''}>${uname(k)}</option>`).join('')}</select>`}
-      <span class="small">${list.length} pengajuan, ${ok.length} disetujui senilai ${rpS(value)}${ok.filter(a => !(signOf(a).fr && signOf(a).kk)).length ? `, ${ok.filter(a => !(signOf(a).fr && signOf(a).kk)).length} perjanjian belum lengkap ditandatangani` : ''}</span>
+      <span class="small">${list.length} pengajuan, ${ok.length} disetujui senilai ${rpS(value)}${role() !== 'Reviewer' && ok.filter(a => !(signOf(a).fr && signOf(a).kk)).length ? `, ${ok.filter(a => !(signOf(a).fr && signOf(a).kk)).length} perjanjian belum lengkap ditandatangani` : ''}</span>
     </div>
     <div class="panel">${list.length ? `<div class="table-wrap"><table class="funnel done-t">
       <thead><tr><th>Calon franchisee</th><th>Hasil</th><th>Tahap terakhir</th><th>Alasan</th><th>Nilai kesepakatan</th><th>Perjanjian (Privy)</th><th>Sales</th><th>Tanggal selesai</th></tr></thead>
@@ -896,7 +897,7 @@ function doneHTML() {
         <td class="small" style="color:var(--ink)">${a.stage === 'disetujui' ? 'Persetujuan akhir' : REJ_STEP[a.rejectStep ?? 0]}</td>
         <td class="small" style="max-width:280px">${a.stage === 'disetujui' ? '–' : esc(a.rejectReason || '–')}</td>
         <td>${a.stage === 'disetujui' ? `<b>${rp(dealValue(a))}</b>` : '<span class="small">–</span>'}</td>
-        <td>${a.stage === 'disetujui' ? `<span class="chip ${signChip(a)[0]}">${signChip(a)[1]}</span><div><button class="link small" onclick="openDoc('${a.id}', event)">Lihat dokumen</button></div>` : '<span class="small">–</span>'}</td>
+        <td>${a.stage === 'disetujui' && canSeeDoc(a) ? `<span class="chip ${signChip(a)[0]}">${signChip(a)[1]}</span><div><button class="link small" onclick="openDoc('${a.id}', event)">Lihat dokumen</button></div>` : '<span class="small">–</span>'}</td>
         <td class="small" style="color:var(--ink)">${a.sales ? esc(uname(a.sales)) : '–'}</td>
         <td class="small" style="color:var(--ink);white-space:nowrap">${new Date(a.stageSince).toLocaleDateString('id-ID',{day:'numeric', month:'short', year:'numeric'})}</td>
       </tr>`; }).join('')}</tbody></table></div>` : '<p class="np-empty" style="padding:4px 0">Tidak ada pengajuan selesai untuk filter ini.</p>'}</div>
@@ -1399,7 +1400,7 @@ function tabNego(a) {
       ${scoreCard(a)}${quoteHTML(L)}
       <div class="field"><label for="mg-note">Catatan keputusan</label><textarea id="mg-note" placeholder="Wajib diisi jika ditolak"></textarea></div>
       <div class="actions"><button class="btn btn-ok" onclick="finalDecision('${a.id}','ok')">Setujui kemitraan</button><button class="btn btn-danger" onclick="finalDecision('${a.id}','tolak')">Tolak</button></div>${changesHTML(a)}`;
-  if (a.stage === 'disetujui') return `<div class="callout ok">Kemitraan disetujui. Nilai kesepakatan ${rp(dealValue(a))}. Perjanjian waralaba dikirim lewat <b>Privy</b> untuk ditandatangani secara elektronik oleh calon franchisee dan Kopi Koma.</div>${signHTML(a, false)}${quoteHTML(L)}${versionsHTML(a)}${changesHTML(a)}`;
+  if (a.stage === 'disetujui') return `<div class="callout ok">Kemitraan disetujui. Nilai kesepakatan ${rp(dealValue(a))}. Perjanjian waralaba dikirim lewat <b>Privy</b> untuk ditandatangani secara elektronik oleh calon franchisee dan Kopi Koma.</div>${canSeeDoc(a) ? signHTML(a, false) : ''}${quoteHTML(L)}${versionsHTML(a)}${changesHTML(a)}`;
   if (a.stage === 'ditolak') return `<div class="callout bad">Aplikasi ditutup${a.rejectReason ? ': ' + esc(a.rejectReason) : '.'}</div>${changesHTML(a)}`;
   return '<p class="muted">Negosiasi dimulai setelah quotation dikirim.</p>';
 }
@@ -1539,7 +1540,8 @@ function signKK(id) {
 }
 function openDoc(id, e) {
   if (e) e.stopPropagation();
-  const a = find(id); state.doc = id;
+  const a = find(id); if (!canSeeDoc(a)) return;
+  state.doc = id;
   log(a, 'Dokumen perjanjian waralaba dibuka', MODE === 'mitra' ? FR : ME);
   renderDoc(); setTimeout(() => document.querySelector('#docm .close')?.focus(), 30);
 }
