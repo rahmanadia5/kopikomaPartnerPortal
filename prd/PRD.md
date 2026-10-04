@@ -209,6 +209,8 @@ The system covers **12 features** across two applications:
 | Overdue indicators, Sales Performance | Yes | Yes | No | No | No |
 | Target | Team | Team | Own | No | No |
 
+Reviewers cannot view the signed agreement: their work ends at the eligibility assessment, and the agreement contains personal and commercial data they do not need.
+
 #### Feature P1 to P3: Partner Portal
 
 | ID | User Story | Requirement | Acceptance Criteria |
