@@ -25,6 +25,19 @@ Out of scope: outlet opening and royalty. After approval, the franchise agreemen
 
 **Demo password:** demo123 (all staff accounts are listed on the login page)
 
+## How to Try the Prototype
+
+A 5-minute path through the core flow. Open both links in the same browser so the two apps share data.
+
+1. Open the Partner Portal (/mitra), click "Isi data contoh", and submit. The lead is assigned automatically to Rendi (Tangerang region).
+2. Open the dashboard and log in as Rendi (Sales) from the demo account list. Process the business presentation and the location survey.
+3. Log in as Bima (Reviewer) and complete the eligibility assessment.
+4. Log in as Rendi again and send the quotation.
+5. Back in the Partner Portal, check the status with the application number and email, then agree to the quotation.
+6. Log in as Laras (Manager), give final approval, and sign the agreement. Open Pipeline, then Completed, to view the signed document.
+
+Extra value (Should have): as Laras, open Target and Performa Sales.
+
 ## Assumptions
 
 ### Client
