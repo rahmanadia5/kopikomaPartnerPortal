@@ -173,7 +173,7 @@ The system covers **12 features** across two applications:
 | ID | User Story | Requirement | Acceptance Criteria |
 |---|---|---|---|
 | FR-F-001 | As a Manager, I want to approve or reject so that the partnership is confirmed by both parties. | Approve or reject (reason required). No location revision. | Approve: 2 of 2, revenue counted, agreement sent through Privy. Candidate sees the result in the tracker. |
-| FR-F-002 | As a Manager, I want to see whether each agreement is signed so that I know which closed deals are complete. | Signing status per party (candidate and Kopi Koma) updated from Privy. The Manager signs for Kopi Koma from the application detail. | Completed table shows "Not signed", "Waiting for candidate or Kopi Koma", or "Signed". Each signature is logged, and sales is notified when both have signed. |
+| FR-F-002 | As a Manager, I want to see whether each agreement is signed so that I know which closed deals are complete. | Signing status per party (candidate and Kopi Koma) updated from Privy. The Manager signs for Kopi Koma from the application detail. | Completed table shows "Not signed", "Waiting for candidate or Kopi Koma", or "Signed", with a "View document" link to the signed agreement (parties, agreed quotation, approval trail, and both e-signatures with timestamps), downloadable as PDF. Each signature and each document view is logged. Sales is notified when both have signed. |
 
 #### Feature G: Tasks and Reminders
 

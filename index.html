@@ -213,6 +213,10 @@ table.cost tr.total td{font-weight:800;border-bottom:0;padding-top:10px}
 .card-main{display:flex;flex-direction:column;gap:5px;text-align:left;background:none;border:0;padding:10px 12px 8px;cursor:pointer;width:100%;border-radius:var(--r-s) var(--r-s) 0 0}
 .apv{position:fixed;inset:0;background:rgba(36,23,15,.4);z-index:70;display:grid;place-items:center;padding:16px}
 .apv[hidden]{display:none}
+.apv-box.doc-box{width:min(680px,100%)}.doc-body{padding:16px 22px 22px}.doc-body h3{margin:18px 0 8px;font-size:15px}
+.sigs{display:grid;grid-template-columns:1fr 1fr;gap:10px}.sig{border:1px dashed var(--line);border-radius:var(--r-s);padding:10px 12px}.sig.ok{border:1px solid var(--ok);background:var(--ok-soft)}
+@media (max-width:560px){.sigs{grid-template-columns:1fr}}
+@media print{body>*:not(#docm){display:none!important}#docm{position:static;background:none;padding:0;display:block}#docm .apv-box{box-shadow:none;max-height:none;width:100%}#docm .close,.doc-actions{display:none!important}}
 .apv-box{background:var(--surface);border-radius:14px;width:min(540px,100%);max-height:88vh;overflow:auto;box-shadow:0 20px 50px rgba(36,23,15,.25)}
 .apv-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:18px 20px;background:#F4ECE1;position:sticky;top:0;z-index:1}
 .apv-list{list-style:none;margin:0;padding:18px 20px 22px}
@@ -321,6 +325,7 @@ tr.sum td{background:#FAF8F4;border-top:2px solid var(--line)}
 <div class="overlay" id="overlay" onclick="closeDetail()"></div>
 <aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="dTitle"></aside>
 <div class="apv" id="apv" hidden onclick="if(event.target===this)closeApproval()"></div>
+<div class="apv" id="docm" hidden onclick="if(event.target===this)closeDoc()"></div>
 <div class="notif-pop" id="notifPop" hidden role="dialog" aria-label="Notifikasi"></div>
 <div class="umenu" id="userMenu" hidden role="menu"></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
@@ -503,10 +508,17 @@ function mkApp(n, name, city, paket, stage, days, o = {}) {
     ev.push([sales,'Quotation versi 1 dikirim ke calon franchisee']);
     if (ri >= 5) ev.push([sales,'Calon franchisee menyetujui quotation versi 1']);
   }
-  if (stage === 'disetujui') { ev.push([MANAGER,'Persetujuan akhir: kemitraan disetujui']); ev.push([null,'Perjanjian waralaba dikirim lewat Privy ke calon franchisee dan Kopi Koma']); a.sign = {fr:null, kk:null}; }
+  if (stage === 'disetujui') ev.push([MANAGER,'Persetujuan akhir: kemitraan disetujui']);
   const end = new Date(daysAgo(days)).getTime(), start = new Date(daysAgo(days + 3 * ev.length)).getTime();
   a.log = ev.map((e,i) => ({t:new Date(ev.length === 1 ? end : start + (end - start) * i / (ev.length - 1)).toISOString(), by:e[0], text:e[1]}));
   if (a.presentasi) a.presentasi.date = a.log.find(l => /Presentasi bisnis selesai/.test(l.text)).t.slice(0,10);
+  if (stage === 'disetujui') {
+    const t0 = new Date(a.log[a.log.length - 1].t).getTime(), off = days > 0 ? 3600e3 : 0, at = k => new Date(t0 + off * k).toISOString();
+    a.sign = {fr:at(2), kk:at(3)};
+    a.log.push({t:at(0), by:null, text:'Perjanjian waralaba dikirim lewat Privy ke calon franchisee dan Kopi Koma'},
+      {t:at(2), by:FR, text:'Perjanjian waralaba ditandatangani calon franchisee lewat Privy'},
+      {t:at(3), by:MANAGER, text:'Perjanjian waralaba ditandatangani Kopi Koma lewat Privy'});
+  }
   return a;
 }
 function seed() {
@@ -576,7 +588,7 @@ let nid = 0;
 /* Dua aplikasi terpisah dari file yang sama: dashboard franchisor (/) dan portal calon franchisee (/mitra).
    Data aplikasi dan notifikasi disimpan di localStorage agar keduanya terhubung, juga antar-tab. */
 const MODE = /^\/mitra/.test(location.pathname) || location.hash === '#mitra' ? 'mitra' : 'staff';
-const STORE = 'kopikoma-demo-v6';
+const STORE = 'kopikoma-demo-v7';
 function loadShared() { try { return JSON.parse(localStorage.getItem(STORE)); } catch { return null; } }
 function saveShared() { try { localStorage.setItem(STORE, JSON.stringify({apps:state.apps, notifs:state.notifs, tick, nid})); } catch {} }
 function clearShared() { try { localStorage.removeItem(STORE); } catch {} }
@@ -728,7 +740,7 @@ function render() {
     top.hidden = true;
     document.getElementById('main').innerHTML = loginHTML();
     ['drawer','overlay'].forEach(id => document.getElementById(id).classList.remove('open'));
-    document.getElementById('apv').hidden = true; document.getElementById('notifPop').hidden = true; document.getElementById('userMenu').hidden = true;
+    document.getElementById('apv').hidden = true; document.getElementById('docm').hidden = true; state.doc = null; document.getElementById('notifPop').hidden = true; document.getElementById('userMenu').hidden = true;
     return;
   }
   top.hidden = false;
@@ -884,7 +896,7 @@ function doneHTML() {
         <td class="small" style="color:var(--ink)">${a.stage === 'disetujui' ? 'Persetujuan akhir' : REJ_STEP[a.rejectStep ?? 0]}</td>
         <td class="small" style="max-width:280px">${a.stage === 'disetujui' ? '–' : esc(a.rejectReason || '–')}</td>
         <td>${a.stage === 'disetujui' ? `<b>${rp(dealValue(a))}</b>` : '<span class="small">–</span>'}</td>
-        <td>${a.stage === 'disetujui' ? `<span class="chip ${signChip(a)[0]}">${signChip(a)[1]}</span>` : '<span class="small">–</span>'}</td>
+        <td>${a.stage === 'disetujui' ? `<span class="chip ${signChip(a)[0]}">${signChip(a)[1]}</span><div><button class="link small" onclick="openDoc('${a.id}', event)">Lihat dokumen</button></div>` : '<span class="small">–</span>'}</td>
         <td class="small" style="color:var(--ink)">${a.sales ? esc(uname(a.sales)) : '–'}</td>
         <td class="small" style="color:var(--ink);white-space:nowrap">${new Date(a.stageSince).toLocaleDateString('id-ID',{day:'numeric', month:'short', year:'numeric'})}</td>
       </tr>`; }).join('')}</tbody></table></div>` : '<p class="np-empty" style="padding:4px 0">Tidak ada pengajuan selesai untuk filter ini.</p>'}</div>
@@ -1064,7 +1076,7 @@ function portalLookup(id, key) {
   }
   state.portal = {...state.portal, view:'track', id:a.id, key, err:'', open:a.id, fresh:false, resp:null}; render();
 }
-const PORTAL_DEMO = [['KK-0250','Menunggu persetujuanmu atas quotation'],['KK-0249','Permintaan perubahan sedang diproses'],['KK-0251','Menunggu persetujuan Kopi Koma'],['KK-0252','Perjanjian menunggu tanda tanganmu'],['KK-0246','Penilaian kelayakan']];
+const PORTAL_DEMO = [['KK-0250','Menunggu persetujuanmu atas quotation'],['KK-0249','Permintaan perubahan sedang diproses'],['KK-0251','Menunggu persetujuan Kopi Koma'],['KK-0252','Perjanjian sudah ditandatangani'],['KK-0246','Penilaian kelayakan']];
 function portalTrack() {
   const pt = state.portal, a = pt.open ? find(pt.open) : null;
   const look = `<div class="formcard"><h2>Cek status pengajuan</h2><p class="muted">Masukkan nomor pengajuan dari email konfirmasi, beserta email atau nomor HP yang kamu daftarkan.</p>
@@ -1525,13 +1537,45 @@ function signKK(id) {
   if (a.sign.fr) notify(a, a.sales, `Perjanjian waralaba ${a.name} sudah ditandatangani kedua pihak.`);
   toast(a.sign.fr ? 'Perjanjian sudah ditandatangani kedua pihak.' : 'Tanda tangan Kopi Koma tersimpan. Menunggu tanda tangan calon franchisee.'); render();
 }
+function openDoc(id, e) {
+  if (e) e.stopPropagation();
+  const a = find(id); state.doc = id;
+  log(a, 'Dokumen perjanjian waralaba dibuka', MODE === 'mitra' ? FR : ME);
+  renderDoc(); setTimeout(() => document.querySelector('#docm .close')?.focus(), 30);
+}
+function closeDoc() { state.doc = null; renderDoc(); }
+function renderDoc() {
+  const el = document.getElementById('docm'), a = state.doc ? find(state.doc) : null;
+  if (!a) { el.hidden = true; el.innerHTML = ''; return; }
+  el.hidden = false;
+  const L = latest(a), g = signOf(a), c = signChip(a), when = t => t ? fmtDT(t) : '';
+  const agreed = a.log.slice().reverse().find(l => /menyetujui quotation versi/.test(l.text));
+  const fin = a.log.slice().reverse().find(l => /Persetujuan akhir: kemitraan disetujui/.test(l.text));
+  const sigBox = (who, role, t) => `<div class="sig ${t ? 'ok' : ''}"><div class="small">${role}</div><b>${esc(who)}</b>
+    <div class="small">${t ? `Ditandatangani lewat Privy, ${when(t)}<br>Tanda tangan elektronik tersertifikasi` : 'Menunggu tanda tangan'}</div></div>`;
+  el.innerHTML = `<div class="apv-box doc-box" role="dialog" aria-modal="true" aria-labelledby="docT">
+    <div class="apv-head"><div><h2 id="docT" style="margin:0">Perjanjian waralaba</h2><p class="small" style="margin:2px 0 0">${esc(a.name)}, ${a.id}, quotation versi ${L.v}</p></div><button class="close" onclick="closeDoc()" aria-label="Tutup dokumen">&times;</button></div>
+    <div class="doc-body">
+      <div class="d-top"><span class="small">Nomor dokumen Privy: PRV-${a.id.replace('KK-','')}-${(a.approvedAt || '').slice(0,10).replace(/-/g,'')}</span><span class="chip ${c[0]}">${c[1]}</span></div>
+      <h3>Para pihak</h3>
+      <dl class="kv"><dt>Pemberi waralaba</dt><dd>Kopi Koma, diwakili ${esc(person(MANAGER))}</dd><dt>Penerima waralaba</dt><dd>${esc(a.name)}, ${esc(a.city)}<br><span class="small">${esc(a.email)}, ${esc(a.phone)}</span></dd><dt>Sales pendamping</dt><dd>${a.sales ? esc(uname(a.sales)) : '–'}</dd></dl>
+      <h3>Isi kesepakatan (quotation versi ${L.v})</h3>${quoteHTML(L)}
+      <h3>Jejak persetujuan</h3>
+      <dl class="kv"><dt>Persetujuan 1 dari 2</dt><dd>${agreed ? `${esc(byLabel(agreed.by, true))}, ${when(agreed.t)}` : '–'}</dd><dt>Persetujuan 2 dari 2</dt><dd>${fin ? `${esc(byLabel(fin.by, true))}, ${when(fin.t)}` : '–'}</dd></dl>
+      <h3>Tanda tangan elektronik</h3>
+      <div class="sigs">${sigBox(a.name, 'Penerima waralaba', g.fr)}${sigBox(uname(MANAGER), 'Kopi Koma, Manajer Kemitraan', g.kk)}</div>
+      <p class="small" style="margin-top:12px">Dokumen dan status tanda tangan diambil dari Privy. Setiap akses dokumen tercatat di riwayat aplikasi.</p>
+      <div class="actions doc-actions"><button class="btn btn-primary" onclick="window.print()">Unduh PDF</button><button class="btn btn-ghost" onclick="closeDoc()">Tutup</button></div>
+    </div></div>`;
+}
 function signHTML(a, portal) {
   const g = signOf(a), c = signChip(a), when = t => t ? `<span class="chip ok">Ditandatangani ${fmtDT(t).split(',')[0]}</span>` : '<span class="chip warn">Menunggu</span>';
   const btn = portal ? (!g.fr ? `<div class="actions" style="margin-top:12px"><button class="btn btn-primary" onclick="portalSign('${a.id}')">Tanda tangani di Privy</button></div>` : '')
     : (!g.kk && ['Manajer','Super Admin'].includes(role()) ? `<div class="actions" style="margin-top:12px"><button class="btn btn-primary" onclick="signKK('${a.id}')">Tanda tangani di Privy (Kopi Koma)</button></div>` : '');
   return `<div class="formcard" style="margin:14px 0 18px"><div class="d-top"><h3 style="margin:0">Perjanjian waralaba (Privy)</h3><span class="chip ${c[0]}">${c[1]}</span></div>
     <p class="small" style="margin:6px 0 10px">Tanda tangan elektronik tersertifikasi. Status diperbarui otomatis dari Privy.</p>
-    <dl class="mini"><dt>Calon franchisee</dt><dd>${when(g.fr)}</dd><dt>Kopi Koma (Manajer)</dt><dd>${when(g.kk)}</dd></dl>${btn}</div>`;
+    <dl class="mini"><dt>Calon franchisee</dt><dd>${when(g.fr)}</dd><dt>Kopi Koma (Manajer)</dt><dd>${when(g.kk)}</dd></dl>${btn}
+    <div class="actions" style="margin-top:${btn ? 8 : 12}px"><button class="btn btn-ghost" onclick="openDoc('${a.id}')">Lihat dokumen perjanjian</button></div></div>`;
 }
 function finalDecision(id, act) {
   const a = find(id), note = document.getElementById('mg-note').value.trim();
@@ -1772,6 +1816,7 @@ function viewSales() {
 /* ===================== keyboard & boot ===================== */
 document.addEventListener('keydown', e => {
   if (e.key !== 'Escape') return;
+  if (state.doc) { closeDoc(); return; }
   if (state.apv) { closeApproval(); return; }
   if (state.notifOpen || state.menuOpen) { state.notifOpen = false; state.menuOpen = false; renderNotif(); renderTop(); return; }
   if (state.sel || state.addOpen) closeDetail();
