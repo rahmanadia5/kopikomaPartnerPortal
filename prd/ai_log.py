@@ -78,10 +78,10 @@ SECTIONS = [
      'Ran automated browser tests on every role and screen size',
      'Defined what "correct" means and checked results',
      [('cek yang redundant atau butuh improve', -1), 'cek dulu semuanya']),
-    ('Research',
-     'Searched industry and regulation data',
-     'Verified sources, corrected an outdated statistic and replaced PP No. 42/2007 with PP No. 35/2024',
-     ['ini lu dapet data dari mana', 'coba yg bener cek lagi', 'pls benchmark yg bener', 'udah sesuai benchmark yg BENAR']),
+    ('Development and deployment',
+     'Set up the GitHub repository, pushed every revision, and guided the Vercel deployment so the live prototype updates automatically on each push',
+     'Created the Vercel project, connected it to GitHub, chose the project name, and checked each deployed version',
+     ['put all the code to my repo', 'deploy to vercel', 'biar di vercel auto updte', 'terlanjr login pake google', ('i made a new project', -1), 'ganti jadi kopikoma-partnerportal']),
 ]
 
 md = lambda t: markdown.markdown(t, extensions=['tables', 'sane_lists'])
