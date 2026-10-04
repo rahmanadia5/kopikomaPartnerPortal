@@ -35,11 +35,12 @@ def clean_user(t):
     t = re.sub(r'<system-reminder>.*?</system-reminder>', '', t, flags=re.S)
     return t.strip()
 
-def clean_ai(t, limit=1600):
+def clean_ai(t, limit=450):
     t = re.sub(r'(?m)^(Quick update|Now |Next |Committing|Checking|Writing|Rewriting|Screenshots are done|Flowchart is drawn|Full chat log|Testing|Tests pass|The fixes|All good|LibreOffice).*$', '', t).strip()
+    t = re.sub(r'(?m)^\|.*$\n?', '', t).strip()
     if len(t) > limit:
-        cut = t.rfind('\n', 0, limit)
-        t = t[:cut if cut > limit * 0.5 else limit].rstrip() + '\n\n*[…reply shortened]*'
+        cut = max(t.rfind('\n', 0, limit), t.rfind('. ', 0, limit) + 1)
+        t = t[:cut if cut > limit * 0.4 else limit].rstrip() + ' *[…]*'
     return t
 
 def wib(ts):
@@ -65,32 +66,26 @@ SECTIONS = [
     ('Pain points and flow',
      'Reviewed my pain points and flow, pointed out edge cases (for example, where a location change should go back to), and proposed options for business rules',
      'Defined the scope, pain points, and business process (stages, PIC, deadlines, and approval rules), designed the end-to-end flow, then decided which suggestions to accept',
-     ['i need an end to end business process', 'submit applicationnya', 'separate this two dashboard', 'yg mandiri gausah dilabel',
-      'yang bagian pertama ini', 'musti ada e-sign', 'dua duanya kali ya', 'minta ganti lokasi di akhir', 'oke usul lu semua diterima']),
+     ['i need an end to end business process', 'submit applicationnya', 'separate this two dashboard', 'musti ada e-sign', 'dua duanya kali ya',
+      'minta ganti lokasi di akhir', 'oke usul lu semua diterima']),
     ('Prototype',
      'Built the HTML prototype through Claude Code over many feedback rounds',
      'Reviewed each version and decided layout, wording, and terminology',
-     ['remove the lihat alur', 'take out alur bisnis', 'reset data nya ada saran', 'gimana ya bilangnya kalo nanti deploy',
-      'skrg buat semuanya pakai bahasa indonesia', 'pilihan B aja', 'tempat ganti platform', ('ini Data Demo nya apus', -1),
-      'ini ganti jadi Target MTD', 'akan spam banget', 'coba buatin yg opsi 3', 'jadi satu sales megang both', 'boleh deh coba kasih dulu solusi',
-      'adayg redundant', 'no 6 sekalian', 'tanggal 10 gw mau', 'bulan berikutnya langsung', ('ganti twxtnya jadi tugas', -1),
-      'no 2 ganti jadi Target', 'gausah pake saya saya']),
+     ['yg mandiri gausah dilabel', 'tempat ganti platform', 'Bagian ini balikin kayak sebelumnya', ('ini Data Demo nya apus', -1),
+      'jadi satu sales megang both', 'semua sales ada target dua duanya', ('ganti twxtnya jadi tugas', -1), 'gausah pake saya saya']),
     ('Testing',
      'Ran automated browser tests on every role and screen size',
      'Defined what "correct" means and checked results',
-     [('cek yang redundant atau butuh improve', -1), 'ya boleh deh', 'apa lagi yang menurut lu butuh dibenerin', 'cek dulu semuanya']),
+     [('cek yang redundant atau butuh improve', -1), 'cek dulu semuanya']),
     ('Research',
      'Searched industry and regulation data',
      'Verified sources, corrected an outdated statistic and replaced PP No. 42/2007 with PP No. 35/2024',
-     ['biasanya franchisor kopi', 'ini lu dapet data dari mana', 'boleh deh coba cek dulu', 'coba yg bener cek lagi', 'pls benchmark yg bener',
-      'keknya better dipisah ya per sales', 'udah sesuai benchmark yg BENAR', 'yaudah seadanya dah', 'cafe gabisa ya buat per bulan',
-      'cafe per bulan 1 lah semua sales', 'sales yg senior gitu kasih KPI', 'semua sales ada target dua duanya', 'bagian 2.2 kasih linknya']),
+     ['ini lu dapet data dari mana', 'coba yg bener cek lagi', 'pls benchmark yg bener', 'udah sesuai benchmark yg BENAR']),
     ('Writing',
      'Drafted this document from the prototype',
      'Restructured and edited it',
-     ['ya boleh PRD', 'kalo yang no 2, trs gw minta', 'TOKENNYA CEPET ABIS', 'Nama lengkap: Nadia', 'summary nya dirapihin',
-      'coba dipersingkat begini', 'part ini penting gak', ('simplified PRD nya', -1), 'bisa bantu growth business', 'agak maksa',
-      'gini kali ya namainnya', 'mending deadline atau SLA', 'ok gausah']),
+     ['bagian 2.2 kasih linknya', 'summary nya dirapihin', 'coba dipersingkat begini', ('simplified PRD nya', -1),
+      'agak maksa', 'gini kali ya namainnya', 'ini tambahin define business process']),
 ]
 
 md = lambda t: markdown.markdown(t, extensions=['tables', 'sane_lists'])
@@ -108,7 +103,7 @@ td, th { border: 1px solid #999; padding: 5px 7px; vertical-align: top; text-ali
 .msg table td, .msg table th { font-size: 8.5pt; padding: 3px 5px; } code { font-size: 9pt; } blockquote { margin: 4px 0; padding-left: 8px; border-left: 3px solid #bbb; color: #333; }
 """
 body = [f'<h1>AI Conversation Log</h1><div class="meta">Nadia Rahma Prasanti - Universitas Indonesia<br>Tool: Claude (Anthropic), used through Claude Code. Session date: {wib(msgs[0]["ts"])[:11]}.<br>'
-        'The log is grouped by the activities in the PRD\'s "Use of AI" section. Messages are quoted from the original session; code, commands, and test output are left out, and long replies are shortened.</div>',
+        'The log is grouped by the activities in the PRD\'s "Use of AI" section. It shows the key moments only: my messages are quoted in full, and the AI replies are shortened to their first lines.</div>',
         '<table class="sum"><tr><th>Activity</th><th>AI did</th><th>I did</th></tr>' +
         ''.join(f'<tr><td>{html.escape(a)}</td><td>{html.escape(b)}</td><td>{html.escape(c)}</td></tr>' for a, b, c, _ in SECTIONS) + '</table>']
 for k, (title, ai_did, i_did, picks) in enumerate(SECTIONS, 1):
