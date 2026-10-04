@@ -102,6 +102,14 @@ body = [f'<h1>AI Conversation Log</h1><div class="meta">Nadia Rahma Prasanti - U
         'The log is grouped by the activities in the PRD\'s "Use of AI" section. It shows the key moments only: my messages are quoted in full, and the AI replies are shortened to their first lines.</div>',
         '<table class="sum"><tr><th>Activity</th><th>AI did</th><th>I did</th></tr>' +
         ''.join(f'<tr><td>{html.escape(a)}</td><td>{html.escape(b)}</td><td>{html.escape(c)}</td></tr>' for a, b, c, _ in SECTIONS) + '</table>']
+import base64
+SHOTS = sorted(p for p in (Path(sys.argv[3]) if len(sys.argv) > 3 else HERE / 'ai_shots').glob('*') if p.suffix.lower() in ('.png', '.jpg', '.jpeg'))
+if SHOTS:
+    body.append('<h2>Original screenshots</h2><p class="small">Screenshots taken directly from the Claude interface, as proof of the original conversation. The pages after this summarize the key moments as text.</p>')
+    for f in SHOTS:
+        cap = re.sub(r'^\d+[ _-]*', '', f.stem).replace('_', ' ')
+        b64 = base64.b64encode(f.read_bytes()).decode()
+        body.append(f'<figure style="margin:10px 0 18px;page-break-inside:avoid"><img src="data:image/{"png" if f.suffix.lower() == ".png" else "jpeg"};base64,{b64}" style="max-width:100%;max-height:230mm;border:1px solid #ccc;border-radius:6px"><figcaption class="small" style="margin-top:4px"><i>{html.escape(cap)}</i></figcaption></figure>')
 for k, (title, ai_did, i_did, picks) in enumerate(SECTIONS, 1):
     body.append(f'<h2>{k}. {html.escape(title)}</h2><p><b>AI did:</b> {html.escape(ai_did)}<br><b>I did:</b> {html.escape(i_did)}</p>')
     for ut, at in [x for x in CHAT.get({'Pain points, features, and flow': 'Features and flow'}.get(title, title), []) if not re.search(r'\bjir\b', x[0], re.I)]:
