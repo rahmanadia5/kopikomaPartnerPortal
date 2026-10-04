@@ -17,7 +17,7 @@ It addresses three core pain points: leads scattered across WhatsApp and persona
 
 For the business, this is a growth tool: Kopi Koma grows by opening outlets through partners, so capturing more leads and losing fewer of them turns directly into more outlets and revenue.
 
-Out of scope: everything after both parties approve (agreement signing, outlet opening, royalty). Signing through Privy is shown only as the next step.
+Out of scope: outlet opening and royalty. After approval, the franchise agreement is signed through Privy, and its signing status is tracked on each application.
 
 **Prototype (Franchisor Dashboard):** https://kopikomapartnerportal.vercel.app
 
@@ -172,7 +172,8 @@ The system covers **12 features** across two applications:
 
 | ID | User Story | Requirement | Acceptance Criteria |
 |---|---|---|---|
-| FR-F-001 | As a Manager, I want to approve or reject so that the partnership is confirmed by both parties. | Approve or reject (reason required). No location revision. | Approve: 2 of 2, revenue counted, Privy next step shown. Candidate sees the result in the tracker. |
+| FR-F-001 | As a Manager, I want to approve or reject so that the partnership is confirmed by both parties. | Approve or reject (reason required). No location revision. | Approve: 2 of 2, revenue counted, agreement sent through Privy. Candidate sees the result in the tracker. |
+| FR-F-002 | As a Manager, I want to see whether each agreement is signed so that I know which closed deals are complete. | Signing status per party (candidate and Kopi Koma) updated from Privy. The Manager signs for Kopi Koma from the application detail. | Completed table shows "Not signed", "Waiting for candidate or Kopi Koma", or "Signed". Each signature is logged, and sales is notified when both have signed. |
 
 #### Feature G: Tasks and Reminders
 
@@ -212,8 +213,9 @@ The system covers **12 features** across two applications:
 | ID | User Story | Requirement | Acceptance Criteria |
 |---|---|---|---|
 | FR-P1-001 | As a candidate, I want to register online so that I can apply anytime. | Form with package, capital, location, and required data consent. | Application number shown. Lead follows FR-A-002. |
+| FR-P1-002 | As a candidate, I want answers to common questions so that I can decide before registering. | FAQ on the registration page: packages, costs, royalty, timeline, location, documents, payment, data privacy, and signing. | Questions expand on click. A "Lihat FAQ" link at the top jumps to the section. |
 | FR-P2-001 | As a candidate, I want to check my status so that I do not need to ask. | Lookup by application number plus email or phone. 7-step tracker with the sales' contact. | Wrong combination shows an error without revealing data. |
-| FR-P3-001 | As a candidate, I want to respond to the quotation directly so that my answer is recorded. | Agree (requires ticking "I have read and agree to quotation version N"), request changes (new address for a location change), or withdraw. | Agree logs approval 1 of 2. After final approval, the Privy next step is shown. |
+| FR-P3-001 | As a candidate, I want to respond to the quotation directly so that my answer is recorded. | Agree (requires ticking "I have read and agree to quotation version N"), request changes (new address for a location change), or withdraw. | Agree logs approval 1 of 2. After final approval, the candidate can sign the agreement through Privy from the tracker. |
 
 ### Input, Process, Output
 
@@ -254,7 +256,7 @@ Try the clickable prototype: **Franchisor Dashboard** https://kopikomapartnerpor
 |---|---|---|
 | Must have | A, B, C, E, F, G, I, P1, P2, P3 | MVP (months 0 to 3), pilot in one region |
 | Should have | D (AI fit score), H (targets) | MVP if time allows |
-| Could have | Privy e-signature, WhatsApp notifications, real map data, KYC document verification | Phase 2 (months 3 to 6) |
+| Could have | Live Privy API integration, WhatsApp notifications, real map data, KYC document verification | Phase 2 (months 3 to 6) |
 | Won't have (now) | Royalty tracking, outlet operations, payment gateway | Phase 3 or later |
 
 Open question for the client: should large discounts need Manager approval before a quotation is sent?
@@ -264,7 +266,7 @@ Open question for the client: should large discounts need Manager approval befor
 - Data is stored in the browser, so the dashboard and portal connect only within the same browser. "Reset demo data" restores the sample data.
 - The login page lists demo accounts. Production would use company login (SSO).
 - The AI fit score uses rule-based weighting and simulated map data.
-- Emails are simulated as dashboard notifications. Privy is not integrated.
+- Emails are simulated as dashboard notifications. Privy signing is simulated: the sign buttons stand in for the Privy signing page and status update.
 
 ## Use of AI
 

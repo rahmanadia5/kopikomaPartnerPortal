@@ -160,6 +160,11 @@ table.cost tr.total td{font-weight:800;border-bottom:0;padding-top:10px}
 .mini{margin:0;font-size:13px}
 .mini dt{color:var(--muted)}
 .mini dd{margin:0 0 8px;font-weight:600}
+.faq{margin:26px 0 0}.faq h2{font-size:18px;margin:0 0 10px}
+.faq details{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-s);margin-bottom:8px}
+.faq summary{cursor:pointer;padding:12px 14px;font-weight:700;font-size:14px;list-style:none;display:flex;justify-content:space-between;gap:10px}
+.faq summary::-webkit-details-marker{display:none}.faq summary::after{content:'+';color:var(--aren-ink);font-size:18px;line-height:1}
+.faq details[open] summary::after{content:'\2212'}.faq details p{margin:0;padding:0 14px 12px;font-size:14px;color:var(--muted)}
 .formcard{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-m);padding:22px}
 .timeline{list-style:none;margin:0;padding:0}
 .timeline li{position:relative;padding:0 0 18px 30px}
@@ -498,7 +503,7 @@ function mkApp(n, name, city, paket, stage, days, o = {}) {
     ev.push([sales,'Quotation versi 1 dikirim ke calon franchisee']);
     if (ri >= 5) ev.push([sales,'Calon franchisee menyetujui quotation versi 1']);
   }
-  if (stage === 'disetujui') ev.push([MANAGER,'Persetujuan akhir: kemitraan disetujui']);
+  if (stage === 'disetujui') { ev.push([MANAGER,'Persetujuan akhir: kemitraan disetujui']); ev.push([null,'Perjanjian waralaba dikirim lewat Privy ke calon franchisee dan Kopi Koma']); a.sign = {fr:null, kk:null}; }
   const end = new Date(daysAgo(days)).getTime(), start = new Date(daysAgo(days + 3 * ev.length)).getTime();
   a.log = ev.map((e,i) => ({t:new Date(ev.length === 1 ? end : start + (end - start) * i / (ev.length - 1)).toISOString(), by:e[0], text:e[1]}));
   if (a.presentasi) a.presentasi.date = a.log.find(l => /Presentasi bisnis selesai/.test(l.text)).t.slice(0,10);
@@ -571,7 +576,7 @@ let nid = 0;
 /* Dua aplikasi terpisah dari file yang sama: dashboard franchisor (/) dan portal calon franchisee (/mitra).
    Data aplikasi dan notifikasi disimpan di localStorage agar keduanya terhubung, juga antar-tab. */
 const MODE = /^\/mitra/.test(location.pathname) || location.hash === '#mitra' ? 'mitra' : 'staff';
-const STORE = 'kopikoma-demo-v5';
+const STORE = 'kopikoma-demo-v6';
 function loadShared() { try { return JSON.parse(localStorage.getItem(STORE)); } catch { return null; } }
 function saveShared() { try { localStorage.setItem(STORE, JSON.stringify({apps:state.apps, notifs:state.notifs, tick, nid})); } catch {} }
 function clearShared() { try { localStorage.removeItem(STORE); } catch {} }
@@ -616,6 +621,8 @@ const find = id => state.apps.find(a => a.id === id);
 const latest = a => a.quotes[a.quotes.length - 1];
 const lastChange = a => a.changes[a.changes.length - 1];
 const isDone = a => a.stage === 'disetujui' || a.stage === 'ditolak';
+const signOf = a => a.sign || {fr:null, kk:null};
+const signChip = a => { const g = signOf(a); return g.fr && g.kk ? ['ok','Sudah ditandatangani'] : g.fr ? ['warn','Menunggu TTD Kopi Koma'] : g.kk ? ['warn','Menunggu TTD calon franchisee'] : ['warn','Belum ditandatangani']; };
 const dealValue = a => latest(a) ? qValue(latest(a)) : total(a.paket);
 const activeLoad = (s, apps = state.apps) => apps.filter(a => a.sales === s && !isDone(a)).length;
 function triage(a, apps = state.apps) {
@@ -867,16 +874,17 @@ function doneHTML() {
       ${[['all','Semua'],['ok','Disetujui'],['no','Ditolak atau mundur']].map(([k,l]) => `<button class="pill" aria-pressed="${f.res === k}" onclick="${setF('res', k)}">${l}</button>`).join('')}
       <select class="search" style="min-width:0;width:auto" aria-label="Periode" onchange="state.doneF.per=this.value;refreshPipeline()">${[['semua','Semua waktu'],['bulan','Bulan ini'],['kuartal','Kuartal ini'],['tahun','Tahun ini']].map(([k,l]) => `<option value="${k}" ${f.per === k ? 'selected' : ''}>${l}</option>`).join('')}</select>
       ${role() === 'Sales' ? '' : `<select class="search" style="min-width:0;width:auto" aria-label="Sales" onchange="state.doneF.s=this.value;refreshPipeline()"><option value="all">Semua sales</option>${SALES.map(k => `<option value="${k}" ${f.s === k ? 'selected' : ''}>${uname(k)}</option>`).join('')}</select>`}
-      <span class="small">${list.length} pengajuan, ${ok.length} disetujui senilai ${rpS(value)}</span>
+      <span class="small">${list.length} pengajuan, ${ok.length} disetujui senilai ${rpS(value)}${ok.filter(a => !(signOf(a).fr && signOf(a).kk)).length ? `, ${ok.filter(a => !(signOf(a).fr && signOf(a).kk)).length} perjanjian belum lengkap ditandatangani` : ''}</span>
     </div>
     <div class="panel">${list.length ? `<div class="table-wrap"><table class="funnel done-t">
-      <thead><tr><th>Calon franchisee</th><th>Hasil</th><th>Tahap terakhir</th><th>Alasan</th><th>Nilai kesepakatan</th><th>Sales</th><th>Tanggal selesai</th></tr></thead>
+      <thead><tr><th>Calon franchisee</th><th>Hasil</th><th>Tahap terakhir</th><th>Alasan</th><th>Nilai kesepakatan</th><th>Perjanjian (Privy)</th><th>Sales</th><th>Tanggal selesai</th></tr></thead>
       <tbody>${list.map(a => { const o = outcomeOf(a); return `<tr onclick="openDetail('${a.id}')">
         <td><div class="tl-title">${esc(a.name)}</div><div class="small">${a.id}, ${esc(a.city)}, ${PAKET[a.paket].nama}</div></td>
         <td><span class="chip ${o[0]}">${o[1]}</span></td>
         <td class="small" style="color:var(--ink)">${a.stage === 'disetujui' ? 'Persetujuan akhir' : REJ_STEP[a.rejectStep ?? 0]}</td>
         <td class="small" style="max-width:280px">${a.stage === 'disetujui' ? '–' : esc(a.rejectReason || '–')}</td>
         <td>${a.stage === 'disetujui' ? `<b>${rp(dealValue(a))}</b>` : '<span class="small">–</span>'}</td>
+        <td>${a.stage === 'disetujui' ? `<span class="chip ${signChip(a)[0]}">${signChip(a)[1]}</span>` : '<span class="small">–</span>'}</td>
         <td class="small" style="color:var(--ink)">${a.sales ? esc(uname(a.sales)) : '–'}</td>
         <td class="small" style="color:var(--ink);white-space:nowrap">${new Date(a.stageSince).toLocaleDateString('id-ID',{day:'numeric', month:'short', year:'numeric'})}</td>
       </tr>`; }).join('')}</tbody></table></div>` : '<p class="np-empty" style="padding:4px 0">Tidak ada pengajuan selesai untuk filter ini.</p>'}</div>
@@ -983,7 +991,7 @@ function portalHTML() {
 }
 function portalForm() {
   const f = state.form, e = state.formErr;
-  return `<section class="hero"><h1>Buka outlet Kopi Koma <i>di kotamu.</i></h1></section>
+  return `<section class="hero"><h1>Buka outlet Kopi Koma <i>di kotamu.</i></h1><p class="sub" style="margin-top:8px">Punya pertanyaan dulu? <button class="link" onclick="document.getElementById('faq').scrollIntoView({behavior:'smooth'})">Lihat FAQ</button></p></section>
   <div class="paket-list" style="margin-bottom:22px">${Object.entries(PAKET).map(([k,p]) => `<div class="paket"><h3>${p.nama}</h3><div class="price">${rp(total(k))}</div>
     <dl class="mini"><dt>Royalti</dt><dd>${p.royalti}</dd><dt>Estimasi balik modal</dt><dd>${p.bep}</dd></dl></div>`).join('')}</div>
   <div class="formcard"><div class="d-top"><h2>Formulir pendaftaran mitra</h2><button class="link" onclick="saveForm();portalDemoFill()">Isi data contoh</button></div>
@@ -1004,7 +1012,26 @@ function portalForm() {
     <label class="consent"><input type="checkbox" id="f-consent" ${f.consent ? 'checked' : ''}><span>Saya menyetujui Kopi Koma memproses data pribadi saya, termasuk dokumen identitas dan keuangan, untuk keperluan seleksi kemitraan sesuai UU Pelindungan Data Pribadi.</span></label>
     ${e.consent ? `<p class="err" style="margin-top:6px">${e.consent}</p>` : ''}
     <div class="actions" style="margin-top:20px"><button class="btn btn-primary" onclick="submitPortal()">Kirim pendaftaran</button></div>
-  </div>`;
+  </div>
+  ${faqHTML()}`;
+}
+function faqHTML() {
+  const inc = k => PAKET[k].items.map(i => i[0].toLowerCase()).join(', ');
+  const qa = [
+    ['Apa beda paket Gerobak dan Cafe?', `Gerobak (${rp(total('gerobak'))}) cocok untuk usaha pertama dengan modal lebih kecil, tanpa royalti, estimasi balik modal ${PAKET.gerobak.bep}. Cafe (${rp(total('cafe'))}) adalah outlet lengkap dengan area duduk, royalti ${PAKET.cafe.royalti.toLowerCase()}, estimasi balik modal ${PAKET.cafe.bep}.`],
+    ['Biaya paket sudah termasuk apa saja?', `Gerobak: ${inc('gerobak')}. Cafe: ${inc('cafe')}.`],
+    ['Kenapa paket Gerobak tanpa royalti?', 'Mitra Gerobak membeli bahan baku dari Kopi Koma, jadi tidak ada potongan persentase dari omzet.'],
+    ['Berapa lama proses sampai disetujui?', 'Ada 7 tahap, dari presentasi bisnis, survei lokasi, penilaian kelayakan, quotation, sampai persetujuan akhir. Umumnya sekitar 4 minggu, tergantung kelengkapan data dan kecepatanmu menanggapi quotation.'],
+    ['Siapa yang menentukan lokasi outlet?', 'Kamu mengajukan lokasi, lalu sales Kopi Koma melakukan survei untuk menilai kelayakannya. Lokasi masih bisa diganti saat negosiasi quotation.'],
+    ['Dokumen apa yang perlu disiapkan?', `${DOCS.map(d => d[1]).join(', ')}. Hanya KTP yang wajib saat mendaftar, sisanya bisa menyusul sebelum penilaian kelayakan.`],
+    ['Apakah harus punya pengalaman usaha?', 'Tidak wajib. Pelatihan sudah termasuk dalam paket, dan sales pendamping membantumu dari awal.'],
+    ['Kotaku belum ada sales Kopi Koma, apakah tetap bisa daftar?', 'Bisa. Pengajuanmu akan ditinjau tim kemitraan dan sales yang ditunjuk akan menghubungimu.'],
+    ['Apakah pembayaran bisa bertahap?', 'Skema pembayaran, misalnya lunas atau termin, dibahas di quotation dan bisa dinegosiasikan.'],
+    ['Bagaimana cara memantau pengajuan?', 'Buka Cek status pengajuan, lalu masukkan nomor pengajuan dan email atau nomor HP. Setiap perubahan juga dikirim ke emailmu.'],
+    ['Apakah data pribadiku aman?', 'Data diproses sesuai UU Pelindungan Data Pribadi, hanya bisa diakses tim yang berwenang, dan setiap akses dicatat.'],
+    ['Bagaimana perjanjiannya ditandatangani?', 'Setelah kemitraan disetujui, perjanjian waralaba dikirim lewat Privy untuk ditandatangani secara elektronik dan tersertifikasi.']
+  ];
+  return `<section class="faq" id="faq"><h2>Pertanyaan yang sering ditanyakan</h2>${qa.map(([q, ans]) => `<details><summary>${q}</summary><p>${ans}</p></details>`).join('')}</section>`;
 }
 function setPortalFile(k, input) { saveForm(); state.form[k] = input.files[0] ? input.files[0].name : ''; delete state.formErr[k]; render(); }
 function portalDemoFill() {
@@ -1037,7 +1064,7 @@ function portalLookup(id, key) {
   }
   state.portal = {...state.portal, view:'track', id:a.id, key, err:'', open:a.id, fresh:false, resp:null}; render();
 }
-const PORTAL_DEMO = [['KK-0250','Menunggu persetujuanmu atas quotation'],['KK-0249','Permintaan perubahan sedang diproses'],['KK-0251','Menunggu persetujuan Kopi Koma'],['KK-0252','Kemitraan disepakati'],['KK-0246','Penilaian kelayakan']];
+const PORTAL_DEMO = [['KK-0250','Menunggu persetujuanmu atas quotation'],['KK-0249','Permintaan perubahan sedang diproses'],['KK-0251','Menunggu persetujuan Kopi Koma'],['KK-0252','Perjanjian menunggu tanda tanganmu'],['KK-0246','Penilaian kelayakan']];
 function portalTrack() {
   const pt = state.portal, a = pt.open ? find(pt.open) : null;
   const look = `<div class="formcard"><h2>Cek status pengajuan</h2><p class="muted">Masukkan nomor pengajuan dari email konfirmasi, beserta email atau nomor HP yang kamu daftarkan.</p>
@@ -1073,7 +1100,7 @@ function trackerHTML(a) {
   <div class="formcard"><div class="d-top"><div><div class="small">${a.id}, paket ${PAKET[a.paket].nama}, ${esc(a.city)}</div><h2 style="margin:2px 0 0">${esc(a.name)}</h2></div><span class="chip ${status[0]}">${status[1]}</span></div>
     <div style="margin:14px 0 18px">${salesCard}</div>
     <ol class="timeline">${items}</ol>
-    ${ok ? `<div class="callout ok" style="margin:6px 0 0">Selamat, kemitraan disepakati kedua pihak dengan nilai ${rp(dealValue(a))}. Langkah berikutnya: perjanjian waralaba dikirim lewat <b>Privy</b> ke ${esc(a.email)} untuk ditandatangani secara elektronik (tanda tangan elektronik tersertifikasi). Sales pendamping akan mendampingi prosesnya.</div>` : ''}
+    ${ok ? `<div class="callout ok" style="margin:6px 0 0">Selamat, kemitraan disepakati kedua pihak dengan nilai ${rp(dealValue(a))}. Perjanjian waralaba dikirim lewat <b>Privy</b> ke ${esc(a.email)}. Sales pendamping akan mendampingi prosesnya.</div>${signHTML(a, true)}` : ''}
   </div>
   ${portalQuote(a)}`;
 }
@@ -1098,6 +1125,13 @@ function portalQuote(a) {
   } else if (L.status === 'disetujui franchisee' && a.stage === 'approval') act = `<div class="callout ok">Kamu sudah menyetujui quotation versi ${L.v}. Menunggu persetujuan akhir dari Kopi Koma.</div>`;
   return `<div class="formcard" style="margin-top:16px"><div class="d-top"><h2>Quotation versi ${L.v}</h2>${qStatus(a, L)}</div>${act}<div class="preview" style="margin-top:12px">${quoteHTML(L)}</div>
     ${a.quotes.length > 1 ? `<p class="small" style="margin:0">Versi sebelumnya: ${a.quotes.slice(0,-1).map(q => `versi ${q.v} (${rp(qValue(q))})`).join(', ')}.</p>` : ''}</div>`;
+}
+function portalSign(id) {
+  const a = find(id); a.sign = {...signOf(a), fr:nowIso()};
+  log(a,'Perjanjian waralaba ditandatangani calon franchisee lewat Privy', FR);
+  if (!a.sign.kk) notify(a, MANAGER, `${a.name} sudah menandatangani perjanjian waralaba di Privy. Giliran Kopi Koma menandatangani.`);
+  notify(a, a.sales, a.sign.kk ? `Perjanjian waralaba ${a.name} sudah ditandatangani kedua pihak.` : `${a.name} sudah menandatangani perjanjian waralaba di Privy.`);
+  toast('Tanda tanganmu tersimpan di Privy.'); render();
 }
 function portalAgree(id) {
   if (!document.getElementById('pq-confirm')?.checked) return toast('Centang konfirmasi bahwa kamu sudah membaca dan menyetujui isi quotation.','bad');
@@ -1353,7 +1387,7 @@ function tabNego(a) {
       ${scoreCard(a)}${quoteHTML(L)}
       <div class="field"><label for="mg-note">Catatan keputusan</label><textarea id="mg-note" placeholder="Wajib diisi jika ditolak"></textarea></div>
       <div class="actions"><button class="btn btn-ok" onclick="finalDecision('${a.id}','ok')">Setujui kemitraan</button><button class="btn btn-danger" onclick="finalDecision('${a.id}','tolak')">Tolak</button></div>${changesHTML(a)}`;
-  if (a.stage === 'disetujui') return `<div class="callout ok">Kemitraan disetujui. Nilai kesepakatan ${rp(dealValue(a))}. Langkah berikutnya: perjanjian waralaba dikirim lewat <b>Privy</b> untuk ditandatangani secara elektronik oleh calon franchisee dan Kopi Koma.</div>${quoteHTML(L)}${versionsHTML(a)}${changesHTML(a)}`;
+  if (a.stage === 'disetujui') return `<div class="callout ok">Kemitraan disetujui. Nilai kesepakatan ${rp(dealValue(a))}. Perjanjian waralaba dikirim lewat <b>Privy</b> untuk ditandatangani secara elektronik oleh calon franchisee dan Kopi Koma.</div>${signHTML(a, false)}${quoteHTML(L)}${versionsHTML(a)}${changesHTML(a)}`;
   if (a.stage === 'ditolak') return `<div class="callout bad">Aplikasi ditutup${a.rejectReason ? ': ' + esc(a.rejectReason) : '.'}</div>${changesHTML(a)}`;
   return '<p class="muted">Negosiasi dimulai setelah quotation dikirim.</p>';
 }
@@ -1485,11 +1519,26 @@ function negoWithdraw(id) {
   if (!note) return toast('Tulis alasan calon franchisee mundur.','bad');
   state.negoForm = null; reject(a, 5, note, 'Calon franchisee mundur saat negosiasi'); toast('Aplikasi ditutup.'); render();
 }
+function signKK(id) {
+  const a = find(id); a.sign = {...signOf(a), kk:nowIso()};
+  log(a,'Perjanjian waralaba ditandatangani Kopi Koma lewat Privy');
+  if (a.sign.fr) notify(a, a.sales, `Perjanjian waralaba ${a.name} sudah ditandatangani kedua pihak.`);
+  toast(a.sign.fr ? 'Perjanjian sudah ditandatangani kedua pihak.' : 'Tanda tangan Kopi Koma tersimpan. Menunggu tanda tangan calon franchisee.'); render();
+}
+function signHTML(a, portal) {
+  const g = signOf(a), c = signChip(a), when = t => t ? `<span class="chip ok">Ditandatangani ${fmtDT(t).split(',')[0]}</span>` : '<span class="chip warn">Menunggu</span>';
+  const btn = portal ? (!g.fr ? `<div class="actions" style="margin-top:12px"><button class="btn btn-primary" onclick="portalSign('${a.id}')">Tanda tangani di Privy</button></div>` : '')
+    : (!g.kk && ['Manajer','Super Admin'].includes(role()) ? `<div class="actions" style="margin-top:12px"><button class="btn btn-primary" onclick="signKK('${a.id}')">Tanda tangani di Privy (Kopi Koma)</button></div>` : '');
+  return `<div class="formcard" style="margin:14px 0 18px"><div class="d-top"><h3 style="margin:0">Perjanjian waralaba (Privy)</h3><span class="chip ${c[0]}">${c[1]}</span></div>
+    <p class="small" style="margin:6px 0 10px">Tanda tangan elektronik tersertifikasi. Status diperbarui otomatis dari Privy.</p>
+    <dl class="mini"><dt>Calon franchisee</dt><dd>${when(g.fr)}</dd><dt>Kopi Koma (Manajer)</dt><dd>${when(g.kk)}</dd></dl>${btn}</div>`;
+}
 function finalDecision(id, act) {
   const a = find(id), note = document.getElementById('mg-note').value.trim();
   if (act !== 'ok' && !note) return toast('Tulis alasan di catatan keputusan.','bad');
   if (act === 'ok') {
     setStage(a,'disetujui'); a.approvedAt = TODAY.toISOString(); log(a,'Persetujuan akhir: kemitraan disetujui');
+    a.sign = {fr:null, kk:null}; log(a,'Perjanjian waralaba dikirim lewat Privy ke calon franchisee dan Kopi Koma', null);
     notify(a, a.sales, `Kemitraan ${a.name} disetujui. Perjanjian waralaba dikirim lewat Privy untuk tanda tangan elektronik, dampingi prosesnya.`); toast(`Kemitraan disetujui. Nilai kesepakatan ${rp(dealValue(a))}.`);
   } else {
     reject(a, 6, note, 'Persetujuan akhir: ditolak'); notify(a, a.sales, `Kemitraan ${a.name} ditolak pada persetujuan akhir.`); toast('Aplikasi ditolak.');

@@ -61,7 +61,7 @@ box(MX, Y['neg'], ['6. Negotiation: candidate responds', '(in portal, or recorde
 diamond(MX, Y['d6'], 'Response?', 'Candidate', h=80)
 diamond(MX, Y['d7'], ['7. Final', 'approval?'], 'Manager', h=84)
 term(MX, Y['end'], 'Approved (2 of 2)', '#2F7D46', w=200)
-term(RX, Y['end'], ['Agreement via Privy', '(roadmap)'], '#2F7D46', w=190, h=50, dashed=True)
+term(RX, Y['end'], ['Agreement signed', 'via Privy'], '#2F7D46', w=190, h=50, dashed=True)
 for k in ('d3', 'd4', 'd7'):
     term(RX, Y[k], 'Rejected', '#B04848')
 term(RX, Y['d6'], 'Withdrawn', '#777')
