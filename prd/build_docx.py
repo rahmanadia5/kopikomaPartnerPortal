@@ -38,9 +38,27 @@ hp = doc.sections[0].header.paragraphs[0]
 hp.alignment = WD_ALIGN_PARAGRAPH.LEFT
 set_font(hp.add_run(f'{NAME} - {UNIV}'))
 
+def add_link(p, url, size=11):
+    rid = p.part.relate_to(url, 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink', is_external=True)
+    h = OxmlElement('w:hyperlink'); h.set(qn('r:id'), rid)
+    r = OxmlElement('w:r'); rpr = OxmlElement('w:rPr')
+    rf = OxmlElement('w:rFonts')
+    for k in ('w:ascii', 'w:hAnsi', 'w:cs', 'w:eastAsia'): rf.set(qn(k), FONT)
+    c = OxmlElement('w:color'); c.set(qn('w:val'), '1155CC')
+    u = OxmlElement('w:u'); u.set(qn('w:val'), 'single')
+    sz = OxmlElement('w:sz'); sz.set(qn('w:val'), str(int(size * 2)))
+    for e in (rf, c, sz, u): rpr.append(e)
+    t = OxmlElement('w:t'); t.text = url; t.set(qn('xml:space'), 'preserve')
+    r.append(rpr); r.append(t); h.append(r); p._p.append(h)
+
 def add_inline(p, text, size=11):
-    for part in re.split(r'(\*\*[^*]+\*\*)', text):
+    for part in re.split(r'(\*\*[^*]+\*\*|https?://[^\s)]+)', text):
         if not part: continue
+        if part.startswith('http'):
+            tail = part[len(part.rstrip('.,;')):]
+            add_link(p, part.rstrip('.,;'), size)
+            if tail: set_font(p.add_run(tail), size)
+            continue
         bold = part.startswith('**')
         r = p.add_run(part[2:-2] if bold else part)
         set_font(r, size, bold=bold)
@@ -91,7 +109,7 @@ def grid(spec):
         q = t.cell(1, j).paragraphs[0]; q.alignment = WD_ALIGN_PARAGRAPH.CENTER
         r = q.add_run(cap.strip()); set_font(r, 11); r.italic = True
     doc.add_paragraph().paragraph_format.space_after = Pt(0)
-i = 0
+i = 0; in_refs = False
 while i < len(lines):
     ln = lines[i]
     if ln.startswith('|'):
@@ -116,11 +134,14 @@ while i < len(lines):
     if ln.strip() == '[[PAGEBREAK]]':
         doc.add_page_break(); i += 1; continue
     if ln.startswith('# '): p = doc.add_paragraph(style='Title'); add_inline(p, f'**{ln[2:]}**', 11)
-    elif ln.startswith('## '): doc.add_heading(ln[3:], level=1)
+    elif ln.startswith('## '): doc.add_heading(ln[3:], level=1); in_refs = ln[3:].strip() == 'References'
     elif ln.startswith('### '): doc.add_heading(ln[4:], level=2)
     elif ln.startswith('#### '): doc.add_heading(ln[5:], level=3)
     elif ln.startswith('- '): para(ln[2:], 'List Bullet')
-    elif re.match(r'\d+\. ', ln): para(re.sub(r'^\d+\. ', '', ln), 'List Number', WD_ALIGN_PARAGRAPH.LEFT)
+    elif re.match(r'\d+\. ', ln):
+        n, body = ln.split('. ', 1)
+        q = para(f'[{n}] {body}' if in_refs else f'{n}. {body}', align=WD_ALIGN_PARAGRAPH.LEFT)
+        q.paragraph_format.left_indent = Cm(0.8); q.paragraph_format.first_line_indent = Cm(-0.8); q.paragraph_format.space_after = Pt(3)
     elif ln.strip(): para(ln, align=WD_ALIGN_PARAGRAPH.LEFT if ln.startswith(('Prototype', 'Demo password')) else WD_ALIGN_PARAGRAPH.JUSTIFY)
     i += 1
 
