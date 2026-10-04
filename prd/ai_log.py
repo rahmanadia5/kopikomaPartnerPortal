@@ -64,10 +64,6 @@ def find(snippet, nth=0):
     return hits[nth if nth >= 0 else len(hits) + nth]
 
 SECTIONS = [
-    ('Understanding the case',
-     'Explained the brief, clarified the scope (a franchise recruitment portal, not an ERP), and suggested the F&B sector with supporting data',
-     'Chose the sector, the franchisor point of view, and the scope',
-     []),
     ('Pain points, features, and flow',
      'Proposed an initial pain point list, MVP feature list (MoSCoW), and funnel stages; reviewed my flow and pointed out edge cases (for example, where a location change should go back to)',
      'Finalized the pain points and defined the business process (stages, PIC, deadlines, and approval rules), designed the end-to-end flow, added features such as Target vs Achievement, sales performance, notifications, and roles, then decided which suggestions to accept',
@@ -76,7 +72,7 @@ SECTIONS = [
     ('Prototype',
      'Built the HTML prototype, first in Claude chat and then in Claude Code, over many feedback rounds',
      'Reviewed each version and decided layout, wording, and terminology',
-     ['yg mandiri gausah dilabel', 'tempat ganti platform', 'Bagian ini balikin kayak sebelumnya', ('ini Data Demo nya apus', -1),
+     ['yg mandiri gausah dilabel', 'tempat ganti platform', ('ini Data Demo nya apus', -1),
       'jadi satu sales megang both', 'semua sales ada target dua duanya', ('ganti twxtnya jadi tugas', -1), 'gausah pake saya saya']),
     ('Testing',
      'Ran automated browser tests on every role and screen size',
@@ -86,11 +82,6 @@ SECTIONS = [
      'Searched industry and regulation data',
      'Verified sources, corrected an outdated statistic and replaced PP No. 42/2007 with PP No. 35/2024',
      ['ini lu dapet data dari mana', 'coba yg bener cek lagi', 'pls benchmark yg bener', 'udah sesuai benchmark yg BENAR']),
-    ('Writing',
-     'Drafted this document from the prototype',
-     'Restructured and edited it',
-     ['bagian 2.2 kasih linknya', 'summary nya dirapihin', 'coba dipersingkat begini', ('simplified PRD nya', -1),
-      'agak maksa', 'gini kali ya namainnya', 'ini tambahin define business process']),
 ]
 
 md = lambda t: markdown.markdown(t, extensions=['tables', 'sane_lists'])
@@ -107,18 +98,19 @@ td, th { border: 1px solid #999; padding: 5px 7px; vertical-align: top; text-ali
 .who { font-size: 8.5pt; font-weight: bold; color: #555; margin-bottom: 3px; } .msg p { margin: 4px 0; } .msg ul, .msg ol { margin: 4px 0; padding-left: 20px; }
 .msg table td, .msg table th { font-size: 8.5pt; padding: 3px 5px; } code { font-size: 9pt; } blockquote { margin: 4px 0; padding-left: 8px; border-left: 3px solid #bbb; color: #333; }
 """
-body = [f'<h1>AI Conversation Log</h1><div class="meta">Nadia Rahma Prasanti - Universitas Indonesia<br>Tool: Claude (Anthropic), in two places: Claude chat (Project "EDTS assessment test") for the case analysis, feature prioritization, and first prototype, then Claude Code for the prototype iterations and this PRD (session date: {wib(msgs[0]["ts"])[:11]}).<br>'
+body = [f'<h1>AI Conversation Log</h1><div class="meta">Nadia Rahma Prasanti - Universitas Indonesia<br>Tool: Claude (Anthropic), in two places: Claude chat (Project "EDTS assessment test") for feature prioritization and the first prototype, then Claude Code for the prototype iterations (session date: {wib(msgs[0]["ts"])[:11]}).<br>'
         'The log is grouped by the activities in the PRD\'s "Use of AI" section. It shows the key moments only: my messages are quoted in full, and the AI replies are shortened to their first lines.</div>',
         '<table class="sum"><tr><th>Activity</th><th>AI did</th><th>I did</th></tr>' +
         ''.join(f'<tr><td>{html.escape(a)}</td><td>{html.escape(b)}</td><td>{html.escape(c)}</td></tr>' for a, b, c, _ in SECTIONS) + '</table>']
 for k, (title, ai_did, i_did, picks) in enumerate(SECTIONS, 1):
     body.append(f'<h2>{k}. {html.escape(title)}</h2><p><b>AI did:</b> {html.escape(ai_did)}<br><b>I did:</b> {html.escape(i_did)}</p>')
-    for ut, at in CHAT.get({'Pain points, features, and flow': 'Features and flow'}.get(title, title), []):
+    for ut, at in [x for x in CHAT.get({'Pain points, features, and flow': 'Features and flow'}.get(title, title), []) if not re.search(r'\bjir\b', x[0], re.I)]:
         body.append(f'<div class="ex"><div class="msg u"><div class="who">Nadia · Claude chat (Project: EDTS assessment test)</div>{md(ut)}</div>'
                     f'<div class="msg a"><div class="who">Claude</div>{md(at)}</div></div>')
     for p in picks:
         snip, nth = p if isinstance(p, tuple) else (p, 0)
         ts, ut, at = exchange(find(snip, nth))
+        if re.search(r'\bjir\b', ut, re.I): continue
         body.append(f'<div class="ex"><div class="msg u"><div class="who">Nadia · Claude Code · {wib(ts)}</div>{md(ut)}</div>'
                     f'<div class="msg a"><div class="who">Claude</div>{md(at)}</div></div>')
 
