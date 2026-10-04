@@ -31,7 +31,7 @@ def set_font(style_or_run, size=11, bold=None):
 
 set_font(doc.styles['Normal'])
 doc.styles['Normal'].paragraph_format.space_after = Pt(6)
-for name, size in (('Title', 16), ('Heading 1', 14), ('Heading 2', 12), ('Heading 3', 11), ('List Bullet', 11), ('List Bullet 2', 11), ('List Bullet 3', 11), ('List Number', 11)):
+for name, size in (('Title', 11), ('Heading 1', 11), ('Heading 2', 11), ('Heading 3', 11), ('List Bullet', 11), ('List Bullet 2', 11), ('List Bullet 3', 11), ('List Number', 11)):
     set_font(doc.styles[name], size, bold=name.startswith(('Title', 'Heading')))
 
 hp = doc.sections[0].header.paragraphs[0]
@@ -115,7 +115,7 @@ while i < len(lines):
         grid(ln[7:-2]); i += 1; continue
     if ln.strip() == '[[PAGEBREAK]]':
         doc.add_page_break(); i += 1; continue
-    if ln.startswith('# '): p = doc.add_paragraph(style='Title'); add_inline(p, ln[2:], 16)
+    if ln.startswith('# '): p = doc.add_paragraph(style='Title'); add_inline(p, f'**{ln[2:]}**', 11)
     elif ln.startswith('## '): doc.add_heading(ln[3:], level=1)
     elif ln.startswith('### '): doc.add_heading(ln[4:], level=2)
     elif ln.startswith('#### '): doc.add_heading(ln[5:], level=3)
