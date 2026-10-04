@@ -1078,7 +1078,7 @@ function portalTrack() {
 }
 function trackerHTML(a) {
   const pt = state.portal, cur = curStep(a), rej = a.stage === 'ditolak', ok = a.stage === 'disetujui', L = latest(a), ch = pendingChange(a);
-  const status = ok ? ['ok','Disepakati kedua pihak'] : rej ? ['bad','Tidak dilanjutkan'] : a.stage === 'negosiasi' ? ['warn','Menunggu tanggapanmu'] : ['blue','Sedang ditinjau'];
+  const g = signOf(a), status = ok ? (g.fr && g.kk ? ['ok','Perjanjian ditandatangani'] : !g.fr ? ['warn','Menunggu tanda tanganmu'] : ['blue','Menunggu tanda tangan Kopi Koma']) : rej ? ['bad','Tidak dilanjutkan'] : a.stage === 'negosiasi' ? ['warn','Menunggu tanggapanmu'] : ['blue','Sedang ditinjau'];
   const items = PORTAL_STEPS.map(([t, d], i) => {
     let cls = 'todo', note = '';
     if (i < cur || ok) cls = 'done';
