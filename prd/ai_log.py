@@ -7,6 +7,7 @@ from playwright.sync_api import sync_playwright
 
 HERE = Path(__file__).parent
 SRC = sys.argv[1]
+NARR = Path(sys.argv[4]) if len(sys.argv) > 4 else HERE / 'narrative.html'
 CHAT = json.load(open(sys.argv[2], encoding='utf-8')) if len(sys.argv) > 2 else {}
 OUT = HERE / 'EDTS APM 2027 - Nadia Rahma Prasanti - Universitas Indonesia - AI Conversation.pdf'
 
@@ -107,6 +108,7 @@ td, th { border: 1px solid #999; padding: 5px 7px; vertical-align: top; text-ali
 """
 body = [f'<h1>AI Conversation Log</h1><div class="meta">Nadia Rahma Prasanti - Universitas Indonesia<br>Tool: Claude (Anthropic), in two places: Claude chat (Project "EDTS assessment test") for feature prioritization and the first prototype, then Claude Code for the prototype iterations.<br>'
         'The log is grouped by the activities in the PRD\'s "Use of AI" section. It shows the key moments only: my messages are quoted in full, and the AI replies are shortened to their first lines.</div>',
+        (NARR.read_text(encoding='utf-8') if NARR.exists() else '') +
         '<table class="sum"><tr><th>Activity</th><th>AI did</th><th>I did</th></tr>' +
         ''.join(f'<tr><td>{html.escape(a)}</td><td>{html.escape(b)}</td><td>{html.escape(c)}</td></tr>' for a, b, c, _ in SECTIONS) + '</table>']
 import base64
