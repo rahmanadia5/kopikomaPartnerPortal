@@ -67,8 +67,7 @@ SECTIONS = [
     ('Pain points, features, and flow',
      'Tidied up my pain points, feature list, and funnel into a clear structure',
      'Defined the pain points, features, and funnel, designed the business process (stages, PIC, deadlines, and approval rules), and pointed out the special cases the flow must handle (for example, duplicate leads, leads outside any sales region, and location changes during negotiation)',
-     ['i need an end to end business process', 'submit applicationnya', 'separate this two dashboard', 'musti ada e-sign', 'dua duanya kali ya',
-      'minta ganti lokasi di akhir', 'oke usul lu semua diterima']),
+     []),
     ('PRD (first draft)',
      'Formatted my pain points, features, and flow into a first PRD draft (text)',
      'Reviewed and edited the draft and used it as the spec for the prototype; updated the PRD whenever a decision changed while prototyping',
@@ -76,8 +75,12 @@ SECTIONS = [
     ('Prototype',
      'Built the HTML prototype based on the PRD, first in Claude chat and then in Claude Code, over many feedback rounds',
      'Reviewed each version and decided layout, wording, and terminology',
-     ['yg mandiri gausah dilabel', 'tempat ganti platform', ('ini Data Demo nya apus', -1),
-      'jadi satu sales megang both', 'semua sales ada target dua duanya', ('ganti twxtnya jadi tugas', -1), 'gausah pake saya saya']),
+     []),
+    ('Product decisions (recorded in the PRD)',
+     'Discussed the trade-offs of each change I proposed, then updated the PRD and the prototype to match',
+     'Decided each change: separate apps for the franchisor and the candidate, roles and access, the 8-stage flow with automatic lead assignment, location-change rules, per-sales targets, and e-signature tracking',
+     ['i need an end to end business process', 'submit applicationnya', 'separate this two dashboard', 'musti ada e-sign', 'dua duanya kali ya',
+      'minta ganti lokasi di akhir', 'oke usul lu semua diterima', 'yg mandiri gausah dilabel', 'jadi satu sales megang both', 'semua sales ada target dua duanya']),
     ('Testing',
      'Ran automated browser tests on every role and screen size',
      'Defined what "correct" means and checked results',
@@ -102,7 +105,7 @@ td, th { border: 1px solid #999; padding: 5px 7px; vertical-align: top; text-ali
 .who { font-size: 8.5pt; font-weight: bold; color: #555; margin-bottom: 3px; } .msg p { margin: 4px 0; } .msg ul, .msg ol { margin: 4px 0; padding-left: 20px; }
 .msg table td, .msg table th { font-size: 8.5pt; padding: 3px 5px; } code { font-size: 9pt; } blockquote { margin: 4px 0; padding-left: 8px; border-left: 3px solid #bbb; color: #333; }
 """
-body = [f'<h1>AI Conversation Log</h1><div class="meta">Nadia Rahma Prasanti - Universitas Indonesia<br>Tool: Claude (Anthropic), in two places: Claude chat (Project "EDTS assessment test") for feature prioritization and the first prototype, then Claude Code for the prototype iterations (session date: {wib(msgs[0]["ts"])[:11]}).<br>'
+body = [f'<h1>AI Conversation Log</h1><div class="meta">Nadia Rahma Prasanti - Universitas Indonesia<br>Tool: Claude (Anthropic), in two places: Claude chat (Project "EDTS assessment test") for feature prioritization and the first prototype, then Claude Code for the prototype iterations.<br>'
         'The log is grouped by the activities in the PRD\'s "Use of AI" section. It shows the key moments only: my messages are quoted in full, and the AI replies are shortened to their first lines.</div>',
         '<table class="sum"><tr><th>Activity</th><th>AI did</th><th>I did</th></tr>' +
         ''.join(f'<tr><td>{html.escape(a)}</td><td>{html.escape(b)}</td><td>{html.escape(c)}</td></tr>' for a, b, c, _ in SECTIONS) + '</table>']
@@ -119,11 +122,13 @@ for k, (title, ai_did, i_did, picks) in enumerate(SECTIONS, 1):
     for ut, at in [x for x in CHAT.get({'Pain points, features, and flow': 'Features and flow'}.get(title, title), []) if not re.search(r'\bjir\b', x[0], re.I)]:
         body.append(f'<div class="ex"><div class="msg u"><div class="who">Nadia · Claude chat (Project: EDTS assessment test)</div>{md(ut)}</div>'
                     f'<div class="msg a"><div class="who">Claude</div>{md(at)}</div></div>')
+    if title == 'Prototype':
+        body.append('<p class="small">This was followed by feedback rounds on layout and wording, first in Claude chat and then in Claude Code.</p>')
     for p in picks:
         snip, nth = p if isinstance(p, tuple) else (p, 0)
         ts, ut, at = exchange(find(snip, nth))
         if re.search(r'\bjir\b', ut, re.I): continue
-        body.append(f'<div class="ex"><div class="msg u"><div class="who">Nadia · Claude Code · {wib(ts)}</div>{md(ut)}</div>'
+        body.append(f'<div class="ex"><div class="msg u"><div class="who">Nadia · Claude Code</div>{md(ut)}</div>'
                     f'<div class="msg a"><div class="who">Claude</div>{md(at)}</div></div>')
 
 page = f'<!doctype html><html><head><meta charset="utf-8"><style>{css}</style></head><body>{"".join(body)}</body></html>'
