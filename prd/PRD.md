@@ -286,11 +286,12 @@ Open question for the client: should large discounts need Manager approval befor
 
 ## Use of AI
 
-I used Claude (Anthropic) throughout the project. The product decisions were mine, and I checked its output before using it.
+I used Claude (Anthropic) throughout the project, in this order: I wrote the PRD first, built the prototype from it, and kept the PRD updated as decisions changed. The product decisions were mine, and I checked the AI's output before using it.
 
 | Activity | AI did | I did |
 |---|---|---|
 | Pain points, features, and flow | Tidied up my pain points, feature list, and funnel into a clear structure | Defined the pain points, features, and funnel, designed the business process (stages, PIC, deadlines, and approval rules), and pointed out the special cases the flow must handle (for example, duplicate leads, leads outside any sales region, and location changes during negotiation) |
+| PRD (first draft) | Formatted my pain points, features, and flow into a first PRD draft (text) before any prototype was built | Reviewed and edited the draft and used it as the spec for the prototype; updated the PRD whenever a decision changed while prototyping |
 | Prototype | Built the HTML prototype, first in Claude chat and then in Claude Code, over many feedback rounds | Reviewed each version and decided layout, wording, and terminology |
 | Testing | Ran automated browser tests on every role and screen size | Defined what "correct" means and checked results |
 | Development and deployment | Set up the GitHub repository, pushed every revision, and guided the Vercel deployment so the live prototype updates automatically on each push | Created the Vercel project, connected it to GitHub, and checked each deployed version |
