@@ -47,7 +47,7 @@ Extra value (Should have): as Laras, open Target and Performa Sales.
 | Brand | Kopi Koma (fictitious), a local grab-and-go coffee brand with around 80 outlets |
 | Packages | **Gerobak** (cart): Rp 45 million, no royalty (earns from mandatory raw material supply instead). **Cafe**: Rp 450 million, 5% monthly royalty |
 | Team | 1 Manager, 4 Sales (2 senior, 2 junior, one region each), 2 Reviewers, 1 Super Admin |
-| Target | 120 new outlets per year (72 Gerobak, 48 Cafe), a stretch target |
+| Target | 120 new outlets per year (72 Gerobak, 48 Cafe), a stretch target. This is deliberately aggressive (from about 80 to 200 outlets in a year) and should be calibrated with the client's historical opening rate. |
 | Revenue | Deal value of approved packages after discount. Royalty is not counted. |
 
 Franchising is the main expansion channel for Indonesian F&B: the culinary sector makes up 47.77% of the 311 registered franchisors as of February 2025 [1][2], and chain coffee shops grew from around 1,000 outlets in 2016 to over 2,950 in 2019 [3][4]. For a brand like Kopi Koma, the partnership process is therefore a core business process.
@@ -100,7 +100,7 @@ Kopi Koma grows by adding partner outlets, and every outlet starts as a lead. Th
 | Leads assigned within 1 day | 100% | Deadline of the New lead stage |
 | Time from new lead to final decision | 26 days or less | Sum of stage deadlines |
 | Stages completed on time | 85% or more | Assumption, validate in pilot |
-| Lead to approved conversion | 12% or more | Default funnel rates |
+| Lead to approved conversion | 12% or more | Assumption (default funnel rates), calibrate with real data in the pilot |
 | Approved outlets per year | 120 | Business target |
 | Approved deal value per year | around Rp 24.8 billion | 6 Gerobak + 4 Cafe per month |
 | Quotation responses via portal | 70% or more | Assumption, validate in pilot |
